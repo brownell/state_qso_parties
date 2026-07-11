@@ -153,24 +153,6 @@ class UnifiedLogProcessor:
             print(f"prepare_qsos failed {result['callsign']} {result['errors']}")
             return result
         
-        #############################################
-        # Phase 3: Score
-        # Try NOT scoring during initial pass, but only after cross-checking.
-        # instead do the cross-checking, which will do the scoring as part of its process
-        #############################################
-
-        # try:
-        #     self._score_qsos(result)
-        # except Exception as e:
-        #     result['is_valid'] = False
-        #     result['errors'].append(f"Scoring failed: {str(e)}")
-
-        #     print(f"scoring failed failed {result['callsign']} {result['errors']}")
-
-        #     # pprint(f"Done scoring: {result}")
-        #     # print("BREAKPOINT")
-        #     return result
-        
         return result
     
     def _get_dx_info(self, callsign):
