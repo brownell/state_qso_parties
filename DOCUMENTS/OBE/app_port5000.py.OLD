@@ -16,7 +16,7 @@ import shutil
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from config.config import (
-    INCOMING_LOGS, LA_PARISHES_FILE, WVE_ABBREVS_FILE,
+    INCOMING_LOGS, COUNTIES_FILE, WVE_ABBREVS_FILE,
     FLASK_SECRET_KEY, MAX_UPLOAD_SIZE, ensure_directories
 )
 from laqp.core.validator import validate_single_log
@@ -112,7 +112,7 @@ def upload_log():
         # Validate the log with form data cross-checking
         result = validate_single_log(
             Path(temp_log_path),
-            LA_PARISHES_FILE,
+            COUNTIES_FILE,
             WVE_ABBREVS_FILE,
             form_email=email,
             form_mode=mode_category,

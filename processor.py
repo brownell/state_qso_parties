@@ -23,7 +23,7 @@ import csv
 # Import your existing modules
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from config.config import (
-    BONUS_CALLSIGN, LA_PARISHES_FILE, OVERLAY_VALUE_OPTIONS, POWER_VALUE_OPTIONS, STATION_VALUE_OPTIONS, 
+    BONUS_CALLSIGN, COUNTIES_FILE, OVERLAY_VALUE_OPTIONS, POWER_VALUE_OPTIONS, STATION_VALUE_OPTIONS, 
     STATES_FILE, PROVINCES_FILE, EXTRA_BONUS_YEAR, EXTRA_BONUS_CALLS, EXTRA_BONUS_POINTS,
     US_PREFIXES, CANADIAN_PREFIXES, QRZ_CALLSIGN, QRZ_PASSWORD,
     PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE,
@@ -37,10 +37,10 @@ class UnifiedLogProcessor:
     Unified processor that combines validation, preparation, and scoring.
     """
     
-    def __init__(self, parishes_file: Path, states_file: Path, provinces_file: Path, dxcc_entities_file: Path):
+    def __init__(self, counties_file: Path, states_file: Path, provinces_file: Path, dxcc_entities_file: Path):
         """Initialize with reference data files"""
         # Load parishes, states, and provinces
-        with open(parishes_file, 'r') as f:
+        with open(counties_file, 'r') as f:
             self.parishes = set(line.strip().upper() for line in f if line.strip())
 
         with open(states_file, 'r') as f:
@@ -630,7 +630,7 @@ def process_single_log(
         log_path: Path = None,
         form_data: Dict = None,
         log_content: str = None,
-        parishes_file: Path = Path(LA_PARISHES_FILE),
+        counties_file: Path = Path(COUNTIES_FILE),
         states_file: Path = Path(STATES_FILE),
         provinces_file: Path = Path(PROVINCES_FILE),
         dxcc_entities_file: Path = Path(DXCC_ENTITIES_FILE)) -> Dict:
@@ -639,14 +639,14 @@ def process_single_log(
     
     Args:
         log_path: Path to log file
-        parishes_file: Path to parish abbreviations (optional, uses default)
+        counties_file: Path to county abbreviations (optional, uses default)
         state_province_file: Path to state/province abbreviations (optional, uses default)
         **form_data: Optional form fields (email, mode, power, station, overlay)
     
     Returns:
         Result dictionary
     """
-    processor = UnifiedLogProcessor(parishes_file, states_file, provinces_file, dxcc_entities_file)
+    processor = UnifiedLogProcessor(counties_file, states_file, provinces_file, dxcc_entities_file)
 
     return processor.process_log_details(
         contest_year,
@@ -699,14 +699,14 @@ def process_batch_logs(log_dir: Path, contest_year: str) -> Dict:
     
     Args:
         log_dir: Directory containing log files
-        parishes_file: Path to parish abbreviations (optional, uses default)
+        counties_file: Path to county abbreviations (optional, uses default)
         state_province_file: Path to state/province abbreviations (optional, uses default)
     
     Returns:
         List of result dictionaries
     """
     
-    processor = UnifiedLogProcessor(LA_PARISHES_FILE, STATES_FILE, PROVINCES_FILE, DXCC_ENTITIES_FILE)
+    processor = UnifiedLogProcessor(COUNTIES_FILE, STATES_FILE, PROVINCES_FILE, DXCC_ENTITIES_FILE)
 
     results = []
     # print(f"ready to process_log_details for logs in {log_dir}")

@@ -60,7 +60,7 @@ STATISTICS_DIR = OLD_STATISTICS_DIR
 # ============================================================
 
 REFERENCE_DATA_DIR = BASE_DIR / 'reference_data'
-LA_PARISHES_FILE = REFERENCE_DATA_DIR / 'la_parishes.txt'
+COUNTIES_FILE = REFERENCE_DATA_DIR / 'la_parishes.txt'
 WVE_ABBREVS_FILE = REFERENCE_DATA_DIR / 'wve_abbrevs.txt'
 
 # ============================================================

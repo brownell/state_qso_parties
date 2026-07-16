@@ -1,0 +1,61 @@
+# Louisiana QSO Party - Environment Variables
+# Copy this to .env and fill in your values
+
+# ============================================================================
+# CONTEST
+# ============================================================================
+CONTEST='laqp'  
+CONTEST_NAME= 'Louisiana QSO Party' 
+
+# ============================================================================
+# SECURITY - REQUIRED
+# ============================================================================
+# Generate with: python3 -c "import secrets; print(secrets.token_hex(32))"
+# 
+# These secrets are stored in 
+#   https://docs.google.com/document/d/18qI-pQpHOlcv5l2CJt_KppwS3GkCr_Pfm6lLoBKo6HA/edit?usp=sharing
+#   in the w5gad.org Google Drive (must be logged in to w5gad.org)
+SECRET_KEY=
+QRZ_CALLSIGN=
+QRZ_PASSWORD=
+
+# ============================================================================
+# APPLICATION SETTINGS
+# ============================================================================
+FLASK_ENV=development
+CONTEST_YEAR=2026
+MAX_UPLOAD_SIZE=5242880ex
+
+# ============================================================================
+# DATABASE
+# ============================================================================
+DATABASE_FILE=..\laqp_data\database\laqp.db  
+
+# ============================================================================
+# DIRECTORIES
+# ============================================================================
+BATCH_INPUT_DIR=..\laqp_data\batch_input  
+FINAL_REPORTS_DIR=..\laqp_data\final_reports   
+REFERENCE_DATA_DIR=.\reference_data
+ALLOWED_LOG_EXTENSIONS={'log','txt','cbr'}
+
+# ============================================================================
+# Admin settings
+# ============================================================================
+# Admin settings (if needed in future)
+# ADMIN_EMAIL=laqp@w5gad.org
+# W5GAD_URL=w5gad.org
+
+# ============================================================================
+# OPTIONAL SETTINGS
+# ============================================================================
+# Enable/disable features
+# ENABLE_WEB_UPLOADS=true
+# ENABLE_BATCH_PROCESSING=true
+
+# Rate limiting (if needed)
+# MAX_UPLOADS_PER_HOUR=10
+
+# Logging
+# LOG_LEVEL=INFO
+# LOG_FILE=data\logs\laqp.log

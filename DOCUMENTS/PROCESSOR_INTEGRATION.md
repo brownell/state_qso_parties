@@ -360,7 +360,7 @@ your-project/
 Update paths in `config/config.py`:
 
 ```python
-LA_PARISHES_FILE = 'data/LA_Parish_Abbrevs.txt'
+COUNTIES_FILE = 'data/LA_Parish_Abbrevs.txt'
 WVE_ABBREVS_FILE = 'data/WVE_Abbrevs.txt'
 ```
 

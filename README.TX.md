@@ -1,8 +1,20 @@
-# Louisiana QSO Party Log Processor
+# Texas QSO Party Log Processor
 
-Contest log processing system for the Louisiana QSO Party, hosted by Jefferson Amateur Radio Club.
+Contest log processing system for the Louisiana QSO Party, hosted by ???.
 
 ### Adapted from Texas QSO Party software created by Charles Sanders, NO5W
+
+# Overview
+
+## What it does and produces
+This software processes log files that have been captured and pre-processed by Bruce Horn's log upload system.
+
+It produces two things. The first is an individual html page (at the TQP website) for each operator. This site contains the operators certificate with his/her rankings in several catetegories.
+
+Second it contains an html page that contains the Final Report, showing all the leaderboards and commentary on the contest
+
+## How it does the work
+1. First all the logs are loaded into memory
 
 ## Leaderboards and Certificates
 The current rules specify awards for the following categories. In 2026, we are not sending out awards or certificates. For everyone - no matter were they placed - the may come to the website 15 days after the contest and see an HTML certificate, which they may print, that shows where they placed in all the relevent categories:

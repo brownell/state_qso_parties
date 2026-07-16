@@ -1,10 +1,8 @@
 """
-Texas QSO Party - Configuration
+Louisiana QSO Party - Configuration
 Application logic and contest rules (NOT secrets/credentials)
 
-This file must be copied to config.py to do a run as TQP
-
-NOTE: set up for Windows dev and deployment
+This file must be copied to config.py to do a run as LAQP
 """
 import os
 
@@ -31,8 +29,8 @@ if not SECRET_KEY:
     raise ValueError("SECRET_KEY not set in environment!")
 
 FLASK_ENV = os.environ.get('FLASK_ENV', 'production')
-CONTEST_NAME = os.environ.get('CONTEST_NAME', 'Texas QSO Party')
-CONTEST_YEAR = os.environ.get('CONTEST_YEAR', '2025')
+CONTEST = "TQP"
+CONTEST_YEAR = os.environ.get('CONTEST_YEAR', '2026')
 
 
 # ============================================================================
@@ -56,7 +54,7 @@ QRZ_PASSWORD=os.environ.get('QRZ_PASSWORD')
 # User data (on volume, in /data/)
 # ============================================================================
 BATCH_INPUT_DIR = os.environ.get('BATCH_INPUT_DIR', '/data/batch_input')
-DATABASE_FILE = os.environ.get('DATABASE_FILE', '/data/database/tqp.db')
+DATABASE_FILE = os.environ.get('DATABASE_FILE', '/data/database/laqp.db')
 FINAL_REPORTS_DIR = os.environ.get('FINAL_REPORTS_DIR', '/data/final_reports')
 
 # ============================================================================
@@ -64,8 +62,8 @@ FINAL_REPORTS_DIR = os.environ.get('FINAL_REPORTS_DIR', '/data/final_reports')
 # ============================================================================
 
 # Available years for results lookup
-CONTEST_YEARS = os.environ.get('CONTEST_YEARS', '2025').split(',')
-CONTEST_YEAR = os.environ.get('CONTEST_YEAR', '2025')
+CONTEST_YEARS = os.environ.get('CONTEST_YEARS', '2026: PRELIMINARY. FINAL here Monday May 1,2025,2024,2023 (FINAL)').split(',')
+CONTEST_YEAR = os.environ.get('CONTEST_YEAR', '2026')
 
 # Log file extensions allowed for upload
 ALLOWED_LOG_EXTENSIONS = {'log', 'txt', 'cbr'}

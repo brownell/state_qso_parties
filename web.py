@@ -101,7 +101,7 @@ def home():
 
 @app.route('/abbreviations')
 def abbreviations():
-    """Render the LA parish abbreviations page (placeholder)"""
+    """Render the LA county abbreviations page (placeholder)"""
     return render_template('abbreviations.html')
 
 @app.route('/activate')
