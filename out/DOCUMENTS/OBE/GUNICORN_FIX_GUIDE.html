@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Fixing Gunicorn for LAQP Web Server</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="fixing-gunicorn-for-laqp-web-server">Fixing Gunicorn for LAQP Web Server</h1>
+<h2 id="the-problem">The Problem</h2>
+<p>Gunicorn is looking for the app in the wrong way. Your Flask app structure is:</p>
+<pre><code>laqp/
+  web/
+    app.py  (contains: app = Flask(__name__))
+</code></pre>
+<p>Gunicorn needs a proper entry point.</p>
+<h2 id="solution-create-a-wsgi-entry-point">Solution: Create a WSGI Entry Point</h2>
+<h3 id="step-1-create-wsgipy-in-your-project-root">Step 1: Create <a href="http://wsgi.py">wsgi.py</a> in your project root</h3>
+<p>Create <code>/home/brownell/Development/laqp/wsgi.py</code>:</p>
+<pre><code class="language-python"><span class="hljs-string">&quot;&quot;&quot;
+WSGI entry point for Gunicorn
+&quot;&quot;&quot;</span>
+<span class="hljs-keyword">import</span> sys
+<span class="hljs-keyword">from</span> pathlib <span class="hljs-keyword">import</span> Path
+
+<span class="hljs-comment"># Add project root to path</span>
+sys.path.insert(<span class="hljs-number">0</span>, <span class="hljs-built_in">str</span>(Path(__file__).parent))
+
+<span class="hljs-comment"># Import the Flask app</span>
+<span class="hljs-keyword">from</span> web.app <span class="hljs-keyword">import</span> app
+
+<span class="hljs-comment"># This is what Gunicorn will use</span>
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:
+    app.run()
+</code></pre>
+<p>Save this file.</p>
+<h3 id="step-2-update-the-systemd-service-file">Step 2: Update the systemd service file</h3>
+<p>Edit <code>/etc/systemd/system/laqp-web.service</code>:</p>
+<pre><code class="language-bash">sudo nano /etc/systemd/system/laqp-web.service
+</code></pre>
+<p>Replace with this:</p>
+<pre><code class="language-ini"><span class="hljs-section">[Unit]</span>
+<span class="hljs-attr">Description</span>=LAQP Web Application
+<span class="hljs-attr">After</span>=network.target
+
+<span class="hljs-section">[Service]</span>
+<span class="hljs-attr">Type</span>=notify
+<span class="hljs-attr">User</span>=brownell
+<span class="hljs-attr">Group</span>=brownell
+<span class="hljs-attr">WorkingDirectory</span>=/home/brownell/Development/laqp
+<span class="hljs-attr">Environment</span>=<span class="hljs-string">&quot;PATH=/home/brownell/Development/laqp/venv/bin:/usr/local/bin:/usr/bin:/bin&quot;</span>
+<span class="hljs-attr">ExecStart</span>=/home/brownell/Development/laqp/venv/bin/gunicorn --workers <span class="hljs-number">3</span> --bind <span class="hljs-number">0.0</span>.<span class="hljs-number">0.0</span>:<span class="hljs-number">5000</span> wsgi:app
+<span class="hljs-attr">Restart</span>=always
+<span class="hljs-attr">RestartSec</span>=<span class="hljs-number">10</span>
+
+<span class="hljs-section">[Install]</span>
+<span class="hljs-attr">WantedBy</span>=multi-user.target
+</code></pre>
+<p><strong>Key change:</strong> <code>ExecStart=... wsgi:app</code> instead of <code>web.app:app</code></p>
+<h3 id="step-3-test-gunicorn-manually-first">Step 3: Test Gunicorn manually first</h3>
+<p>Before using systemd, let's make sure Gunicorn works:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">cd</span> /home/brownell/Development/laqp
+<span class="hljs-built_in">source</span> venv/bin/activate
+
+<span class="hljs-comment"># Test Gunicorn directly</span>
+gunicorn --workers 3 --<span class="hljs-built_in">bind</span> 0.0.0.0:5000 wsgi:app
+</code></pre>
+<p>You should see:</p>
+<pre><code>[2026-01-19 18:00:00] [12345] [INFO] Starting gunicorn 21.2.0
+[2026-01-19 18:00:00] [12345] [INFO] Listening at: http://0.0.0.0:5000 (12345)
+[2026-01-19 18:00:00] [12345] [INFO] Using worker: sync
+[2026-01-19 18:00:00] [12346] [INFO] Booting worker with pid: 12346
+[2026-01-19 18:00:00] [12347] [INFO] Booting worker with pid: 12347
+[2026-01-19 18:00:00] [12348] [INFO] Booting worker with pid: 12348
+</code></pre>
+<p>Test it: Open <a href="http://localhost:5000">http://localhost:5000</a> in a browser</p>
+<p>If it works, press Ctrl+C to stop it.</p>
+<h3 id="step-4-now-use-systemd">Step 4: Now use systemd</h3>
+<pre><code class="language-bash">sudo systemctl daemon-reload
+sudo systemctl <span class="hljs-built_in">enable</span> laqp-web
+sudo systemctl start laqp-web
+sudo systemctl status laqp-web
+</code></pre>
+<p>Should show: <strong>Active: active (running)</strong></p>
+<hr>
+<h2 id="alternative-if-wsgipy-doesnt-work">Alternative: If <a href="http://wsgi.py">wsgi.py</a> Doesn't Work</h2>
+<p>If the <a href="http://wsgi.py">wsgi.py</a> approach has issues, you can modify web/app.py directly to be Gunicorn-compatible.</p>
+<p>At the <strong>bottom</strong> of <code>/home/brownell/Development/laqp/web/app.py</code>, make sure it ends with:</p>
+<pre><code class="language-python"><span class="hljs-comment"># Create the app instance at module level for Gunicorn</span>
+<span class="hljs-comment"># (Keep your existing app = Flask(__name__) line)</span>
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:
+    <span class="hljs-comment"># This runs when you do: python3 web/app.py</span>
+    app.run(host=<span class="hljs-string">&#x27;0.0.0.0&#x27;</span>, port=<span class="hljs-number">5000</span>, debug=<span class="hljs-literal">False</span>)
+
+<span class="hljs-comment"># Gunicorn will import &#x27;app&#x27; from this module</span>
+</code></pre>
+<p>Then in the systemd service, use:</p>
+<pre><code class="language-ini"><span class="hljs-attr">ExecStart</span>=/home/brownell/Development/laqp/venv/bin/gunicorn --workers <span class="hljs-number">3</span> --bind <span class="hljs-number">0.0</span>.<span class="hljs-number">0.0</span>:<span class="hljs-number">5000</span> web.app:app
+</code></pre>
+<p>But you'll also need to make sure the project root is in Python's path. Add to the service file:</p>
+<pre><code class="language-ini"><span class="hljs-attr">Environment</span>=<span class="hljs-string">&quot;PYTHONPATH=/home/brownell/Development/laqp&quot;</span>
+<span class="hljs-attr">Environment</span>=<span class="hljs-string">&quot;PATH=/home/brownell/Development/laqp/venv/bin:/usr/local/bin:/usr/bin:/bin&quot;</span>
+</code></pre>
+<hr>
+<h2 id="complete-working-service-file-final-version">Complete Working Service File (Final Version)</h2>
+<p>Here's the complete, tested service file:</p>
+<pre><code class="language-ini"><span class="hljs-section">[Unit]</span>
+<span class="hljs-attr">Description</span>=LAQP Web Application
+<span class="hljs-attr">After</span>=network.target
+
+<span class="hljs-section">[Service]</span>
+<span class="hljs-attr">Type</span>=notify
+<span class="hljs-attr">User</span>=brownell
+<span class="hljs-attr">Group</span>=brownell
+<span class="hljs-attr">WorkingDirectory</span>=/home/brownell/Development/laqp
+<span class="hljs-attr">Environment</span>=<span class="hljs-string">&quot;PATH=/home/brownell/Development/laqp/venv/bin:/usr/local/bin:/usr/bin:/bin&quot;</span>
+<span class="hljs-attr">Environment</span>=<span class="hljs-string">&quot;PYTHONPATH=/home/brownell/Development/laqp&quot;</span>
+<span class="hljs-attr">ExecStart</span>=/home/brownell/Development/laqp/venv/bin/gunicorn --workers <span class="hljs-number">3</span> --bind <span class="hljs-number">0.0</span>.<span class="hljs-number">0.0</span>:<span class="hljs-number">5000</span> wsgi:app
+<span class="hljs-attr">Restart</span>=always
+<span class="hljs-attr">RestartSec</span>=<span class="hljs-number">10</span>
+<span class="hljs-attr">StandardOutput</span>=journal
+<span class="hljs-attr">StandardError</span>=journal
+
+<span class="hljs-section">[Install]</span>
+<span class="hljs-attr">WantedBy</span>=multi-user.target
+</code></pre>
+<hr>
+<h2 id="verifying-it-works">Verifying It Works</h2>
+<h3 id="check-the-service-status">Check the service status:</h3>
+<pre><code class="language-bash">sudo systemctl status laqp-web
+</code></pre>
+<h3 id="view-live-logs">View live logs:</h3>
+<pre><code class="language-bash">sudo journalctl -u laqp-web -f
+</code></pre>
+<h3 id="test-locally">Test locally:</h3>
+<pre><code class="language-bash">curl http://localhost:5000
+</code></pre>
+<h3 id="test-from-your-network">Test from your network:</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># From another computer</span>
+curl http://192.168.1.192:5000
+</code></pre>
+<h3 id="check-worker-processes">Check worker processes:</h3>
+<pre><code class="language-bash">ps aux | grep gunicorn
+</code></pre>
+<p>You should see 4 processes:</p>
+<ul>
+<li>1 master process</li>
+<li>3 worker processes</li>
+</ul>
+<hr>
+<h2 id="understanding-gunicorn-workers">Understanding Gunicorn Workers</h2>
+<p>With <code>--workers 3</code>, you get:</p>
+<ul>
+<li><strong>1 master process</strong> - Manages the workers</li>
+<li><strong>3 worker processes</strong> - Each can handle requests simultaneously</li>
+</ul>
+<p>So you can handle <strong>3 uploads at the same time</strong>.</p>
+<h3 id="tuning-the-number-of-workers">Tuning the number of workers:</h3>
+<p>Rule of thumb: <code>(2 x CPU_cores) + 1</code></p>
+<p>Check your CPU cores:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">nproc</span>
+</code></pre>
+<p>If you have 4 cores: <code>(2 x 4) + 1 = 9 workers</code> would be optimal for high load.</p>
+<p>For a ham contest, 3 workers is plenty.</p>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="if-it-still-fails">If it still fails:</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Check detailed logs</span>
+sudo journalctl -u laqp-web --no-pager | <span class="hljs-built_in">tail</span> -100
+
+<span class="hljs-comment"># Try running gunicorn manually to see errors</span>
+<span class="hljs-built_in">cd</span> /home/brownell/Development/laqp
+<span class="hljs-built_in">source</span> venv/bin/activate
+gunicorn --workers 3 --<span class="hljs-built_in">bind</span> 0.0.0.0:5000 wsgi:app --log-level debug
+</code></pre>
+<h3 id="common-issues">Common issues:</h3>
+<ol>
+<li>
+<p><strong>&quot;No module named 'web'&quot;</strong></p>
+<ul>
+<li>Solution: Make sure PYTHONPATH is set in service file</li>
+</ul>
+</li>
+<li>
+<p><strong>&quot;cannot import name 'app'&quot;</strong></p>
+<ul>
+<li>Solution: Check that web/app.py has <code>app = Flask(__name__)</code> at module level</li>
+</ul>
+</li>
+<li>
+<p><strong>Port already in use</strong></p>
+<ul>
+<li>Solution: Make sure no other Flask instance is running</li>
+</ul>
+<pre><code class="language-bash">sudo lsof -i :5000
+sudo <span class="hljs-built_in">kill</span> &lt;PID&gt;
+</code></pre>
+</li>
+</ol>
+<hr>
+<h2 id="step-by-step-checklist">Step-by-Step Checklist</h2>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Create <code>/home/brownell/Development/laqp/wsgi.py</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Test Gunicorn manually: <code>gunicorn --workers 3 --bind 0.0.0.0:5000 wsgi:app</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Update systemd service file</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Run <code>sudo systemctl daemon-reload</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Run <code>sudo systemctl enable laqp-web</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Run <code>sudo systemctl start laqp-web</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Check status: <code>sudo systemctl status laqp-web</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> View logs: <code>sudo journalctl -u laqp-web -f</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Test: <code>curl http://localhost:5000</code></li>
+</ul>
+<hr>
+<h2 id="benefits-youll-get">Benefits You'll Get</h2>
+<p>Once Gunicorn is working:</p>
+<p>✅ <strong>3 simultaneous uploads</strong> - Multiple hams can submit logs at once
+✅ <strong>Auto-restart</strong> - If a worker crashes, others keep working
+✅ <strong>Production-ready</strong> - Proper WSGI server
+✅ <strong>Starts on boot</strong> - Service starts automatically
+✅ <strong>Better logging</strong> - Integrated with systemd journal
+✅ <strong>Process management</strong> - Master process manages workers</p>
+<p>Let me know which step you get stuck on!</p>
+
+            
+            
+        </body>
+        </html>

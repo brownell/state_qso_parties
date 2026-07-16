@@ -27,7 +27,7 @@ from config.config import (
     STATES_FILE, PROVINCES_FILE, EXTRA_BONUS_YEAR, EXTRA_BONUS_CALLS, EXTRA_BONUS_POINTS,
     US_PREFIXES, CANADIAN_PREFIXES, QRZ_CALLSIGN, QRZ_PASSWORD,
     PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE,
-    CALLSIGN_BONUS_POINTS, ROVER_PARISH_BONUS,
+    CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS,
     PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES
 )
 
@@ -39,9 +39,9 @@ class UnifiedLogProcessor:
     
     def __init__(self, counties_file: Path, states_file: Path, provinces_file: Path, dxcc_entities_file: Path):
         """Initialize with reference data files"""
-        # Load parishes, states, and provinces
+        # Load counties, states, and provinces
         with open(counties_file, 'r') as f:
-            self.parishes = set(line.strip().upper() for line in f if line.strip())
+            self.counties = set(line.strip().upper() for line in f if line.strip())
 
         with open(states_file, 'r') as f:
             self.states = set(line.strip().upper() for line in f if line.strip())
@@ -81,15 +81,15 @@ class UnifiedLogProcessor:
             'total_qsos': 0, # total number validated, whether dups or not
             'valid_qsos': 0, #number of qsos that are not dups and contribute to the score
             'total_multipliers': 0,
-            'parishes_worked': set(),
-            'parishes_worked_multiplier': 0,
+            'counties_worked': set(),
+            'counties_worked_multiplier': 0,
             'states_worked': set(),
             'states_worked_multiplier': 0,
             'provinces_worked': set(),
             'provinces_worked_multiplier': 0,
             'dx_worked': set(),
             'dx_worked_multiplier': 0,
-            'parishes_activated': set(),
+            'counties_activated': set(),
             'rover_bonus_points': 0,
             'worked_n5lcc': False,
             'num_n5lcc_contacts': 0,
@@ -151,26 +151,7 @@ class UnifiedLogProcessor:
             result['is_valid'] = False
             result['errors'].append(f": {str(e)}")
             print(f"prepare_qsos failed {result['callsign']} {result['errors']}")
-            return result
-        
-        #############################################
-        # Phase 3: Score
-        # Try NOT scoring during initial pass, but only after cross-checking.
-        # instead do the cross-checking, which will do the scoring as part of its process
-        #############################################
-
-        # try:
-        #     self._score_qsos(result)
-        # except Exception as e:
-        #     result['is_valid'] = False
-        #     result['errors'].append(f"Scoring failed: {str(e)}")
-
-        #     print(f"scoring failed failed {result['callsign']} {result['errors']}")
-
-        #     # pprint(f"Done scoring: {result}")
-        #     # print("BREAKPOINT")
-        #     return result
-        
+            return result        
         return result
     
     def _get_dx_info(self, callsign):
@@ -370,7 +351,7 @@ class UnifiedLogProcessor:
         return True
     
     def _prepare_qsos(self, qso_lines, result: Dict) -> List[Dict]:
-        """Phase 2: Prepare QSOs (convert freq, expand multi-parish, etc.)"""
+        """Phase 2: Prepare QSOs (convert freq, expand multi-county, etc.)"""
         
         for line_num, qso_line in qso_lines:
             parts = qso_line.split()
@@ -458,140 +439,8 @@ class UnifiedLogProcessor:
         else:
             return 'LA-FIXED'
     
-    def _score_qsos(self, result: Dict):
-        """Phase 3: Score QSOs and calculate multipliers"""
-        
-        # A mult dup is when a QSO is a duplicate for multiplier purposes (same band/mode/rcvd_qth) but not a point dup (different rcvd_call).  These get qso points (if otherwise valid) but not  multipliers.  
-        # A qso dup is when all of band/mode/rcvd_call are the same, in which case it should not count for points or multipliers.
-        mult_dups = []
-        qso_dups = []
-        # pprint(f"QSO Scoring for {result['callsign'].upper()}")
-        for qso in result['qsos']:
-            # Skip QSOs flagged by cross-checking
-            if qso.get('xcheck', '') != '':
-                continue  # This QSO is NIL, B, or XCH - skip it
-        
-            band = qso['band']
-            mode_cat = qso['mode_category']
-            sent_call = qso['sent_call']
-            rcvd_call = qso['rcvd_call']
-            sent_qth = qso['sent_qth']
-
-            ## if rcvd_call is a DX, then replace rcvd_qth with DXCC code (ADIF number as string)
-            try:
-                dx_rcvd_qth  = self.my_callinfo.get_all(rcvd_call)
-            except Exception as e:
-                result['errors'].append(f"Exception {e} getting rcvd_qth callinfo")
-                print_result(result)
-                print("exception")
-            if dx_rcvd_qth and ((dx_rcvd_qth['country'] not in ['United States', 'Canada'])): # working DX station
-                rcvd_qth = self.dxcc_entities[int(dx_rcvd_qth['adif'])]
-                dx_rcvd_qth['dxcc_entity'] = rcvd_qth
-                # print(f"rcvd_qth is dx: sender sent_qth {sent_qth} receiver {rcvd_qth}")
-            
-                ## make sure this is not DX to DX
-                if len(result['dxcc_entity']) > 0: # call from one DX to another -> invalid
-                    result['warnings'].append(f"ERROR QSO from one DX station to another {qso['line_num']} band: {band} mode: {mode_cat} sender: {sent_call} sender QTH: {result['dxcc_entity']} remote op: {rcvd_call} remote QTH: {rcvd_qth}")
-                    continue
-            else:
-                rcvd_qth = qso['rcvd_qth']
-                dx_rcvd_qth = None
-
-            # NOT DX - ROVER gets a qso_check that includes his QTH because he can call same
-            # station multiple toimes from different parishes
-            if result['location_type'] == "LA-ROVER":
-                    qso_check = band + mode_cat + sent_qth + rcvd_call
-                    if sent_qth not in result['parishes_activated']:
-                        result['parishes_activated'].add(sent_qth)
-            else: ## MUST be LA Fixed or State or Province
-                qso_check = band + mode_cat + rcvd_call
-                    
-            if qso_check in qso_dups:
-                result['warnings'].append(f"DUPLICATE QSO on line {qso['line_num']} band/mode/call worked:  {band}m, {mode_cat}, {rcvd_call}")
-                qso['xcheck'] = 'DQ'
-            else:  ## not a duplicate for points, so get points
-                result['valid_qsos'] += 1
-                qso_dups.append(qso_check)
-
-            # Track bands worked and QSO by band (for display only, does not impact score)
-            result['bands_worked'].add(band)
-            result['qsos_by_band'][band] += 1
-
-            # Track qsos by hour (1-hour blocks)
-            try:
-                result['qsos_by_hour'][qso['time']] += 1
-            except Exception as e:
-                # print(f"Error tying to get the QSO time {e}")
-                result['warnings'].append(f"ERROR QSO Bad time value on line {qso['line_num']} WORKED: band {band} mode {mode_cat} remote op {rcvd_qth}")
-                continue
-            
-            # Award points
-            if mode_cat == 'Phone':
-                result['qso_points'] += PHONE_QSO_POINTS
-                # print(f"qso_points {result['qso_points']} total_qsos {result['total_qsos']} valid_qsos {result['valid_qsos']}")
-                result['qsos_by_mode']['Phone'] += 1
-            else:  # CW/Digital
-                result['qso_points'] += CW_DIGITAL_QSO_POINTS
-                # print(f"qso_points {result['qso_points']} total_qsos {result['total_qsos']} valid_qsos {result['valid_qsos']}")
-                result['qsos_by_mode']['CW/Digital'] += 1
-
-            # Check for N5LCC
-            if rcvd_call == 'N5LCC':
-                result['worked_n5lcc'] = True
-                result['num_n5lcc_contacts'] += 1
-
-            ## MULTIPLIERS
-
-            mult_check = band + mode_cat + rcvd_qth
-            if mult_check not in mult_dups:
-                mult_dups.append(mult_check)
-
-                ## Everyone gets parish multiplier for parishes, but only LA stations get state/province/DX multipliers
-                if rcvd_qth in self.parishes:
-                    result['parishes_worked'].add(rcvd_qth)
-                    result['parishes_worked_multiplier'] += 1
-                
-                # LA stations get state, province, and DX multipliers
-                if result['location_type'] == 'LA-FIXED' or result['location_type'] == 'LA-ROVER':
-                    if dx_rcvd_qth:  ## DX multiplier
-                        result['dx_worked'].add(dx_rcvd_qth['dxcc_entity'])
-                        result['dx_worked_multiplier'] += 1
-                    # LA: states, provinces, DX are multipliers
-                    elif rcvd_qth in self.provinces:
-                        result['provinces_worked'].add(rcvd_qth)
-                        result['provinces_worked_multiplier'] += 1
-                    elif rcvd_qth in self.states:
-                        result['states_worked'].add(rcvd_qth)
-                        # print(result['states_worked'])
-                        # print(f"rcvd_qth: {rcvd_qth}")
-                        result['states_worked_multiplier'] += 1
-
-        # print("break before points")
-        # Finished with points, now sum the individual multipliers
-        for i in ['parishes', 'states', 'provinces', 'dx']:
-            result['total_multipliers'] += result[f'{i}_worked_multiplier']
-          
-
-        ## score before bonuses
-        result['final_score'] = result['qso_points'] * result['total_multipliers']
-
-        ## add bonus points for one or more N5LCC contacts
-        if result['worked_n5lcc']:
-            result['final_score'] += CALLSIGN_BONUS_POINTS
-
-        ## Add rover bonus points for activated parishes
-        if result['location_type'] == 'LA-ROVER':
-            result['rover_bonus_points'] = len(result['parishes_activated']) * ROVER_PARISH_BONUS
-            result['final_score'] += result['rover_bonus_points']
-
-        ## Bonus for something outside of QSOs
-        if result['callsign'] in EXTRA_BONUS_CALLS and result['year'] == EXTRA_BONUS_YEAR:
-            result['final_score'] += EXTRA_BONUS_POINTS
     
-
-    ## END of score_qsos
-    
-    ## Utility functions
+## Utility functions
 
 
     def _is_dx_callsign(self, call: str) -> bool:
@@ -659,7 +508,7 @@ def print_result(result):
     print(f"Callsign: {result['callsign']} Errors: {len(result['errors'])}  Warnings: {len(result['warnings'])}")
     print(sorted(result['states_worked']))
     print(sorted(result['provinces_worked']))
-    print(sorted(result['parishes_worked']))
+    print(sorted(result['counties_worked']))
     print(sorted(result['dx_worked']))
     print(f"Number states worked: {len(result['states_worked'])}")
     print(f"Location Type: {result['location_type']}")
@@ -668,9 +517,9 @@ def print_result(result):
     print(f"Overlay: {result['overlay']}")
     print(f"Final Score: {result['final_score']} (Claimed: {result['claimed_score']})")
     print(f"Total QSOs: {result['total_qsos']}  Valid QSOs: {result['valid_qsos']}  QSO Points: {result['qso_points']}")
-    print(f"Total Multipliers: {result['total_multipliers']} (Parishes: {result['parishes_worked_multiplier']}, States: {result['states_worked_multiplier']}, Provinces: {result['provinces_worked_multiplier']}, DX: {result['dx_worked_multiplier']})")
+    print(f"Total Multipliers: {result['total_multipliers']} (Counties: {result['counties_worked_multiplier']}, States: {result['states_worked_multiplier']}, Provinces: {result['provinces_worked_multiplier']}, DX: {result['dx_worked_multiplier']})")
     if result['location_type'] == 'LA_ROVER':
-        print(f"Rover Bonus Points: {result['rover_bonus_points']} for activating parishes: {', '.join(result['parishes_activated'])}")
+        print(f"Rover Bonus Points: {result['rover_bonus_points']} for activating counties: {', '.join(result['counties_activated'])}")
     if result['worked_n5lcc']:
         print(f"N5LCC Contacts: {result['num_n5lcc_contacts']} (Bonus points applied)")
     if result['warnings']:

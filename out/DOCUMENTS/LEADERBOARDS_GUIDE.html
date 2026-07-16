@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Louisiana QSO Party - Leaderboard Generator</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="louisiana-qso-party---leaderboard-generator">Louisiana QSO Party - Leaderboard Generator</h1>
+<h2 id="overview">Overview</h2>
+<p>The leaderboard generator interprets a declarative configuration (LEADERBOARDS) to generate ranked tables from the database. No hard-coded queries needed!</p>
+<h2 id="configuration-format">Configuration Format</h2>
+<h3 id="structure">Structure</h3>
+<pre><code class="language-python">LEADERBOARDS = [
+    [section_1_config],
+    [section_2_config],
+    ...
+]
+</code></pre>
+<h3 id="section-format">Section Format</h3>
+<p>Each section is a list where:</p>
+<ul>
+<li><strong>First element</strong> = Section metadata</li>
+<li><strong>Remaining elements</strong> = Table definitions</li>
+</ul>
+<pre><code class="language-python">[
+    <span class="hljs-comment"># Section metadata (first element)</span>
+    {
+        <span class="hljs-string">&#x27;section_title&#x27;</span>: <span class="hljs-string">&#x27;Section Title Here&#x27;</span>,
+        <span class="hljs-string">&#x27;show&#x27;</span>: [
+            [<span class="hljs-string">&#x27;db_field_name&#x27;</span>, <span class="hljs-string">&#x27;Column Header&#x27;</span>],
+            [<span class="hljs-string">&#x27;callsign&#x27;</span>, <span class="hljs-string">&#x27;CallSign&#x27;</span>],
+            [<span class="hljs-string">&#x27;final_score&#x27;</span>, <span class="hljs-string">&#x27;Total Score&#x27;</span>],
+            ...
+        ]
+    },
+    
+    <span class="hljs-comment"># Table definition 1</span>
+    {
+        <span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;Table Title&#x27;</span>,
+        <span class="hljs-string">&#x27;ands&#x27;</span>: [
+            [<span class="hljs-string">&#x27;field&#x27;</span>, <span class="hljs-string">&#x27;value&#x27;</span>],           <span class="hljs-comment"># Simple equality</span>
+            [<span class="hljs-string">&#x27;field&#x27;</span>, <span class="hljs-string">&#x27;operator&#x27;</span>, <span class="hljs-string">&#x27;value&#x27;</span>]  <span class="hljs-comment"># Custom operator</span>
+        ]
+    },
+    
+    <span class="hljs-comment"># Table definition 2</span>
+    {...},
+    ...
+]
+</code></pre>
+<h2 id="and-clause-formats">AND Clause Formats</h2>
+<h3 id="2-element-simple-equality">2-Element: Simple Equality</h3>
+<pre><code class="language-python">[<span class="hljs-string">&#x27;location_type&#x27;</span>, <span class="hljs-string">&#x27;LA-FIXED&#x27;</span>]
+<span class="hljs-comment"># Generates: WHERE location_type = &#x27;LA-FIXED&#x27;</span>
+</code></pre>
+<h3 id="3-element-custom-operator">3-Element: Custom Operator</h3>
+<pre><code class="language-python">[<span class="hljs-string">&#x27;final_score&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">1000</span>]
+<span class="hljs-comment"># Generates: WHERE final_score &gt; 1000</span>
+
+[<span class="hljs-string">&#x27;total_qsos&#x27;</span>, <span class="hljs-string">&#x27;&gt;=&#x27;</span>, <span class="hljs-number">100</span>]
+<span class="hljs-comment"># Generates: WHERE total_qsos &gt;= 100</span>
+
+[<span class="hljs-string">&#x27;callsign&#x27;</span>, <span class="hljs-string">&#x27;LIKE&#x27;</span>, <span class="hljs-string">&#x27;K5%&#x27;</span>]
+<span class="hljs-comment"># Generates: WHERE callsign LIKE &#x27;K5%&#x27;</span>
+</code></pre>
+<h3 id="multiple-and-clauses">Multiple AND Clauses</h3>
+<pre><code class="language-python"><span class="hljs-string">&#x27;ands&#x27;</span>: [
+    [<span class="hljs-string">&#x27;location_type&#x27;</span>, <span class="hljs-string">&#x27;LA-FIXED&#x27;</span>],
+    [<span class="hljs-string">&#x27;power_level&#x27;</span>, <span class="hljs-string">&#x27;QRP&#x27;</span>],
+    [<span class="hljs-string">&#x27;final_score&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">500</span>]
+]
+<span class="hljs-comment"># Generates: WHERE location_type = &#x27;LA-FIXED&#x27; </span>
+<span class="hljs-comment">#            AND power_level = &#x27;QRP&#x27;</span>
+<span class="hljs-comment">#            AND final_score &gt; 500</span>
+</code></pre>
+<h2 id="complete-example">Complete Example</h2>
+<pre><code class="language-python">LEADERBOARDS = [
+    <span class="hljs-comment"># Section 1: Louisiana Stations</span>
+    [
+        {
+            <span class="hljs-string">&#x27;section_title&#x27;</span>: <span class="hljs-string">&#x27;Top Level Categories - Louisiana Stations&#x27;</span>,
+            <span class="hljs-string">&#x27;show&#x27;</span>: [
+                [<span class="hljs-string">&#x27;callsign&#x27;</span>, <span class="hljs-string">&#x27;CallSign&#x27;</span>],
+                [<span class="hljs-string">&#x27;final_score&#x27;</span>, <span class="hljs-string">&#x27;Total Score&#x27;</span>],
+                [<span class="hljs-string">&#x27;overlay&#x27;</span>, <span class="hljs-string">&#x27;Overlay&#x27;</span>],
+                [<span class="hljs-string">&#x27;mode_category&#x27;</span>, <span class="hljs-string">&#x27;Mode&#x27;</span>],
+                [<span class="hljs-string">&#x27;worked_n5lcc&#x27;</span>, <span class="hljs-string">&#x27;N5LCC&#x27;</span>]
+            ]
+        },
+        {<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;LA Fixed QRP&#x27;</span>, 
+         <span class="hljs-string">&#x27;ands&#x27;</span>: [[<span class="hljs-string">&#x27;location_type&#x27;</span>, <span class="hljs-string">&#x27;LA-FIXED&#x27;</span>], [<span class="hljs-string">&#x27;power_level&#x27;</span>, <span class="hljs-string">&#x27;QRP&#x27;</span>]]},
+        {<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;LA Fixed LOW&#x27;</span>, 
+         <span class="hljs-string">&#x27;ands&#x27;</span>: [[<span class="hljs-string">&#x27;location_type&#x27;</span>, <span class="hljs-string">&#x27;LA-FIXED&#x27;</span>], [<span class="hljs-string">&#x27;power_level&#x27;</span>, <span class="hljs-string">&#x27;LOW&#x27;</span>]]},
+        {<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;LA Fixed HIGH&#x27;</span>, 
+         <span class="hljs-string">&#x27;ands&#x27;</span>: [[<span class="hljs-string">&#x27;location_type&#x27;</span>, <span class="hljs-string">&#x27;LA-FIXED&#x27;</span>], [<span class="hljs-string">&#x27;power_level&#x27;</span>, <span class="hljs-string">&#x27;HIGH&#x27;</span>]]},
+        {<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;LA Rover QRP&#x27;</span>, 
+         <span class="hljs-string">&#x27;ands&#x27;</span>: [[<span class="hljs-string">&#x27;location_type&#x27;</span>, <span class="hljs-string">&#x27;LA-ROVER&#x27;</span>], [<span class="hljs-string">&#x27;power_level&#x27;</span>, <span class="hljs-string">&#x27;QRP&#x27;</span>]]},
+    ],
+    
+    <span class="hljs-comment"># Section 2: Non-Louisiana Stations</span>
+    [
+        {
+            <span class="hljs-string">&#x27;section_title&#x27;</span>: <span class="hljs-string">&#x27;Top Level Categories - Non-Louisiana Stations&#x27;</span>,
+            <span class="hljs-string">&#x27;show&#x27;</span>: [
+                [<span class="hljs-string">&#x27;callsign&#x27;</span>, <span class="hljs-string">&#x27;CallSign&#x27;</span>],
+                [<span class="hljs-string">&#x27;final_score&#x27;</span>, <span class="hljs-string">&#x27;Total Score&#x27;</span>],
+                [<span class="hljs-string">&#x27;overlay&#x27;</span>, <span class="hljs-string">&#x27;Overlay&#x27;</span>]
+            ]
+        },
+        {<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;NON-LA QRP&#x27;</span>, 
+         <span class="hljs-string">&#x27;ands&#x27;</span>: [[<span class="hljs-string">&#x27;location_type&#x27;</span>, <span class="hljs-string">&#x27;NON-LA&#x27;</span>], [<span class="hljs-string">&#x27;power_level&#x27;</span>, <span class="hljs-string">&#x27;QRP&#x27;</span>]]},
+        {<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;NON-LA LOW&#x27;</span>, 
+         <span class="hljs-string">&#x27;ands&#x27;</span>: [[<span class="hljs-string">&#x27;location_type&#x27;</span>, <span class="hljs-string">&#x27;NON-LA&#x27;</span>], [<span class="hljs-string">&#x27;power_level&#x27;</span>, <span class="hljs-string">&#x27;LOW&#x27;</span>]]},
+    ],
+    
+    <span class="hljs-comment"># Section 3: High Scorers (using 3-element AND)</span>
+    [
+        {
+            <span class="hljs-string">&#x27;section_title&#x27;</span>: <span class="hljs-string">&#x27;Top Scorers&#x27;</span>,
+            <span class="hljs-string">&#x27;show&#x27;</span>: [
+                [<span class="hljs-string">&#x27;callsign&#x27;</span>, <span class="hljs-string">&#x27;CallSign&#x27;</span>],
+                [<span class="hljs-string">&#x27;location_type&#x27;</span>, <span class="hljs-string">&#x27;Location&#x27;</span>],
+                [<span class="hljs-string">&#x27;final_score&#x27;</span>, <span class="hljs-string">&#x27;Score&#x27;</span>]
+            ]
+        },
+        {<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;Scores Over 5000&#x27;</span>, 
+         <span class="hljs-string">&#x27;ands&#x27;</span>: [[<span class="hljs-string">&#x27;final_score&#x27;</span>, <span class="hljs-string">&#x27;&gt;=&#x27;</span>, <span class="hljs-number">5000</span>]]},
+        {<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;Louisiana Scores Over 3000&#x27;</span>,
+         <span class="hljs-string">&#x27;ands&#x27;</span>: [
+             [<span class="hljs-string">&#x27;location_type&#x27;</span>, <span class="hljs-string">&#x27;LIKE&#x27;</span>, <span class="hljs-string">&#x27;LA-%&#x27;</span>],
+             [<span class="hljs-string">&#x27;final_score&#x27;</span>, <span class="hljs-string">&#x27;&gt;=&#x27;</span>, <span class="hljs-number">3000</span>]
+         ]},
+    ]
+]
+</code></pre>
+<h2 id="usage">Usage</h2>
+<h3 id="generate-leaderboards">Generate Leaderboards</h3>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> leaderboards <span class="hljs-keyword">import</span> generate_leaderboards
+<span class="hljs-keyword">from</span> config.config <span class="hljs-keyword">import</span> LEADERBOARDS
+
+<span class="hljs-comment"># Generate all sections and tables</span>
+sections = generate_leaderboards(<span class="hljs-string">&#x27;2024&#x27;</span>, LEADERBOARDS)
+
+<span class="hljs-comment"># sections is a list of dicts:</span>
+<span class="hljs-comment"># [</span>
+<span class="hljs-comment">#     {</span>
+<span class="hljs-comment">#         &#x27;section_title&#x27;: &#x27;Section Title&#x27;,</span>
+<span class="hljs-comment">#         &#x27;show_fields&#x27;: [...],</span>
+<span class="hljs-comment">#         &#x27;tables&#x27;: [</span>
+<span class="hljs-comment">#             {</span>
+<span class="hljs-comment">#                 &#x27;title&#x27;: &#x27;Table Title&#x27;,</span>
+<span class="hljs-comment">#                 &#x27;headers&#x27;: [&#x27;Rank&#x27;, &#x27;CallSign&#x27;, &#x27;Total Score&#x27;, ...],</span>
+<span class="hljs-comment">#                 &#x27;rows&#x27;: [</span>
+<span class="hljs-comment">#                     [1, &#x27;K5ABC&#x27;, 1250, ...],</span>
+<span class="hljs-comment">#                     [2, &#x27;W5XYZ&#x27;, 980, ...],</span>
+<span class="hljs-comment">#                     ...</span>
+<span class="hljs-comment">#                 ]</span>
+<span class="hljs-comment">#             },</span>
+<span class="hljs-comment">#             ...</span>
+<span class="hljs-comment">#         ]</span>
+<span class="hljs-comment">#     },</span>
+<span class="hljs-comment">#     ...</span>
+<span class="hljs-comment"># ]</span>
+</code></pre>
+<h3 id="print-leaderboards-text">Print Leaderboards (Text)</h3>
+<pre><code class="language-python"><span class="hljs-keyword">for</span> section <span class="hljs-keyword">in</span> sections:
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;\n<span class="hljs-subst">{<span class="hljs-string">&#x27;=&#x27;</span>*<span class="hljs-number">60</span>}</span>&quot;</span>)
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">{section[<span class="hljs-string">&#x27;section_title&#x27;</span>]}</span>&quot;</span>)
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">{<span class="hljs-string">&#x27;=&#x27;</span>*<span class="hljs-number">60</span>}</span>\n&quot;</span>)
+    
+    <span class="hljs-keyword">for</span> table <span class="hljs-keyword">in</span> section[<span class="hljs-string">&#x27;tables&#x27;</span>]:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;\n<span class="hljs-subst">{table[<span class="hljs-string">&#x27;title&#x27;</span>]}</span>&quot;</span>)
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;-&#x27;</span> * <span class="hljs-number">60</span>)
+        
+        <span class="hljs-comment"># Print headers</span>
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27; | &#x27;</span>.join(<span class="hljs-string">f&quot;<span class="hljs-subst">{h:<span class="hljs-number">12</span>}</span>&quot;</span> <span class="hljs-keyword">for</span> h <span class="hljs-keyword">in</span> table[<span class="hljs-string">&#x27;headers&#x27;</span>]))
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;-&#x27;</span> * <span class="hljs-number">60</span>)
+        
+        <span class="hljs-comment"># Print rows</span>
+        <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> table[<span class="hljs-string">&#x27;rows&#x27;</span>]:
+            <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27; | &#x27;</span>.join(<span class="hljs-string">f&quot;<span class="hljs-subst">{<span class="hljs-built_in">str</span>(v):<span class="hljs-number">12</span>}</span>&quot;</span> <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> row))
+</code></pre>
+<h3 id="generate-html">Generate HTML</h3>
+<pre><code class="language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">generate_html_table</span>(<span class="hljs-params">table</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Convert table dict to HTML table&quot;&quot;&quot;</span>
+    html = <span class="hljs-string">f&quot;&lt;h3&gt;<span class="hljs-subst">{table[<span class="hljs-string">&#x27;title&#x27;</span>]}</span>&lt;/h3&gt;\n&quot;</span>
+    html += <span class="hljs-string">&quot;&lt;table class=&#x27;leaderboard-table&#x27;&gt;\n&quot;</span>
+    
+    <span class="hljs-comment"># Headers</span>
+    html += <span class="hljs-string">&quot;  &lt;thead&gt;&lt;tr&gt;\n&quot;</span>
+    <span class="hljs-keyword">for</span> header <span class="hljs-keyword">in</span> table[<span class="hljs-string">&#x27;headers&#x27;</span>]:
+        html += <span class="hljs-string">f&quot;    &lt;th&gt;<span class="hljs-subst">{header}</span>&lt;/th&gt;\n&quot;</span>
+    html += <span class="hljs-string">&quot;  &lt;/tr&gt;&lt;/thead&gt;\n&quot;</span>
+    
+    <span class="hljs-comment"># Rows</span>
+    html += <span class="hljs-string">&quot;  &lt;tbody&gt;\n&quot;</span>
+    <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> table[<span class="hljs-string">&#x27;rows&#x27;</span>]:
+        html += <span class="hljs-string">&quot;  &lt;tr&gt;\n&quot;</span>
+        <span class="hljs-keyword">for</span> value <span class="hljs-keyword">in</span> row:
+            html += <span class="hljs-string">f&quot;    &lt;td&gt;<span class="hljs-subst">{value}</span>&lt;/td&gt;\n&quot;</span>
+        html += <span class="hljs-string">&quot;  &lt;/tr&gt;\n&quot;</span>
+    html += <span class="hljs-string">&quot;  &lt;/tbody&gt;\n&quot;</span>
+    
+    html += <span class="hljs-string">&quot;&lt;/table&gt;\n&quot;</span>
+    <span class="hljs-keyword">return</span> html
+
+<span class="hljs-comment"># Generate complete HTML report</span>
+html_parts = []
+<span class="hljs-keyword">for</span> section <span class="hljs-keyword">in</span> sections:
+    html_parts.append(<span class="hljs-string">f&quot;&lt;h2&gt;<span class="hljs-subst">{section[<span class="hljs-string">&#x27;section_title&#x27;</span>]}</span>&lt;/h2&gt;&quot;</span>)
+    <span class="hljs-keyword">for</span> table <span class="hljs-keyword">in</span> section[<span class="hljs-string">&#x27;tables&#x27;</span>]:
+        html_parts.append(generate_html_table(table))
+
+html_report = <span class="hljs-string">&#x27;\n&#x27;</span>.join(html_parts)
+</code></pre>
+<h2 id="key-features">Key Features</h2>
+<p>✅ <strong>Declarative</strong> - Define queries in config, not code
+✅ <strong>Automatic ranking</strong> - Rank column added to every table
+✅ <strong>Sorted by score</strong> - Always <code>ORDER BY final_score DESC</code>
+✅ <strong>Skip empty tables</strong> - Tables with 0 rows are excluded
+✅ <strong>Flexible conditions</strong> - 2-element (=) or 3-element (any operator)
+✅ <strong>Clean data structure</strong> - Easy to convert to HTML, PDF, etc.</p>
+<h2 id="example-output-structure">Example Output Structure</h2>
+<pre><code class="language-python">{
+    <span class="hljs-string">&#x27;section_title&#x27;</span>: <span class="hljs-string">&#x27;Louisiana Stations&#x27;</span>,
+    <span class="hljs-string">&#x27;show_fields&#x27;</span>: [[<span class="hljs-string">&#x27;callsign&#x27;</span>, <span class="hljs-string">&#x27;CallSign&#x27;</span>], ...],
+    <span class="hljs-string">&#x27;tables&#x27;</span>: [
+        {
+            <span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;LA Fixed QRP&#x27;</span>,
+            <span class="hljs-string">&#x27;headers&#x27;</span>: [<span class="hljs-string">&#x27;Rank&#x27;</span>, <span class="hljs-string">&#x27;CallSign&#x27;</span>, <span class="hljs-string">&#x27;Total Score&#x27;</span>, <span class="hljs-string">&#x27;Overlay&#x27;</span>, <span class="hljs-string">&#x27;Mode&#x27;</span>],
+            <span class="hljs-string">&#x27;rows&#x27;</span>: [
+                [<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;K5ABC&#x27;</span>, <span class="hljs-number">1250</span>, <span class="hljs-literal">None</span>, <span class="hljs-string">&#x27;MIXED&#x27;</span>],
+                [<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;W5XYZ&#x27;</span>, <span class="hljs-number">980</span>, <span class="hljs-string">&#x27;WIRES&#x27;</span>, <span class="hljs-string">&#x27;PHONE&#x27;</span>],
+                [<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;N5TEST&#x27;</span>, <span class="hljs-number">750</span>, <span class="hljs-literal">None</span>, <span class="hljs-string">&#x27;CW-DIGITAL&#x27;</span>]
+            ]
+        },
+        {
+            <span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;LA Fixed LOW&#x27;</span>,
+            <span class="hljs-string">&#x27;headers&#x27;</span>: [<span class="hljs-string">&#x27;Rank&#x27;</span>, <span class="hljs-string">&#x27;CallSign&#x27;</span>, <span class="hljs-string">&#x27;Total Score&#x27;</span>, ...],
+            <span class="hljs-string">&#x27;rows&#x27;</span>: [...]
+        }
+    ]
+}
+</code></pre>
+<h2 id="advanced-examples">Advanced Examples</h2>
+<h3 id="using-custom-operators">Using Custom Operators</h3>
+<pre><code class="language-python"><span class="hljs-comment"># Top 10 scores</span>
+{<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;Top 10 Overall&#x27;</span>, 
+ <span class="hljs-string">&#x27;ands&#x27;</span>: [[<span class="hljs-string">&#x27;final_score&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">0</span>]]},  <span class="hljs-comment"># Get all, then limit in processing</span>
+
+<span class="hljs-comment"># Callsigns starting with K5</span>
+{<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;K5 Callsigns&#x27;</span>,
+ <span class="hljs-string">&#x27;ands&#x27;</span>: [[<span class="hljs-string">&#x27;callsign&#x27;</span>, <span class="hljs-string">&#x27;LIKE&#x27;</span>, <span class="hljs-string">&#x27;K5%&#x27;</span>]]},
+
+<span class="hljs-comment"># QRP with &gt; 100 QSOs</span>
+{<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;QRP &gt; 100 QSOs&#x27;</span>,
+ <span class="hljs-string">&#x27;ands&#x27;</span>: [
+     [<span class="hljs-string">&#x27;power_level&#x27;</span>, <span class="hljs-string">&#x27;QRP&#x27;</span>],
+     [<span class="hljs-string">&#x27;valid_qsos&#x27;</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>, <span class="hljs-number">100</span>]
+ ]},
+
+<span class="hljs-comment"># Not null overlay</span>
+{<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;Overlay Participants&#x27;</span>,
+ <span class="hljs-string">&#x27;ands&#x27;</span>: [[<span class="hljs-string">&#x27;overlay&#x27;</span>, <span class="hljs-string">&#x27;IS NOT&#x27;</span>, <span class="hljs-string">&#x27;NULL&#x27;</span>]]},
+</code></pre>
+<h2 id="integration-with-final-report">Integration with Final Report</h2>
+<pre><code class="language-python"><span class="hljs-comment"># In your report generation script</span>
+<span class="hljs-keyword">from</span> leaderboards <span class="hljs-keyword">import</span> generate_leaderboards
+<span class="hljs-keyword">from</span> config.config <span class="hljs-keyword">import</span> LEADERBOARDS, FINAL_REPORT_TXT
+
+year = <span class="hljs-string">&#x27;2024&#x27;</span>
+
+<span class="hljs-comment"># Generate leaderboards</span>
+sections = generate_leaderboards(year, LEADERBOARDS)
+
+<span class="hljs-comment"># Create report</span>
+report = <span class="hljs-string">f&quot;&quot;&quot;
+&lt;h1&gt;Louisiana QSO Party <span class="hljs-subst">{year}</span> - Final Results&lt;/h1&gt;
+&lt;div class=&quot;intro&quot;&gt;
+<span class="hljs-subst">{FINAL_REPORT_TXT}</span>
+&lt;/div&gt;
+&quot;&quot;&quot;</span>
+
+<span class="hljs-comment"># Add all sections</span>
+<span class="hljs-keyword">for</span> section <span class="hljs-keyword">in</span> sections:
+    report += <span class="hljs-string">f&quot;&lt;h2&gt;<span class="hljs-subst">{section[<span class="hljs-string">&#x27;section_title&#x27;</span>]}</span>&lt;/h2&gt;&quot;</span>
+    <span class="hljs-keyword">for</span> table <span class="hljs-keyword">in</span> section[<span class="hljs-string">&#x27;tables&#x27;</span>]:
+        report += generate_html_table(table)
+
+<span class="hljs-comment"># Save report</span>
+<span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">f&#x27;final_report_<span class="hljs-subst">{year}</span>.html&#x27;</span>, <span class="hljs-string">&#x27;w&#x27;</span>) <span class="hljs-keyword">as</span> f:
+    f.write(report)
+</code></pre>
+<h2 id="testing">Testing</h2>
+<pre><code class="language-python"><span class="hljs-comment"># Test with simple config</span>
+test_config = [
+    [
+        {<span class="hljs-string">&#x27;section_title&#x27;</span>: <span class="hljs-string">&#x27;Test Section&#x27;</span>, 
+         <span class="hljs-string">&#x27;show&#x27;</span>: [[<span class="hljs-string">&#x27;callsign&#x27;</span>, <span class="hljs-string">&#x27;Call&#x27;</span>], [<span class="hljs-string">&#x27;final_score&#x27;</span>, <span class="hljs-string">&#x27;Score&#x27;</span>]]},
+        {<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;All LA Stations&#x27;</span>, 
+         <span class="hljs-string">&#x27;ands&#x27;</span>: [[<span class="hljs-string">&#x27;location_type&#x27;</span>, <span class="hljs-string">&#x27;LIKE&#x27;</span>, <span class="hljs-string">&#x27;LA-%&#x27;</span>]]},
+    ]
+]
+
+sections = generate_leaderboards(<span class="hljs-string">&#x27;2024&#x27;</span>, test_config)
+<span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Generated <span class="hljs-subst">{<span class="hljs-built_in">len</span>(sections)}</span> section(s)&quot;</span>)
+<span class="hljs-keyword">for</span> section <span class="hljs-keyword">in</span> sections:
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;  <span class="hljs-subst">{<span class="hljs-built_in">len</span>(section[<span class="hljs-string">&#x27;tables&#x27;</span>])}</span> table(s)&quot;</span>)
+</code></pre>
+<p>The leaderboard generator is completely data-driven - just update the LEADERBOARDS configuration to add new categories!</p>
+
+            
+            
+        </body>
+        </html>

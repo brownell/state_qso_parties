@@ -75,7 +75,7 @@ CW_DIGITAL_QSO_POINTS = 4
 # Bonus points
 BONUS_CALLSIGN = 'N5LCC'  # Bonus for working N5LCC (Louisiana Contest Club)
 CALLSIGN_BONUS_POINTS = 100  # Bonus for working N5LCC (Louisiana Contest Club)
-ROVER_PARISH_BONUS = 50  # Bonus per parish activated (rovers only)
+ROVER_COUNTY_BONUS = 50  # Bonus per county activated (rovers only)
 EXTRA_BONUS_CALLS = os.environ.get('EXTRA_BONUS_CALLS', ['KI5ZAW', 'N5SCJ', 'K5TD'])
 EXTRA_BONUS_POINTS = os.environ.get('EXTRA_BONUS_POINTS', 25)
 EXTRA_BONUS_YEAR = os.environ.get('EXTRA_BONUS_YEAR', '2026')

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>LAQP Cross-Checking Integration Guide</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="laqp-cross-checking-integration-guide">LAQP Cross-Checking Integration Guide</h1>
+<h2 id="overview">Overview</h2>
+<p>The cross-checking module validates QSOs by finding reciprocal contacts in other submitted logs. Invalid QSOs are marked and warnings are added. Final scores are recalculated using only valid QSOs.</p>
+<h2 id="files-modifiedcreated">Files Modified/Created</h2>
+<h3 id="new-file">New File</h3>
+<ul>
+<li><strong>cross_check.py</strong> - Main cross-checking module</li>
+</ul>
+<h3 id="files-that-need-updates">Files That Need Updates</h3>
+<ul>
+<li><strong><a href="http://processor.py">processor.py</a></strong> - Export two functions for reuse</li>
+<li><strong><a href="http://database.py">database.py</a></strong> - Remove <code>_header</code> before saving</li>
+<li><strong>generate_rankings.py</strong> - Run after cross-checking</li>
+</ul>
+<h2 id="required-changes-to-existing-code">Required Changes to Existing Code</h2>
+<h3 id="1-processorpy---export-scoring-functions">1. <a href="http://processor.py">processor.py</a> - Export Scoring Functions</h3>
+<p>The cross-checking module needs to reuse your scoring logic. Make these functions available:</p>
+<pre><code class="language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">calculate_qso_points</span>(<span class="hljs-params">qso, result</span>):
+    <span class="hljs-string">&quot;&quot;&quot;
+    Calculate points for a single QSO.
+    
+    Args:
+        qso: QSO dictionary
+        result: Operator result dictionary (for context like location_type)
+        
+    Returns:
+        int: Points for this QSO
+    &quot;&quot;&quot;</span>
+    <span class="hljs-comment"># Your existing point calculation logic</span>
+    <span class="hljs-comment"># Based on location_type, mode, etc.</span>
+    <span class="hljs-keyword">pass</span>
+
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">determine_multiplier</span>(<span class="hljs-params">qso, result</span>):
+    <span class="hljs-string">&quot;&quot;&quot;
+    Determine if a QSO provides a new multiplier.
+    
+    Args:
+        qso: QSO dictionary
+        result: Operator result dictionary
+        
+    Returns:
+        dict|None: {&#x27;type&#x27;: &#x27;parish&#x27;|&#x27;state&#x27;|&#x27;province&#x27;|&#x27;dx&#x27;, &#x27;value&#x27;: &#x27;ORLEANS&#x27;}
+                   or None if not a multiplier
+    &quot;&quot;&quot;</span>
+    <span class="hljs-comment"># Your existing multiplier logic</span>
+    <span class="hljs-comment"># Parse rcvd_qth to determine type and value</span>
+    <span class="hljs-keyword">pass</span>
+</code></pre>
+<p><strong>If these functions don't exist as separate functions</strong>, extract the logic from your main scoring loop.</p>
+<h3 id="2-databasepy---remove-_header-before-saving">2. <a href="http://database.py">database.py</a> - Remove _header Before Saving</h3>
+<p>Update <code>save_contest_result()</code> to remove internal fields:</p>
+<pre><code class="language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">save_contest_result</span>(<span class="hljs-params">result</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Save contest result to database&quot;&quot;&quot;</span>
+    
+    <span class="hljs-comment"># Create a copy to avoid modifying original</span>
+    data = result.copy()
+    
+    <span class="hljs-comment"># Remove internal fields that shouldn&#x27;t be saved</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;_header&#x27;</span> <span class="hljs-keyword">in</span> data:
+        <span class="hljs-keyword">del</span> data[<span class="hljs-string">&#x27;_header&#x27;</span>]
+    
+    <span class="hljs-comment"># Convert sets to lists for JSON serialization</span>
+    <span class="hljs-keyword">for</span> key, value <span class="hljs-keyword">in</span> data.items():
+        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(value, <span class="hljs-built_in">set</span>):
+            data[key] = <span class="hljs-built_in">list</span>(value)
+    
+    <span class="hljs-comment"># Save to database</span>
+    conn = get_connection()
+    conn.execute(<span class="hljs-string">&#x27;&#x27;&#x27;
+        INSERT OR REPLACE INTO contest_results (year, callsign, data)
+        VALUES (?, ?, ?)
+    &#x27;&#x27;&#x27;</span>, (data[<span class="hljs-string">&#x27;year&#x27;</span>], data[<span class="hljs-string">&#x27;callsign&#x27;</span>], json.dumps(data)))
+    conn.commit()
+</code></pre>
+<h3 id="3-update-contest-workflow">3. Update Contest Workflow</h3>
+<p><strong>Current workflow (before cross-checking):</strong></p>
+<pre><code class="language-bash"><span class="hljs-comment"># Upload logs via web or batch processing</span>
+python batch.py 2026
+
+<span class="hljs-comment"># Generate rankings (uses claimed scores)</span>
+python generate_rankings.py 2026
+
+<span class="hljs-comment"># Generate report</span>
+python generate_final_report.py 2026
+</code></pre>
+<p><strong>New workflow (with cross-checking):</strong></p>
+<pre><code class="language-bash"><span class="hljs-comment"># 1. Upload and process all logs</span>
+python batch.py 2026
+
+<span class="hljs-comment"># 2. Run cross-checking (NEW STEP!)</span>
+python cross_check.py 2026
+
+<span class="hljs-comment"># 3. Generate rankings (now uses final scores)</span>
+python generate_rankings.py 2026
+
+<span class="hljs-comment"># 4. Generate report</span>
+python generate_final_report.py 2026
+</code></pre>
+<h2 id="how-cross-checking-works">How Cross-Checking Works</h2>
+<h3 id="phase-1-mark-invalid-qsos">Phase 1: Mark Invalid QSOs</h3>
+<p>For each QSO in each log:</p>
+<ol>
+<li>Look for reciprocal QSO in other logs</li>
+<li>Match on: band, mode, time (±30 min), callsigns</li>
+<li>Verify exchange information</li>
+<li>Mark QSO as valid/invalid</li>
+<li>Add warning message if invalid</li>
+</ol>
+<h3 id="phase-2-recalculate-scores">Phase 2: Recalculate Scores</h3>
+<p>For each operator:</p>
+<ol>
+<li>Get only valid QSOs</li>
+<li>Re-run scoring algorithm (points + multipliers)</li>
+<li>Update <code>final_score</code> and all statistics</li>
+<li>Save updated result to database</li>
+</ol>
+<h3 id="warning-message-format">Warning Message Format</h3>
+<p>New warnings are added in same style as existing warnings:</p>
+<pre><code class="language-python">result[<span class="hljs-string">&#x27;warnings&#x27;</span>].append(
+    <span class="hljs-string">f&quot;QSO at line <span class="hljs-subst">{line_num}</span>: &quot;</span>
+    <span class="hljs-string">f&quot;<span class="hljs-subst">{rcvd_call}</span> on <span class="hljs-subst">{band}</span> <span class="hljs-subst">{mode}</span> at <span class="hljs-subst">{time}</span> - &quot;</span>
+    <span class="hljs-string">f&quot;Not found in <span class="hljs-subst">{rcvd_call}</span>&#x27;s log (NIL)&quot;</span>
+)
+</code></pre>
+<h2 id="cross-check-status-codes">Cross-Check Status Codes</h2>
+<p>Each QSO gets a <code>cross_check_status</code> field:</p>
+<ul>
+<li><strong>CONFIRMED</strong>: QSO found in both logs ✅ (valid)</li>
+<li><strong>NIL</strong>: Not in other station's log ❌ (invalid, warning added)</li>
+<li><strong>BUSTED</strong>: Callsign error detected ❌ (invalid, warning added)</li>
+<li><strong>EXCHANGE_ERROR</strong>: QSO exists but exchange wrong ❌ (invalid, warning added)</li>
+<li><strong>UNIQUE</strong>: Station didn't submit log ✅ (valid, no penalty, no warning)</li>
+</ul>
+<h2 id="qso-object-fields-added">QSO Object Fields Added</h2>
+<p>Each QSO in <code>result['qsos']</code> gets these new fields:</p>
+<pre><code class="language-python">qso = {
+    <span class="hljs-comment"># Existing fields...</span>
+    <span class="hljs-string">&#x27;band&#x27;</span>: <span class="hljs-string">&#x27;20m&#x27;</span>,
+    <span class="hljs-string">&#x27;mode&#x27;</span>: <span class="hljs-string">&#x27;PH&#x27;</span>,
+    <span class="hljs-string">&#x27;rcvd_call&#x27;</span>: <span class="hljs-string">&#x27;W5XYZ&#x27;</span>,
+    <span class="hljs-comment"># ...</span>
+    
+    <span class="hljs-comment"># New cross-check fields:</span>
+    <span class="hljs-string">&#x27;is_valid&#x27;</span>: <span class="hljs-literal">True</span>,  <span class="hljs-comment"># False if NIL/BUSTED/EXCHANGE_ERROR</span>
+    <span class="hljs-string">&#x27;cross_check_status&#x27;</span>: <span class="hljs-string">&#x27;CONFIRMED&#x27;</span>,  <span class="hljs-comment"># See status codes above</span>
+}
+</code></pre>
+<h2 id="result-object-fields-updated">Result Object Fields Updated</h2>
+<p>The result dictionary gets these updates:</p>
+<pre><code class="language-python">result = {
+    <span class="hljs-comment"># Before cross-check (Phase 1 - from batch.py):</span>
+    <span class="hljs-string">&#x27;claimed_score&#x27;</span>: <span class="hljs-number">45000</span>,  <span class="hljs-comment"># What operator calculated</span>
+    <span class="hljs-string">&#x27;qso_points&#x27;</span>: <span class="hljs-number">3000</span>,      <span class="hljs-comment"># From claimed QSOs</span>
+    <span class="hljs-string">&#x27;total_multipliers&#x27;</span>: <span class="hljs-number">15</span>, <span class="hljs-comment"># From claimed QSOs</span>
+    
+    <span class="hljs-comment"># After cross-check (Phase 2 - from cross_check.py):</span>
+    <span class="hljs-string">&#x27;final_score&#x27;</span>: <span class="hljs-number">43500</span>,    <span class="hljs-comment"># After removing invalid QSOs</span>
+    <span class="hljs-string">&#x27;qso_points&#x27;</span>: <span class="hljs-number">2900</span>,      <span class="hljs-comment"># Recalculated</span>
+    <span class="hljs-string">&#x27;total_multipliers&#x27;</span>: <span class="hljs-number">15</span>, <span class="hljs-comment"># Recalculated (may change!)</span>
+    <span class="hljs-string">&#x27;valid_qsos&#x27;</span>: <span class="hljs-number">195</span>,       <span class="hljs-comment"># Count of valid QSOs</span>
+    <span class="hljs-string">&#x27;score_reduction_pct&#x27;</span>: <span class="hljs-number">3.3</span>,  <span class="hljs-comment"># Percentage reduction</span>
+    
+    <span class="hljs-comment"># New warnings added:</span>
+    <span class="hljs-string">&#x27;warnings&#x27;</span>: [
+        <span class="hljs-string">&quot;QSO at line 42: W5XYZ on 20m PH at 14:30 - Not found in W5XYZ&#x27;s log (NIL)&quot;</span>,
+        <span class="hljs-string">&quot;QSO at line 67: K5ABD on 40m CW at 15:45 - Callsign error, possibly K5ABC (BUSTED)&quot;</span>,
+        <span class="hljs-comment"># ...</span>
+    ]
+}
+</code></pre>
+<h2 id="configuration">Configuration</h2>
+<p>At the top of <code>cross_check.py</code>:</p>
+<pre><code class="language-python">TIME_WINDOW_MINUTES = <span class="hljs-number">30</span>  <span class="hljs-comment"># ±30 minutes for time matching</span>
+ENABLE_FUZZY_MATCHING = <span class="hljs-literal">True</span>  <span class="hljs-comment"># Check for callsign errors</span>
+MAX_EDIT_DISTANCE = <span class="hljs-number">2</span>  <span class="hljs-comment"># Max character differences for fuzzy matching</span>
+</code></pre>
+<p>Adjust these as needed for Louisiana QSO Party rules.</p>
+<h2 id="testing-recommendations">Testing Recommendations</h2>
+<h3 id="test-1-simple-two-log-test">Test 1: Simple Two-Log Test</h3>
+<p>Create two test logs that work each other:</p>
+<ul>
+<li>Log A: K5ABC works W5XYZ</li>
+<li>Log B: W5XYZ works K5ABC
+Both should show CONFIRMED status.</li>
+</ul>
+<h3 id="test-2-nil-detection">Test 2: NIL Detection</h3>
+<ul>
+<li>Log A: K5ABC works W5XYZ</li>
+<li>Log B: W5XYZ does NOT have K5ABC
+K5ABC's QSO should show NIL status.</li>
+</ul>
+<h3 id="test-3-busted-call">Test 3: Busted Call</h3>
+<ul>
+<li>Log A: K5ABC works &quot;W5XYY&quot; (typo)</li>
+<li>Log B: W5XYZ works K5ABC
+Should detect BUSTED and suggest W5XYZ.</li>
+</ul>
+<h3 id="test-4-exchange-error">Test 4: Exchange Error</h3>
+<ul>
+<li>Log A: K5ABC sent &quot;ORLEANS&quot;, logged W5XYZ as sending &quot;TX&quot;</li>
+<li>Log B: W5XYZ sent &quot;LA&quot;, logged K5ABC correctly
+Should detect EXCHANGE_ERROR.</li>
+</ul>
+<h2 id="performance">Performance</h2>
+<p>For typical LAQP scale (100-200 logs, ~40,000 total QSOs):</p>
+<ul>
+<li>Load all logs: &lt; 1 second</li>
+<li>Build QSO index: &lt; 1 second</li>
+<li>Cross-check all QSOs: 2-5 seconds</li>
+<li>Recalculate scores: &lt; 1 second</li>
+<li><strong>Total time: &lt; 10 seconds</strong></li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="module-processor-has-no-attribute-calculate_qso_points">&quot;Module 'processor' has no attribute 'calculate_qso_points'&quot;</h3>
+<p>→ Need to export these functions from <a href="http://processor.py">processor.py</a> (see section 1 above)</p>
+<h3 id="sets-cannot-be-json-serialized">&quot;Sets cannot be JSON serialized&quot;</h3>
+<p>→ Update <a href="http://database.py">database.py</a> to convert sets to lists before saving (see section 2)</p>
+<h3 id="scores-dont-change-after-cross-checking">Scores don't change after cross-checking</h3>
+<p>→ Check that QSOs are actually being marked invalid. Look at warnings list.</p>
+<h3 id="too-many-nils">Too many NILs</h3>
+<p>→ Check time window setting. May need to increase to ±60 minutes.
+→ Check mode matching logic - ensure PH and FM are treated as equivalent.</p>
+<h2 id="next-steps">Next Steps</h2>
+<ol>
+<li>✅ Create cross_check.py (done)</li>
+<li>Export functions from <a href="http://processor.py">processor.py</a></li>
+<li>Update <a href="http://database.py">database.py</a> to remove _header</li>
+<li>Test with small dataset</li>
+<li>Run full cross-check on 2024 data</li>
+<li>Review warnings and adjust parameters</li>
+<li>Run generate_rankings.py with final scores</li>
+<li>Generate final report</li>
+</ol>
+<h2 id="questions">Questions?</h2>
+<ul>
+<li>
+<p>How to handle rovers who change counties?
+→ Currently handled - each QSO has its own sent_qth</p>
+</li>
+<li>
+<p>What about bonus stations (N5LCC)?
+→ Treated like any other QSO - must be confirmed</p>
+</li>
+<li>
+<p>Do multipliers get recalculated?
+→ Yes! If the first QSO for a mult is NIL, the next valid QSO becomes first</p>
+</li>
+<li>
+<p>Can I re-run cross-checking?
+→ Yes! It's idempotent - safe to run multiple times</p>
+</li>
+<li>
+<p>How do I show before/after scores?
+→ Use claimed_score vs final_score, show score_reduction_pct</p>
+</li>
+</ul>
+
+            
+            
+        </body>
+        </html>

@@ -40,13 +40,13 @@ Required packages:
 
 ### 2. Create Data Files
 
-Create the county abbreviations file at `data/LA_Parish_Abbrevs.txt`:
+Create the county abbreviations file at `data/LA_County_Abbrevs.txt`:
 ```
 ACAD
 ALLE
 ASCE
 ...
-(all 64 Louisiana parishes)
+(all 64 Louisiana counties)
 ```
 
 ### 3. Initialize Database
@@ -115,7 +115,7 @@ gunicorn -w 4 web.app:app
 ### Multipliers
 - **TQP**: Counted once for entire contest
 - **LAQP**: Counted per band AND per mode type (CW/Digital vs Phone)
-  - Example: Working CADDO parish on 40m CW and 40m SSB = 2 multipliers
+  - Example: Working CADDO county on 40m CW and 40m SSB = 2 multipliers
 
 ### Bonuses
 - **TQP**: 
@@ -123,7 +123,7 @@ gunicorn -w 4 web.app:app
   - County activation: 1000 pts per county with 5+ QSOs
 - **LAQP**:
   - N5LCC bonus: 100 pts one-time for working club station
-  - Rover activation: 50 pts per parish activated (rovers only)
+  - Rover activation: 50 pts per county activated (rovers only)
 
 ### Contest Period
 - **TQP**: Two sessions (Saturday afternoon + Sunday afternoon)
@@ -165,8 +165,8 @@ gunicorn -w 4 web.app:app
 ### Scoring
 1. **QSO Points**: 2 for phone, 4 for CW/digital
 2. **Multipliers**: 
-   - Non-LA: LA parishes worked (per band/mode)
-   - LA: parishes + states + provinces + DXCC (per band/mode)
+   - Non-LA: LA counties worked (per band/mode)
+   - LA: counties + states + provinces + DXCC (per band/mode)
 3. **Score**: QSO points × multipliers + bonuses
 
 ### Categories (12 total)

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>LAQP Web Server - Port 5000 Setup Guide</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="laqp-web-server---port-5000-setup-guide">LAQP Web Server - Port 5000 Setup Guide</h1>
+<h2 id="quick-setup-3-steps">Quick Setup (3 Steps)</h2>
+<h3 id="step-1-update-your-flask-app">Step 1: Update Your Flask App</h3>
+<p>Replace your <code>web/app.py</code> with the new version, or just change the last lines to:</p>
+<pre><code class="language-python"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:
+    <span class="hljs-comment"># Run on port 5000 (no sudo needed!)</span>
+    app.run(host=<span class="hljs-string">&#x27;0.0.0.0&#x27;</span>, port=<span class="hljs-number">5000</span>, debug=<span class="hljs-literal">False</span>)
+</code></pre>
+<h3 id="step-2-configure-router-port-forwarding">Step 2: Configure Router Port Forwarding</h3>
+<p>Login to your BGW320 router at: <a href="http://192.168.1.254">http://192.168.1.254</a></p>
+<ol>
+<li>Go to <strong>Firewall</strong> → <strong>NAT/Gaming</strong> or <strong>Port Forwarding</strong></li>
+<li>Find your existing &quot;LAQP-Web&quot; service (or create new)</li>
+<li>Update the settings:
+<ul>
+<li><strong>Service Name</strong>: LAQP-Web</li>
+<li><strong>Protocol</strong>: TCP</li>
+<li><strong>Public Port</strong>: 80</li>
+<li><strong>Private Port</strong>: 5000 ← <strong>CHANGED FROM 80</strong></li>
+<li><strong>Private IP</strong>: 192.168.1.100 (your computer's static IP)</li>
+<li><strong>Enable</strong>: Yes/Checked</li>
+</ul>
+</li>
+<li><strong>Save</strong></li>
+</ol>
+<h3 id="step-3-configure-firewall">Step 3: Configure Firewall</h3>
+<p>Allow port 5000 on your computer:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># If using ufw (Ubuntu/Debian)</span>
+sudo ufw allow 5000/tcp
+
+<span class="hljs-comment"># If using firewalld (RHEL/CentOS)</span>
+sudo firewall-cmd --permanent --add-port=5000/tcp
+sudo firewall-cmd --reload
+</code></pre>
+<h2 id="running-the-server">Running the Server</h2>
+<h3 id="start-the-server">Start the server:</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Navigate to your project directory</span>
+<span class="hljs-built_in">cd</span> /path/to/your/laqp
+
+<span class="hljs-comment"># Run the Flask app (NO SUDO NEEDED!)</span>
+python3 web/app.py
+</code></pre>
+<p>You should see:</p>
+<pre><code>============================================================
+Louisiana QSO Party - Log Upload Server
+============================================================
+Starting Flask application on port 5000
+Incoming logs directory: /path/to/laqp/logs/incoming
+
+Server will be accessible at:
+  - Locally: http://localhost:5000
+  - On network: http://YOUR_LOCAL_IP:5000
+  - From internet: http://YOUR_PUBLIC_IP (via router port forwarding)
+
+Make sure your router forwards:
+  Public Port 80 → Private Port 5000 → This computer
+============================================================
+
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.100:5000
+</code></pre>
+<h2 id="testing-your-setup">Testing Your Setup</h2>
+<h3 id="1-test-locally-on-the-server-computer">1. Test Locally (on the server computer):</h3>
+<pre><code class="language-bash">curl http://localhost:5000
+</code></pre>
+<p>Should return the HTML of your upload page.</p>
+<h3 id="2-test-on-your-network-from-another-computer-on-same-wifi">2. Test on Your Network (from another computer on same WiFi):</h3>
+<pre><code class="language-bash">curl http://192.168.1.100:5000
+</code></pre>
+<p>Or open in browser: <a href="http://192.168.1.100:5000">http://192.168.1.100:5000</a></p>
+<h3 id="3-test-from-internet">3. Test from Internet:</h3>
+<p><strong>Use your phone (turn OFF WiFi, use cellular data):</strong></p>
+<ol>
+<li>Find your public IP: <a href="https://whatismyipaddress.com/">https://whatismyipaddress.com/</a></li>
+<li>Visit: http://YOUR_PUBLIC_IP</li>
+</ol>
+<p>You should see the Louisiana QSO Party log upload page!</p>
+<p><strong>Note</strong>: Some ISPs block port 80. If it doesn't work, try:</p>
+<ul>
+<li>Change router public port to 8080</li>
+<li>Access via: http://YOUR_PUBLIC_IP:8080</li>
+</ul>
+<h2 id="how-it-works">How It Works</h2>
+<pre><code>Internet User
+    ↓
+http://YOUR_PUBLIC_IP:80  ← User enters this
+    ↓
+[ATT BGW320 Router]  ← Port forwarding: 80 → 5000
+    ↓
+http://192.168.1.100:5000  ← Flask listening here
+    ↓
+[Your Computer - Flask App]
+</code></pre>
+<p><strong>Benefits of this setup:</strong></p>
+<ul>
+<li>✅ No sudo required</li>
+<li>✅ Safer (not running as root)</li>
+<li>✅ Easy to stop/start</li>
+<li>✅ Standard practice</li>
+<li>✅ Works with any router</li>
+</ul>
+<h2 id="keeping-it-running">Keeping It Running</h2>
+<h3 id="option-1-run-in-screen-simple">Option 1: Run in Screen (Simple)</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Install screen if needed</span>
+sudo apt install screen
+
+<span class="hljs-comment"># Start a screen session</span>
+screen -S laqp-web
+
+<span class="hljs-comment"># Run your app</span>
+python3 web/app.py
+
+<span class="hljs-comment"># Detach: Press Ctrl+A, then D</span>
+<span class="hljs-comment"># Reattach later: screen -r laqp-web</span>
+</code></pre>
+<h3 id="option-2-systemd-service-better">Option 2: Systemd Service (Better)</h3>
+<p>Create <code>/etc/systemd/system/laqp-web.service</code>:</p>
+<pre><code class="language-ini"><span class="hljs-section">[Unit]</span>
+<span class="hljs-attr">Description</span>=LAQP Log Upload Server
+<span class="hljs-attr">After</span>=network.target
+
+<span class="hljs-section">[Service]</span>
+<span class="hljs-attr">Type</span>=simple
+<span class="hljs-attr">User</span>=YOUR_USERNAME
+<span class="hljs-attr">WorkingDirectory</span>=/path/to/your/laqp
+<span class="hljs-attr">ExecStart</span>=/usr/bin/python3 /path/to/your/laqp/web/app.py
+<span class="hljs-attr">Restart</span>=always
+<span class="hljs-attr">RestartSec</span>=<span class="hljs-number">10</span>
+
+<span class="hljs-section">[Install]</span>
+<span class="hljs-attr">WantedBy</span>=multi-user.target
+</code></pre>
+<p>Enable and start:</p>
+<pre><code class="language-bash">sudo systemctl <span class="hljs-built_in">enable</span> laqp-web
+sudo systemctl start laqp-web
+sudo systemctl status laqp-web
+</code></pre>
+<p>Now it starts automatically on boot!</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="address-already-in-use-error">&quot;Address already in use&quot; error:</h3>
+<p>Port 5000 is already used by something else.</p>
+<pre><code class="language-bash"><span class="hljs-comment"># Find what&#x27;s using port 5000</span>
+sudo lsof -i :5000
+<span class="hljs-comment"># or</span>
+sudo netstat -tlnp | grep :5000
+
+<span class="hljs-comment"># Kill it if needed</span>
+sudo <span class="hljs-built_in">kill</span> &lt;PID&gt;
+
+<span class="hljs-comment"># Or use a different port (e.g., 5001)</span>
+<span class="hljs-comment"># Update app.py and router forwarding accordingly</span>
+</code></pre>
+<h3 id="cant-access-from-internet">Can't access from internet:</h3>
+<ol>
+<li>
+<p><strong>Check router port forwarding</strong>:</p>
+<ul>
+<li>Login to 192.168.1.254</li>
+<li>Verify: Public 80 → Private 5000 → 192.168.1.100</li>
+<li>Make sure it's enabled</li>
+</ul>
+</li>
+<li>
+<p><strong>Check firewall</strong>:</p>
+<pre><code class="language-bash">sudo ufw status
+<span class="hljs-comment"># Should show: 5000/tcp ALLOW Anywhere</span>
+</code></pre>
+</li>
+<li>
+<p><strong>Check Flask is listening</strong>:</p>
+<pre><code class="language-bash">sudo netstat -tlnp | grep :5000
+<span class="hljs-comment"># Should show python3 listening on 0.0.0.0:5000</span>
+</code></pre>
+</li>
+<li>
+<p><strong>Check public IP hasn't changed</strong>:</p>
+<ul>
+<li>Visit <a href="https://whatismyipaddress.com/">https://whatismyipaddress.com/</a></li>
+<li>Verify it matches what you're using</li>
+</ul>
+</li>
+<li>
+<p><strong>Try port 8080 instead of 80</strong>:</p>
+<ul>
+<li>Some ISPs block port 80</li>
+<li>Change router: Public 8080 → Private 5000</li>
+<li>Access: http://YOUR_PUBLIC_IP:8080</li>
+</ul>
+</li>
+</ol>
+<h3 id="flask-wont-start">Flask won't start:</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Check for Python errors</span>
+python3 web/app.py
+
+<span class="hljs-comment"># Check logs</span>
+<span class="hljs-built_in">tail</span> -f /var/log/syslog | grep python
+
+<span class="hljs-comment"># Make sure config files exist</span>
+<span class="hljs-built_in">ls</span> -la config/
+<span class="hljs-built_in">ls</span> -la reference_data/
+</code></pre>
+<h2 id="viewing-logs">Viewing Logs</h2>
+<p>While the app is running:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># Watch incoming logs</span>
+watch -n 2 <span class="hljs-string">&#x27;ls -lh logs/incoming/&#x27;</span>
+
+<span class="hljs-comment"># Or use tail to watch for changes</span>
+<span class="hljs-built_in">tail</span> -f logs/incoming/*
+</code></pre>
+<h2 id="stopping-the-server">Stopping the Server</h2>
+<p>If running in terminal:</p>
+<ul>
+<li>Press <strong>Ctrl+C</strong></li>
+</ul>
+<p>If running as systemd service:</p>
+<pre><code class="language-bash">sudo systemctl stop laqp-web
+</code></pre>
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flask Port</td>
+<td>5000</td>
+</tr>
+<tr>
+<td>Router Public Port</td>
+<td>80 (or 8080)</td>
+</tr>
+<tr>
+<td>Router Private Port</td>
+<td>5000</td>
+</tr>
+<tr>
+<td>Your Static IP</td>
+<td>192.168.1.100</td>
+</tr>
+<tr>
+<td>Router IP</td>
+<td>192.168.1.254</td>
+</tr>
+<tr>
+<td>Incoming Logs</td>
+<td>logs/incoming/</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Start Command:</strong></p>
+<pre><code class="language-bash">python3 web/app.py
+</code></pre>
+<p><strong>Access URLs:</strong></p>
+<ul>
+<li>Local: <a href="http://localhost:5000">http://localhost:5000</a></li>
+<li>Network: <a href="http://192.168.1.100:5000">http://192.168.1.100:5000</a></li>
+<li>Internet: http://YOUR_PUBLIC_IP</li>
+</ul>
+<p>That's it! You're all set up with the port 5000 solution. 73!</p>
+
+            
+            
+        </body>
+        </html>

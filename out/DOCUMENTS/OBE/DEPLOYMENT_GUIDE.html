@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Deployment Guide&colon; Running LAQP Web App from Home</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="deployment-guide-running-laqp-web-app-from-home">Deployment Guide: Running LAQP Web App from Home</h1>
+<h2 id="att-fiber-with-bgw320-router">ATT Fiber with BGW320 Router</h2>
+<p>This guide will help you make your Louisiana QSO Party log upload application accessible from the internet.</p>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>You'll need to:</p>
+<ol>
+<li>Set up a static IP for your web server computer</li>
+<li>Configure port forwarding on your BGW320 router</li>
+<li>Configure your computer's firewall</li>
+<li>Run your Flask app in production mode</li>
+<li>(Optional) Set up a domain name</li>
+</ol>
+<hr>
+<h2 id="part-1-find-your-current-network-information">Part 1: Find Your Current Network Information</h2>
+<h3 id="on-your-web-server-computer-linux">On Your Web Server Computer (Linux):</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Find your local IP address</span>
+ip addr show | grep <span class="hljs-string">&quot;inet &quot;</span> | grep -v 127.0.0.1
+
+<span class="hljs-comment"># Or simpler:</span>
+hostname -I
+
+<span class="hljs-comment"># Find your router&#x27;s IP (gateway)</span>
+ip route | grep default
+
+<span class="hljs-comment"># Should show something like: 192.168.1.254</span>
+</code></pre>
+<h3 id="on-your-web-server-computer-windows">On Your Web Server Computer (Windows):</h3>
+<pre><code class="language-cmd"><span class="hljs-built_in">ipconfig</span>
+
+# Look <span class="hljs-keyword">for</span>:
+# - IPv4 Address (e.g., <span class="hljs-number">192</span>.<span class="hljs-number">168</span>.<span class="hljs-number">1</span>.<span class="hljs-number">100</span>)
+# - Default Gateway (e.g., <span class="hljs-number">192</span>.<span class="hljs-number">168</span>.<span class="hljs-number">1</span>.<span class="hljs-number">254</span>)
+</code></pre>
+<p><strong>Write down:</strong></p>
+<ul>
+<li>Your computer's current IP: ________________</li>
+<li>Router/Gateway IP: ________________ (usually 192.168.1.254)</li>
+</ul>
+<h3 id="find-your-public-ip">Find Your Public IP:</h3>
+<p>Visit: <a href="https://whatismyipaddress.com/">https://whatismyipaddress.com/</a></p>
+<ul>
+<li>Your public IP: ________________</li>
+</ul>
+<hr>
+<h2 id="part-2-configure-static-ip-on-your-computer">Part 2: Configure Static IP on Your Computer</h2>
+<h3 id="option-a-ubuntudebian-linux-recommended-if-using-headless-server">Option A: Ubuntu/Debian Linux (Recommended if using headless server)</h3>
+<h4 id="using-networkmanager-desktop">Using NetworkManager (Desktop):</h4>
+<ol>
+<li>Open Network Settings</li>
+<li>Click the gear icon next to your connection</li>
+<li>Go to IPv4 tab</li>
+<li>Change from &quot;Automatic (DHCP)&quot; to &quot;Manual&quot;</li>
+<li>Add address:
+<ul>
+<li><strong>Address</strong>: 192.168.1.100 (choose any number 2-253)</li>
+<li><strong>Netmask</strong>: 255.255.255.0</li>
+<li><strong>Gateway</strong>: 192.168.1.254 (your router IP)</li>
+<li><strong>DNS</strong>: 8.8.8.8, 8.8.4.4 (Google DNS)</li>
+</ul>
+</li>
+<li>Apply and reconnect</li>
+</ol>
+<h4 id="using-netplan-server">Using netplan (Server):</h4>
+<p>Edit <code>/etc/netplan/01-netcfg.yaml</code>:</p>
+<pre><code class="language-yaml"><span class="hljs-attr">network:</span>
+  <span class="hljs-attr">version:</span> <span class="hljs-number">2</span>
+  <span class="hljs-attr">renderer:</span> <span class="hljs-string">networkd</span>
+  <span class="hljs-attr">ethernets:</span>
+    <span class="hljs-attr">enp0s3:</span>  <span class="hljs-comment"># Change to your interface name (use &#x27;ip link&#x27; to find)</span>
+      <span class="hljs-attr">dhcp4:</span> <span class="hljs-literal">no</span>
+      <span class="hljs-attr">addresses:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-number">192.168</span><span class="hljs-number">.1</span><span class="hljs-number">.100</span><span class="hljs-string">/24</span>
+      <span class="hljs-attr">gateway4:</span> <span class="hljs-number">192.168</span><span class="hljs-number">.1</span><span class="hljs-number">.254</span>
+      <span class="hljs-attr">nameservers:</span>
+        <span class="hljs-attr">addresses:</span> [<span class="hljs-number">8.8</span><span class="hljs-number">.8</span><span class="hljs-number">.8</span>, <span class="hljs-number">8.8</span><span class="hljs-number">.4</span><span class="hljs-number">.4</span>]
+</code></pre>
+<p>Apply:</p>
+<pre><code class="language-bash">sudo netplan apply
+</code></pre>
+<h3 id="option-b-windows">Option B: Windows</h3>
+<ol>
+<li>Open Control Panel → Network and Internet → Network Connections</li>
+<li>Right-click your network adapter → Properties</li>
+<li>Select &quot;Internet Protocol Version 4 (TCP/IPv4)&quot; → Properties</li>
+<li>Select &quot;Use the following IP address&quot;</li>
+<li>Enter:
+<ul>
+<li><strong>IP address</strong>: 192.168.1.100</li>
+<li><strong>Subnet mask</strong>: 255.255.255.0</li>
+<li><strong>Default gateway</strong>: 192.168.1.254</li>
+<li><strong>Preferred DNS</strong>: 8.8.8.8</li>
+<li><strong>Alternate DNS</strong>: 8.8.4.4</li>
+</ul>
+</li>
+<li>Click OK</li>
+</ol>
+<hr>
+<h2 id="part-3-configure-att-bgw320-router">Part 3: Configure ATT BGW320 Router</h2>
+<h3 id="access-router-admin-interface">Access Router Admin Interface:</h3>
+<ol>
+<li>Open browser to: <a href="http://192.168.1.254">http://192.168.1.254</a></li>
+<li>Login credentials:
+<ul>
+<li>Default password is on a sticker on the router</li>
+<li>Or use ATT login if you've changed it</li>
+</ul>
+</li>
+</ol>
+<h3 id="set-up-ip-passthrough-recommended-or-port-forwarding">Set Up IP Passthrough (Recommended) OR Port Forwarding:</h3>
+<h4 id="option-a-ip-passthrough-simpler-gives-your-computer-direct-public-ip">Option A: IP Passthrough (Simpler, gives your computer direct public IP)</h4>
+<p><strong>WARNING</strong>: This exposes your computer directly to internet. Only use if:</p>
+<ul>
+<li>Computer has good firewall configured</li>
+<li>You understand security implications</li>
+<li>You want the simplest setup</li>
+</ul>
+<ol>
+<li>Go to <strong>Settings</strong> → <strong>LAN</strong> → <strong>IP Passthrough</strong></li>
+<li><strong>Allocation Mode</strong>: Passthrough</li>
+<li><strong>Passthrough Mode</strong>: DHCPS-fixed</li>
+<li><strong>Passthrough Fixed MAC Address</strong>: Select your computer's MAC address</li>
+<li>Save</li>
+</ol>
+<p><strong>Skip to Part 4 if using IP Passthrough</strong></p>
+<h4 id="option-b-port-forwarding-more-secure-recommended">Option B: Port Forwarding (More Secure, Recommended)</h4>
+<ol>
+<li>Navigate to <strong>Firewall</strong> → <strong>NAT/Gaming</strong> or <strong>IP Passthrough</strong></li>
+<li>Look for &quot;Port Forwarding&quot; or &quot;Applications, Pinholes and DMZ&quot;</li>
+<li>Click <strong>Add Service</strong> or <strong>Custom Services</strong></li>
+<li>Create new service:
+<ul>
+<li><strong>Service Name</strong>: LAQP-Web</li>
+<li><strong>Protocol</strong>: TCP</li>
+<li><strong>Public Port</strong>: 80 (or 8080 if AT&amp;T blocks port 80)</li>
+<li><strong>Private Port</strong>: 5000 (Flask default) or 80</li>
+<li><strong>Server IPv4 Address</strong>: 192.168.1.100 (your static IP)</li>
+<li><strong>Enable</strong>: Yes/Checked</li>
+</ul>
+</li>
+<li>Save</li>
+</ol>
+<h3 id="additional-port-forwarding-for-https-recommended-for-production">Additional Port Forwarding for HTTPS (Recommended for production):</h3>
+<p>Add another service:</p>
+<ul>
+<li><strong>Service Name</strong>: LAQP-Web-SSL</li>
+<li><strong>Protocol</strong>: TCP</li>
+<li><strong>Public Port</strong>: 443</li>
+<li><strong>Private Port</strong>: 443</li>
+<li><strong>Server IPv4 Address</strong>: 192.168.1.100</li>
+<li><strong>Enable</strong>: Yes/Checked</li>
+</ul>
+<hr>
+<h2 id="part-4-configure-firewall-on-your-computer">Part 4: Configure Firewall on Your Computer</h2>
+<h3 id="ubuntulinux-ufw">Ubuntu/Linux (ufw):</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Enable firewall if not already</span>
+sudo ufw <span class="hljs-built_in">enable</span>
+
+<span class="hljs-comment"># Allow SSH first (so you don&#x27;t lock yourself out!)</span>
+sudo ufw allow 22/tcp
+
+<span class="hljs-comment"># Allow HTTP</span>
+sudo ufw allow 80/tcp
+
+<span class="hljs-comment"># Allow HTTPS</span>
+sudo ufw allow 443/tcp
+
+<span class="hljs-comment"># Allow Flask development port (if testing)</span>
+sudo ufw allow 5000/tcp
+
+<span class="hljs-comment"># Check status</span>
+sudo ufw status verbose
+</code></pre>
+<h3 id="ubuntulinux-firewalld">Ubuntu/Linux (firewalld):</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Allow HTTP</span>
+sudo firewall-cmd --permanent --add-service=http
+
+<span class="hljs-comment"># Allow HTTPS</span>
+sudo firewall-cmd --permanent --add-service=https
+
+<span class="hljs-comment"># Allow custom port if needed</span>
+sudo firewall-cmd --permanent --add-port=5000/tcp
+
+<span class="hljs-comment"># Reload</span>
+sudo firewall-cmd --reload
+
+<span class="hljs-comment"># Check</span>
+sudo firewall-cmd --list-all
+</code></pre>
+<h3 id="windows-firewall">Windows Firewall:</h3>
+<ol>
+<li>Open Windows Defender Firewall → Advanced Settings</li>
+<li>Click &quot;Inbound Rules&quot; → &quot;New Rule&quot;</li>
+<li>Select &quot;Port&quot; → Next</li>
+<li>TCP, Specific local ports: 80,443,5000 → Next</li>
+<li>Allow the connection → Next</li>
+<li>Check all profiles (Domain, Private, Public) → Next</li>
+<li>Name: &quot;LAQP Web Server&quot; → Finish</li>
+</ol>
+<hr>
+<h2 id="part-5-configure-flask-app-for-production">Part 5: Configure Flask App for Production</h2>
+<h3 id="update-your-apppy">Update your <a href="http://app.py">app.py</a></h3>
+<p>Make sure your Flask app ends with:</p>
+<pre><code class="language-python"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:
+    <span class="hljs-comment"># Development mode (testing only)</span>
+    <span class="hljs-comment"># app.run(host=&#x27;0.0.0.0&#x27;, port=5000, debug=True)</span>
+    
+    <span class="hljs-comment"># Production mode</span>
+    app.run(host=<span class="hljs-string">&#x27;0.0.0.0&#x27;</span>, port=<span class="hljs-number">80</span>, debug=<span class="hljs-literal">False</span>)
+</code></pre>
+<p><strong>Important Notes:</strong></p>
+<ul>
+<li><code>host='0.0.0.0'</code> makes Flask listen on ALL network interfaces</li>
+<li><code>port=80</code> is standard HTTP (requires sudo/admin on Linux)</li>
+<li><code>debug=False</code> for production (never use debug=True on public server!)</li>
+</ul>
+<h3 id="running-flask-on-port-80-linux-requires-sudo">Running Flask on Port 80 (Linux requires sudo):</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Option 1: Run with sudo (simple but not recommended)</span>
+sudo python3 web/app.py
+
+<span class="hljs-comment"># Option 2: Give Python permission to bind to port 80 (better)</span>
+sudo <span class="hljs-built_in">setcap</span> <span class="hljs-string">&#x27;cap_net_bind_service=+ep&#x27;</span> $(<span class="hljs-built_in">which</span> python3)
+python3 web/app.py
+
+<span class="hljs-comment"># Option 3: Use a reverse proxy (best - see below)</span>
+</code></pre>
+<hr>
+<h2 id="part-6-production-deployment-recommended">Part 6: Production Deployment (Recommended)</h2>
+<p>For a real production server, use <strong>Gunicorn</strong> with <strong>Nginx</strong>:</p>
+<h3 id="install-required-software">Install Required Software:</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Install Gunicorn and Nginx</span>
+sudo apt update
+sudo apt install nginx python3-pip
+pip3 install gunicorn
+</code></pre>
+<h3 id="create-gunicorn-service">Create Gunicorn Service:</h3>
+<p>Create <code>/etc/systemd/system/laqp-web.service</code>:</p>
+<pre><code class="language-ini"><span class="hljs-section">[Unit]</span>
+<span class="hljs-attr">Description</span>=LAQP Web Application
+<span class="hljs-attr">After</span>=network.target
+
+<span class="hljs-section">[Service]</span>
+<span class="hljs-attr">User</span>=YOUR_USERNAME
+<span class="hljs-attr">Group</span>=www-data
+<span class="hljs-attr">WorkingDirectory</span>=/path/to/your/laqp/project
+<span class="hljs-attr">Environment</span>=<span class="hljs-string">&quot;PATH=/home/YOUR_USERNAME/.local/bin:/usr/bin&quot;</span>
+<span class="hljs-attr">ExecStart</span>=/home/YOUR_USERNAME/.local/bin/gunicorn --workers <span class="hljs-number">3</span> --bind <span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span>:<span class="hljs-number">5000</span> web.app:app
+
+<span class="hljs-section">[Install]</span>
+<span class="hljs-attr">WantedBy</span>=multi-user.target
+</code></pre>
+<p>Replace:</p>
+<ul>
+<li><code>YOUR_USERNAME</code> with your actual username</li>
+<li><code>/path/to/your/laqp/project</code> with actual path</li>
+</ul>
+<p>Enable and start:</p>
+<pre><code class="language-bash">sudo systemctl <span class="hljs-built_in">enable</span> laqp-web
+sudo systemctl start laqp-web
+sudo systemctl status laqp-web
+</code></pre>
+<h3 id="configure-nginx">Configure Nginx:</h3>
+<p>Create <code>/etc/nginx/sites-available/laqp</code>:</p>
+<pre><code class="language-nginx"><span class="hljs-section">server</span> {
+    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;
+    <span class="hljs-attribute">server_name</span> YOUR_PUBLIC_IP;  <span class="hljs-comment"># Or your domain name</span>
+
+    <span class="hljs-attribute">client_max_body_size</span> <span class="hljs-number">10M</span>;  <span class="hljs-comment"># Allow 10MB uploads</span>
+
+    <span class="hljs-section">location</span> / {
+        <span class="hljs-attribute">proxy_pass</span> http://127.0.0.1:5000;
+        <span class="hljs-attribute">proxy_set_header</span> Host <span class="hljs-variable">$host</span>;
+        <span class="hljs-attribute">proxy_set_header</span> X-Real-IP <span class="hljs-variable">$remote_addr</span>;
+        <span class="hljs-attribute">proxy_set_header</span> X-Forwarded-For <span class="hljs-variable">$proxy_add_x_forwarded_for</span>;
+        <span class="hljs-attribute">proxy_set_header</span> X-Forwarded-Proto <span class="hljs-variable">$scheme</span>;
+    }
+
+    <span class="hljs-section">location</span> /static {
+        <span class="hljs-attribute">alias</span> /path/to/your/laqp/project/web/static;
+        <span class="hljs-attribute">expires</span> <span class="hljs-number">30d</span>;
+    }
+}
+</code></pre>
+<p>Enable site:</p>
+<pre><code class="language-bash">sudo <span class="hljs-built_in">ln</span> -s /etc/nginx/sites-available/laqp /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+</code></pre>
+<hr>
+<h2 id="part-7-testing-your-setup">Part 7: Testing Your Setup</h2>
+<h3 id="test-locally-first">Test Locally First:</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># From your server computer</span>
+curl http://localhost
+curl http://192.168.1.100
+
+<span class="hljs-comment"># From another computer on your network</span>
+curl http://192.168.1.100
+</code></pre>
+<h3 id="test-from-internet">Test from Internet:</h3>
+<ol>
+<li>
+<p>From your phone (disable WiFi to use cellular):</p>
+<ul>
+<li>Visit: http://YOUR_PUBLIC_IP</li>
+</ul>
+</li>
+<li>
+<p>From another location:</p>
+<ul>
+<li>Visit: http://YOUR_PUBLIC_IP</li>
+</ul>
+</li>
+</ol>
+<h3 id="if-port-80-is-blocked-by-att">If Port 80 is Blocked by AT&amp;T:</h3>
+<p>Some ISPs block port 80. Test with port 8080:</p>
+<ul>
+<li>Router: Forward public port 8080 → private port 80</li>
+<li>Access via: http://YOUR_PUBLIC_IP:8080</li>
+</ul>
+<hr>
+<h2 id="part-8-get-a-domain-name-optional-but-recommended">Part 8: Get a Domain Name (Optional but Recommended)</h2>
+<h3 id="free-options">Free Options:</h3>
+<ul>
+<li><strong>DuckDNS</strong>: Free subdomain (<a href="http://yourname.duckdns.org">yourname.duckdns.org</a>)</li>
+<li><strong>No-IP</strong>: Free dynamic DNS</li>
+<li><strong>Cloudflare</strong>: Free (but need to buy domain first)</li>
+</ul>
+<h3 id="paid-options-recommended">Paid Options (Recommended):</h3>
+<ul>
+<li><strong>Namecheap</strong>: ~$10/year for .com</li>
+<li><strong>Google Domains</strong>: ~$12/year</li>
+<li><strong>Cloudflare Registrar</strong>: At-cost pricing</li>
+</ul>
+<h3 id="set-up-dynamic-dns-if-you-dont-have-static-public-ip">Set Up Dynamic DNS (if you don't have static public IP):</h3>
+<p>AT&amp;T Fiber usually provides a stable IP, but it can change. Use dynamic DNS:</p>
+<ol>
+<li>Sign up at <a href="http://DuckDNS.org">DuckDNS.org</a></li>
+<li>Create subdomain: <a href="http://laqp.duckdns.org">laqp.duckdns.org</a></li>
+<li>Install DuckDNS updater:</li>
+</ol>
+<pre><code class="language-bash"><span class="hljs-comment"># Create directory</span>
+<span class="hljs-built_in">mkdir</span> -p ~/duckdns
+<span class="hljs-built_in">cd</span> ~/duckdns
+
+<span class="hljs-comment"># Create update script</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;echo url=\&quot;https://www.duckdns.org/update?domains=YOUR_DOMAIN&amp;token=YOUR_TOKEN&amp;ip=\&quot; | curl -k -o ~/duckdns/duck.log -K -&quot;</span> &gt; duck.sh
+
+<span class="hljs-built_in">chmod</span> 700 duck.sh
+
+<span class="hljs-comment"># Add to crontab (updates every 5 minutes)</span>
+crontab -e
+<span class="hljs-comment"># Add line:</span>
+*/5 * * * * ~/duckdns/duck.sh &gt;/dev/null 2&gt;&amp;1
+</code></pre>
+<hr>
+<h2 id="part-9-security-checklist">Part 9: Security Checklist</h2>
+<h3 id="essential-security-steps">Essential Security Steps:</h3>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Change default router password</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Enable router firewall</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Use static IP for web server</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Configure computer firewall (ufw/firewalld)</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Run Flask with <code>debug=False</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Set strong <code>FLASK_SECRET_KEY</code> in config</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Limit upload file sizes (already done: 5MB)</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Keep system updated: <code>sudo apt update &amp;&amp; sudo apt upgrade</code></li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Consider fail2ban to block brute force attempts</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Monitor logs regularly</li>
+</ul>
+<h3 id="install-fail2ban-recommended">Install Fail2ban (Recommended):</h3>
+<pre><code class="language-bash">sudo apt install fail2ban
+sudo systemctl <span class="hljs-built_in">enable</span> fail2ban
+sudo systemctl start fail2ban
+</code></pre>
+<hr>
+<h2 id="part-10-monitoring-and-maintenance">Part 10: Monitoring and Maintenance</h2>
+<h3 id="check-application-logs">Check Application Logs:</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># If using systemd service:</span>
+sudo journalctl -u laqp-web -f
+
+<span class="hljs-comment"># If running manually:</span>
+<span class="hljs-built_in">tail</span> -f /path/to/your/app/logs/error.log
+</code></pre>
+<h3 id="monitor-nginx">Monitor Nginx:</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Access log</span>
+sudo <span class="hljs-built_in">tail</span> -f /var/log/nginx/access.log
+
+<span class="hljs-comment"># Error log</span>
+sudo <span class="hljs-built_in">tail</span> -f /var/log/nginx/error.log
+</code></pre>
+<h3 id="restart-services">Restart Services:</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Restart Flask app</span>
+sudo systemctl restart laqp-web
+
+<span class="hljs-comment"># Restart Nginx</span>
+sudo systemctl restart nginx
+
+<span class="hljs-comment"># Restart both</span>
+sudo systemctl restart laqp-web nginx
+</code></pre>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="cant-access-from-internet">Can't access from internet:</h3>
+<ol>
+<li>
+<p><strong>Check router port forwarding</strong>:</p>
+<ul>
+<li>Login to router, verify settings</li>
+<li>Make sure service is enabled</li>
+</ul>
+</li>
+<li>
+<p><strong>Check computer firewall</strong>:</p>
+<pre><code class="language-bash">sudo ufw status verbose
+</code></pre>
+</li>
+<li>
+<p><strong>Check if Flask is listening</strong>:</p>
+<pre><code class="language-bash">sudo netstat -tlnp | grep :80
+<span class="hljs-comment"># or</span>
+sudo ss -tlnp | grep :80
+</code></pre>
+</li>
+<li>
+<p><strong>Check AT&amp;T blocks</strong>:</p>
+<ul>
+<li>Some ISPs block port 80</li>
+<li>Try port 8080 instead</li>
+</ul>
+</li>
+<li>
+<p><strong>Check public IP</strong>:</p>
+<ul>
+<li>Visit <a href="https://whatismyipaddress.com/">https://whatismyipaddress.com/</a></li>
+<li>Make sure it matches what you're using</li>
+</ul>
+</li>
+</ol>
+<h3 id="logs-show-errors">Logs show errors:</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Check Flask logs</span>
+sudo journalctl -u laqp-web --no-pager | <span class="hljs-built_in">tail</span> -50
+
+<span class="hljs-comment"># Check Nginx logs</span>
+sudo <span class="hljs-built_in">tail</span> -50 /var/log/nginx/error.log
+
+<span class="hljs-comment"># Check system logs</span>
+sudo <span class="hljs-built_in">tail</span> -50 /var/log/syslog
+</code></pre>
+<h3 id="permission-errors">Permission errors:</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Make sure www-data can read files</span>
+sudo <span class="hljs-built_in">chown</span> -R <span class="hljs-variable">$USER</span>:www-data /path/to/laqp
+sudo <span class="hljs-built_in">chmod</span> -R 755 /path/to/laqp
+
+<span class="hljs-comment"># Make sure incoming logs directory is writable</span>
+sudo <span class="hljs-built_in">chmod</span> 775 /path/to/laqp/logs/incoming
+</code></pre>
+<hr>
+<h2 id="quick-reference-card">Quick Reference Card</h2>
+<p><strong>Your Configuration:</strong></p>
+<ul>
+<li>Static IP: _________________</li>
+<li>Router IP: 192.168.1.254</li>
+<li>Public IP: _________________</li>
+<li>Domain: _________________</li>
+<li>Service Port: 80 (or 8080)</li>
+<li>Flask Port: 5000</li>
+</ul>
+<p><strong>Router Login:</strong></p>
+<ul>
+<li>URL: <a href="http://192.168.1.254">http://192.168.1.254</a></li>
+<li>Password: (on router sticker)</li>
+</ul>
+<p><strong>Important Commands:</strong></p>
+<pre><code class="language-bash"><span class="hljs-comment"># Start app</span>
+sudo systemctl start laqp-web
+
+<span class="hljs-comment"># Stop app</span>
+sudo systemctl stop laqp-web
+
+<span class="hljs-comment"># Restart app</span>
+sudo systemctl restart laqp-web
+
+<span class="hljs-comment"># View logs</span>
+sudo journalctl -u laqp-web -f
+
+<span class="hljs-comment"># Check firewall</span>
+sudo ufw status
+</code></pre>
+<hr>
+<h2 id="need-help">Need Help?</h2>
+<p>Common issues:</p>
+<ol>
+<li>Can't access from outside → Check port forwarding and firewall</li>
+<li>Page loads but uploads fail → Check file permissions on logs/incoming/</li>
+<li>Service won't start → Check logs with <code>journalctl</code></li>
+<li>502 Bad Gateway → Gunicorn/Flask not running</li>
+</ol>
+<p>Good luck with the Louisiana QSO Party! 73!</p>
+
+            <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+            
+        </body>
+        </html>

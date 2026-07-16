@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Louisiana QSO Party - Database Integration</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="louisiana-qso-party---database-integration">Louisiana QSO Party - Database Integration</h1>
+<p>This document explains how contest results are stored in the SQLite database.</p>
+<h2 id="overview">Overview</h2>
+<p>Contest results are stored in a SQLite database with a composite key of <strong>year</strong> and <strong>callsign</strong>. When a log is processed (either via web upload or batch processing), the result is automatically saved to the database. If a record already exists for that year/callsign combination, it is <strong>replaced</strong> with the new result.</p>
+<h2 id="database-schema">Database Schema</h2>
+<h3 id="table-contest_results">Table: contest_results</h3>
+<p><strong>Primary Key:</strong> (year, callsign)</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>year</td>
+<td>TEXT</td>
+<td>Contest year (e.g., '2026')</td>
+</tr>
+<tr>
+<td>callsign</td>
+<td>TEXT</td>
+<td>Station callsign (e.g., 'K5ABC')</td>
+</tr>
+<tr>
+<td>name</td>
+<td>TEXT</td>
+<td>Operator name</td>
+</tr>
+<tr>
+<td>category</td>
+<td>TEXT</td>
+<td>Short category code (e.g., 'nl_ph_lo')</td>
+</tr>
+<tr>
+<td>overlay</td>
+<td>TEXT</td>
+<td>Overlay category ('WIRES', 'TB-WIRES', 'POTA', or NULL)</td>
+</tr>
+<tr>
+<td>location_type</td>
+<td>TEXT</td>
+<td>'DX', 'NON-LA', 'LA-FIXED', 'LA-ROVER'</td>
+</tr>
+<tr>
+<td>mode_category</td>
+<td>TEXT</td>
+<td>'PHONE', 'CW-DIGITAL', 'MIXED'</td>
+</tr>
+<tr>
+<td>power_level</td>
+<td>TEXT</td>
+<td>'QRP', 'LOW', 'HIGH'</td>
+</tr>
+<tr>
+<td>is_rover</td>
+<td>INTEGER</td>
+<td>0 or 1 (boolean)</td>
+</tr>
+<tr>
+<td>final_score</td>
+<td>INTEGER</td>
+<td>Total score with bonuses</td>
+</tr>
+<tr>
+<td>qso_points</td>
+<td>INTEGER</td>
+<td>Points from QSOs only</td>
+</tr>
+<tr>
+<td>total_qsos</td>
+<td>INTEGER</td>
+<td>Total number of QSOs</td>
+</tr>
+<tr>
+<td>valid_qsos</td>
+<td>INTEGER</td>
+<td>Valid QSOs (dups excluded)</td>
+</tr>
+<tr>
+<td>total_multipliers</td>
+<td>INTEGER</td>
+<td>Total multiplier count</td>
+</tr>
+<tr>
+<td>parishes_worked</td>
+<td>TEXT</td>
+<td>JSON array of parishes</td>
+</tr>
+<tr>
+<td>parishes_worked_multiplier</td>
+<td>INTEGER</td>
+<td>Count</td>
+</tr>
+<tr>
+<td>states_worked</td>
+<td>TEXT</td>
+<td>JSON array of states</td>
+</tr>
+<tr>
+<td>states_worked_multiplier</td>
+<td>INTEGER</td>
+<td>Count</td>
+</tr>
+<tr>
+<td>provinces_worked</td>
+<td>TEXT</td>
+<td>JSON array of provinces</td>
+</tr>
+<tr>
+<td>provinces_multiplier</td>
+<td>INTEGER</td>
+<td>Count</td>
+</tr>
+<tr>
+<td>dx_worked</td>
+<td>TEXT</td>
+<td>JSON array of DX</td>
+</tr>
+<tr>
+<td>dx_worked_multiplier</td>
+<td>INTEGER</td>
+<td>Count</td>
+</tr>
+<tr>
+<td>parishes_activated</td>
+<td>TEXT</td>
+<td>JSON array of parishes (rovers)</td>
+</tr>
+<tr>
+<td>rover_bonus_points</td>
+<td>INTEGER</td>
+<td>Bonus points</td>
+</tr>
+<tr>
+<td>worked_n5lcc</td>
+<td>INTEGER</td>
+<td>0 or 1 (boolean)</td>
+</tr>
+<tr>
+<td>num_n5lcc_contacts</td>
+<td>INTEGER</td>
+<td>Count</td>
+</tr>
+<tr>
+<td>qsos_by_band</td>
+<td>TEXT</td>
+<td>JSON object</td>
+</tr>
+<tr>
+<td>qsos_by_mode</td>
+<td>TEXT</td>
+<td>JSON object</td>
+</tr>
+<tr>
+<td>qsos_by_hour</td>
+<td>TEXT</td>
+<td>JSON object</td>
+</tr>
+<tr>
+<td>bands_worked</td>
+<td>TEXT</td>
+<td>JSON array</td>
+</tr>
+<tr>
+<td>multipliers_by_band_mode</td>
+<td>TEXT</td>
+<td>JSON object</td>
+</tr>
+<tr>
+<td>claimed_score</td>
+<td>INTEGER</td>
+<td>Operator's claimed score</td>
+</tr>
+<tr>
+<td>errors</td>
+<td>TEXT</td>
+<td>JSON array of error strings</td>
+</tr>
+<tr>
+<td>warnings</td>
+<td>TEXT</td>
+<td>JSON array of warning strings</td>
+</tr>
+<tr>
+<td>has_valid_power</td>
+<td>INTEGER</td>
+<td>0 or 1 (boolean)</td>
+</tr>
+<tr>
+<td>has_valid_operator</td>
+<td>INTEGER</td>
+<td>0 or 1 (boolean)</td>
+</tr>
+<tr>
+<td>has_email</td>
+<td>INTEGER</td>
+<td>0 or 1 (boolean)</td>
+</tr>
+<tr>
+<td>is_valid</td>
+<td>INTEGER</td>
+<td>0 or 1 (boolean)</td>
+</tr>
+<tr>
+<td><strong>rankings</strong></td>
+<td>TEXT</td>
+<td><strong>JSON object with category rankings</strong></td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TEXT</td>
+<td>ISO timestamp</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>TEXT</td>
+<td>ISO timestamp</td>
+</tr>
+</tbody>
+</table>
+<h3 id="indexes">Indexes</h3>
+<ul>
+<li><code>idx_year</code> - On (year)</li>
+<li><code>idx_category</code> - On (year, category)</li>
+<li><code>idx_score</code> - On (year, final_score DESC)</li>
+</ul>
+<h2 id="rankings-field">Rankings Field</h2>
+<p>The <code>rankings</code> field stores a JSON object mapping ranking categories to placement:</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;overall&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;nl_ph_lo&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;phone&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">5</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;low&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><strong>Format:</strong> <code>{'category': rank_integer}</code></p>
+<p><strong>Examples:</strong></p>
+<ul>
+<li><code>{'cw': 45}</code> - 45th place in CW category</li>
+<li><code>{'overall': 1, 'nl_ph_hi': 1}</code> - 1st place overall and in their category</li>
+<li><code>{}</code> - Empty initially, populated when rankings are calculated</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<h3 id="web-upload-webpy">Web Upload (<a href="http://web.py">web.py</a>)</h3>
+<p>When a contestant uploads a log via the web interface:</p>
+<ol>
+<li>Log is validated, prepared, and scored</li>
+<li>Year is added from form field (or defaults to current year)</li>
+<li>Result is saved to database with <code>save_result(result)</code></li>
+<li>If a record exists for (year, callsign), it's replaced</li>
+<li>HTML results are displayed to contestant</li>
+</ol>
+<pre><code class="language-python"><span class="hljs-comment"># In web.py</span>
+result = process_single_log(Path(tmp_path), ...)
+result[<span class="hljs-string">&#x27;year&#x27;</span>] = year  <span class="hljs-comment"># From form or current year</span>
+save_result(result)  <span class="hljs-comment"># Saves or updates database record</span>
+</code></pre>
+<h3 id="batch-processing-batchpy">Batch Processing (<a href="http://batch.py">batch.py</a>)</h3>
+<p>When processing all logs in batch mode:</p>
+<ol>
+<li>All logs in incoming directory are processed</li>
+<li>Year is from CONTEST_YEAR environment variable (or current year)</li>
+<li>For each valid result:
+<ul>
+<li>HTML file is generated in <code>HTML_RESULTS/{year}/</code></li>
+<li>Result is saved to database</li>
+</ul>
+</li>
+<li>Invalid logs are reported but not saved</li>
+</ol>
+<pre><code class="language-python"><span class="hljs-comment"># In batch.py</span>
+results = process_batch_logs(INCOMING_LOGS)
+<span class="hljs-keyword">for</span> result <span class="hljs-keyword">in</span> results:
+    result[<span class="hljs-string">&#x27;year&#x27;</span>] = year
+    <span class="hljs-keyword">if</span> result[<span class="hljs-string">&#x27;is_valid&#x27;</span>]:
+        generate_html_result(result, Path(HTML_RESULTS), year=year)
+        save_result(result)  <span class="hljs-comment"># Saves to database</span>
+</code></pre>
+<h3 id="setting-contest-year">Setting Contest Year</h3>
+<p><strong>For Web:</strong></p>
+<ul>
+<li>Year comes from form field on upload page</li>
+<li>Falls back to current year if not provided</li>
+</ul>
+<p><strong>For Batch:</strong></p>
+<pre><code class="language-bash"><span class="hljs-comment"># Set via environment variable</span>
+<span class="hljs-built_in">export</span> CONTEST_YEAR=2026
+python batch.py
+
+<span class="hljs-comment"># Or in docker-compose.yml</span>
+environment:
+  - CONTEST_YEAR=2026
+</code></pre>
+<h2 id="database-operations">Database Operations</h2>
+<h3 id="initialize-database">Initialize Database</h3>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> database <span class="hljs-keyword">import</span> ContestDatabase
+
+db = ContestDatabase(<span class="hljs-string">&#x27;laqp/database/laqp.db&#x27;</span>)
+<span class="hljs-comment"># Tables are created automatically</span>
+</code></pre>
+<h3 id="save-a-result">Save a Result</h3>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> database <span class="hljs-keyword">import</span> save_result
+
+<span class="hljs-comment"># Result dict must include &#x27;year&#x27; and &#x27;callsign&#x27;</span>
+result[<span class="hljs-string">&#x27;year&#x27;</span>] = <span class="hljs-string">&#x27;2026&#x27;</span>
+result[<span class="hljs-string">&#x27;callsign&#x27;</span>] = <span class="hljs-string">&#x27;K5ABC&#x27;</span>
+
+<span class="hljs-comment"># Save (or replace if exists)</span>
+<span class="hljs-keyword">if</span> save_result(result):
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Saved successfully&quot;</span>)
+</code></pre>
+<h3 id="get-a-result">Get a Result</h3>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> database <span class="hljs-keyword">import</span> get_result
+
+result = get_result(<span class="hljs-string">&#x27;2026&#x27;</span>, <span class="hljs-string">&#x27;K5ABC&#x27;</span>)
+<span class="hljs-keyword">if</span> result:
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Score: <span class="hljs-subst">{result[<span class="hljs-string">&#x27;final_score&#x27;</span>]}</span>&quot;</span>)
+</code></pre>
+<h3 id="get-all-results-for-a-year">Get All Results for a Year</h3>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> database <span class="hljs-keyword">import</span> ContestDatabase
+
+db = ContestDatabase()
+results = db.get_results_by_year(<span class="hljs-string">&#x27;2026&#x27;</span>, valid_only=<span class="hljs-literal">True</span>)
+
+<span class="hljs-keyword">for</span> result <span class="hljs-keyword">in</span> results:
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">{result[<span class="hljs-string">&#x27;callsign&#x27;</span>]}</span>: <span class="hljs-subst">{result[<span class="hljs-string">&#x27;final_score&#x27;</span>]}</span>&quot;</span>)
+</code></pre>
+<h3 id="get-results-by-category">Get Results by Category</h3>
+<pre><code class="language-python">db = ContestDatabase()
+results = db.get_results_by_category(<span class="hljs-string">&#x27;2026&#x27;</span>, <span class="hljs-string">&#x27;nl_ph_lo&#x27;</span>)
+
+<span class="hljs-keyword">for</span> rank, result <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(results, <span class="hljs-number">1</span>):
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">{rank}</span>. <span class="hljs-subst">{result[<span class="hljs-string">&#x27;callsign&#x27;</span>]}</span>: <span class="hljs-subst">{result[<span class="hljs-string">&#x27;final_score&#x27;</span>]}</span>&quot;</span>)
+</code></pre>
+<h3 id="update-rankings">Update Rankings</h3>
+<pre><code class="language-python">db = ContestDatabase()
+
+<span class="hljs-comment"># Calculate rankings (to be implemented)</span>
+rankings_dict = {
+    <span class="hljs-string">&#x27;K5ABC&#x27;</span>: {<span class="hljs-string">&#x27;overall&#x27;</span>: <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;nl_ph_lo&#x27;</span>: <span class="hljs-number">1</span>},
+    <span class="hljs-string">&#x27;W5XYZ&#x27;</span>: {<span class="hljs-string">&#x27;overall&#x27;</span>: <span class="hljs-number">2</span>, <span class="hljs-string">&#x27;nl_ph_lo&#x27;</span>: <span class="hljs-number">2</span>},
+}
+
+db.update_rankings(<span class="hljs-string">&#x27;2026&#x27;</span>, rankings_dict)
+</code></pre>
+<h3 id="get-statistics">Get Statistics</h3>
+<pre><code class="language-python">db = ContestDatabase()
+stats = db.get_statistics(<span class="hljs-string">&#x27;2026&#x27;</span>)
+
+<span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Total logs: <span class="hljs-subst">{stats[<span class="hljs-string">&#x27;total_logs&#x27;</span>]}</span>&quot;</span>)
+<span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Valid logs: <span class="hljs-subst">{stats[<span class="hljs-string">&#x27;valid_logs&#x27;</span>]}</span>&quot;</span>)
+<span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Total QSOs: <span class="hljs-subst">{stats[<span class="hljs-string">&#x27;total_qsos&#x27;</span>]}</span>&quot;</span>)
+<span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Top score: <span class="hljs-subst">{stats[<span class="hljs-string">&#x27;top_callsign&#x27;</span>]}</span> - <span class="hljs-subst">{stats[<span class="hljs-string">&#x27;top_score&#x27;</span>]}</span>&quot;</span>)
+</code></pre>
+<h2 id="data-serialization">Data Serialization</h2>
+<p>The database module automatically handles:</p>
+<ul>
+<li><strong>Sets → JSON arrays</strong> (sorted)</li>
+<li><strong>Dicts → JSON objects</strong></li>
+<li><strong>Booleans → integers</strong> (0 or 1)</li>
+<li><strong>JSON arrays → Sets</strong> (when deserializing set fields)</li>
+</ul>
+<h3 id="example">Example</h3>
+<p><strong>In memory:</strong></p>
+<pre><code class="language-python">result = {
+    <span class="hljs-string">&#x27;parishes_worked&#x27;</span>: {<span class="hljs-string">&#x27;ORL&#x27;</span>, <span class="hljs-string">&#x27;JEF&#x27;</span>, <span class="hljs-string">&#x27;STB&#x27;</span>},
+    <span class="hljs-string">&#x27;worked_n5lcc&#x27;</span>: <span class="hljs-literal">True</span>
+}
+</code></pre>
+<p><strong>In database:</strong></p>
+<pre><code class="language-sql">parishes_worked <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;[&quot;JEF&quot;, &quot;ORL&quot;, &quot;STB&quot;]&#x27;</span>  <span class="hljs-comment">-- Sorted JSON array</span>
+worked_n5lcc <span class="hljs-operator">=</span> <span class="hljs-number">1</span>                            <span class="hljs-comment">-- Integer</span>
+</code></pre>
+<p><strong>Retrieved from database:</strong></p>
+<pre><code class="language-python">result = {
+    <span class="hljs-string">&#x27;parishes_worked&#x27;</span>: {<span class="hljs-string">&#x27;JEF&#x27;</span>, <span class="hljs-string">&#x27;ORL&#x27;</span>, <span class="hljs-string">&#x27;STB&#x27;</span>},  -- Back to <span class="hljs-built_in">set</span>
+    <span class="hljs-string">&#x27;worked_n5lcc&#x27;</span>: <span class="hljs-literal">True</span>                        -- Back to <span class="hljs-built_in">bool</span>
+}
+</code></pre>
+<h2 id="database-location">Database Location</h2>
+<p>Default: <code>laqp/database/laqp.db</code></p>
+<p>Can be configured:</p>
+<pre><code class="language-python">db = ContestDatabase(<span class="hljs-string">&#x27;custom/path/to/database.db&#x27;</span>)
+</code></pre>
+<p>Or via environment:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">export</span> DATABASE_PATH=/app/database/laqp.db
+</code></pre>
+<h2 id="composite-key-behavior">Composite Key Behavior</h2>
+<p>The database uses <code>INSERT OR REPLACE</code> which means:</p>
+<ol>
+<li>First submission for K5ABC in 2026 → Creates new record</li>
+<li>Second submission for K5ABC in 2026 → <strong>Replaces entire record</strong></li>
+<li>Submission for K5ABC in 2027 → Creates new record (different year)</li>
+</ol>
+<p>This allows contestants to resubmit corrected logs.</p>
+<h2 id="rankings-population">Rankings Population</h2>
+<p>The <code>rankings</code> field is empty (<code>{}</code>) when first saved. Rankings are populated later by a separate script that:</p>
+<ol>
+<li>Retrieves all valid results for a year</li>
+<li>Groups by category</li>
+<li>Calculates rankings</li>
+<li>Updates all records with <code>update_rankings()</code></li>
+</ol>
+<p>(Rankings calculation to be implemented in next phase)</p>
+<h2 id="next-steps">Next Steps</h2>
+<p>This sets up the foundation for:</p>
+<ol>
+<li>✅ Store individual results keyed by year/callsign</li>
+<li>✅ Automatic database save on upload and batch</li>
+<li>✅ Replace existing records on resubmission</li>
+<li>✅ Rankings field ready for population</li>
+<li>⬜ Calculate and populate rankings (next phase)</li>
+<li>⬜ Display rankings to users (next phase)</li>
+<li>⬜ Generate leaderboards (next phase)</li>
+</ol>
+<h2 id="testing">Testing</h2>
+<h3 id="test-database-save">Test Database Save</h3>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> database <span class="hljs-keyword">import</span> save_result
+
+test_result = {
+    <span class="hljs-string">&#x27;year&#x27;</span>: <span class="hljs-string">&#x27;2026&#x27;</span>,
+    <span class="hljs-string">&#x27;callsign&#x27;</span>: <span class="hljs-string">&#x27;K5TEST&#x27;</span>,
+    <span class="hljs-string">&#x27;final_score&#x27;</span>: <span class="hljs-number">1000</span>,
+    <span class="hljs-string">&#x27;is_valid&#x27;</span>: <span class="hljs-literal">True</span>,
+    <span class="hljs-comment"># ... other fields</span>
+}
+
+<span class="hljs-keyword">if</span> save_result(test_result):
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;✓ Saved&quot;</span>)
+</code></pre>
+<h3 id="test-database-retrieve">Test Database Retrieve</h3>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> database <span class="hljs-keyword">import</span> get_result
+
+result = get_result(<span class="hljs-string">&#x27;2026&#x27;</span>, <span class="hljs-string">&#x27;K5TEST&#x27;</span>)
+<span class="hljs-keyword">if</span> result:
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;✓ Retrieved: <span class="hljs-subst">{result[<span class="hljs-string">&#x27;callsign&#x27;</span>]}</span>&quot;</span>)
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;  Score: <span class="hljs-subst">{result[<span class="hljs-string">&#x27;final_score&#x27;</span>]}</span>&quot;</span>)
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;  Rankings: <span class="hljs-subst">{result[<span class="hljs-string">&#x27;rankings&#x27;</span>]}</span>&quot;</span>)
+</code></pre>
+<h3 id="view-database-contents">View Database Contents</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Using sqlite3 command line</span>
+sqlite3 laqp/database/laqp.db
+
+<span class="hljs-comment"># View all records</span>
+SELECT year, callsign, final_score, rankings FROM contest_results;
+
+<span class="hljs-comment"># View 2026 results</span>
+SELECT callsign, final_score FROM contest_results 
+WHERE year = <span class="hljs-string">&#x27;2026&#x27;</span> AND is_valid = 1 
+ORDER BY final_score DESC;
+</code></pre>
+<h2 id="files-modified">Files Modified</h2>
+<ul>
+<li>✅ <strong><a href="http://database.py">database.py</a></strong> - New database module</li>
+<li>✅ <strong><a href="http://web.py">web.py</a></strong> - Save results after web upload</li>
+<li>✅ <strong><a href="http://batch.py">batch.py</a></strong> - Save results during batch processing</li>
+<li>✅ <strong><a href="http://processor.py">processor.py</a></strong> - Results include all fields (no changes needed)</li>
+</ul>
+<p>The database integration is now complete and ready for rankings calculation!</p>
+
+            
+            
+        </body>
+        </html>

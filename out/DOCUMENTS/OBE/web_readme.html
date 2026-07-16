@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Louisiana QSO Party - Web Log Upload Application</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="louisiana-qso-party---web-log-upload-application">Louisiana QSO Party - Web Log Upload Application</h1>
+<p>Single-page Flask application for contestants to upload and validate their contest logs.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li><strong>Louisiana Contest Club Styling</strong>: Matches the look and feel of <a href="https://laqp.louisianacontestclub.org">https://laqp.louisianacontestclub.org</a></li>
+<li><strong>Real-time Validation</strong>: Validates logs immediately upon upload</li>
+<li><strong>Dual Input Methods</strong>: Upload file OR paste log text</li>
+<li><strong>Responsive Design</strong>: Works on desktop, tablet, and mobile devices</li>
+<li><strong>Form Validation</strong>: Collects all required information (email, mode, power, station type, overlay)</li>
+<li><strong>Clear Feedback</strong>: Shows success or detailed error messages</li>
+</ul>
+<h2 id="file-structure">File Structure</h2>
+<pre><code>web/
+├── app.py                      # Flask application
+├── README.md                   # This file
+├── static/
+│   ├── css/
+│   │   └── upload.css         # Styling (Louisiana Contest Club theme)
+│   └── js/
+│       └── upload.js          # Form handling and AJAX
+└── templates/
+    └── upload.html            # Main upload page
+</code></pre>
+<h2 id="setup">Setup</h2>
+<h3 id="1-install-dependencies">1. Install Dependencies</h3>
+<pre><code class="language-bash">pip install flask
+</code></pre>
+<p>(Flask is already in requirements.txt for the main project)</p>
+<h3 id="2-run-development-server">2. Run Development Server</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># From the project root directory</span>
+<span class="hljs-built_in">cd</span> web
+python app.py
+</code></pre>
+<p>The application will start on <a href="http://localhost:5000">http://localhost:5000</a></p>
+<h3 id="3-access-the-page">3. Access the Page</h3>
+<p>Open your browser to:</p>
+<pre><code>http://localhost:5000
+</code></pre>
+<h2 id="production-deployment">Production Deployment</h2>
+<h3 id="option-1-gunicorn-linuxmac">Option 1: Gunicorn (Linux/Mac)</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Install gunicorn</span>
+pip install gunicorn
+
+<span class="hljs-comment"># Run with 4 worker processes</span>
+gunicorn -w 4 -b 0.0.0.0:5000 app:app
+</code></pre>
+<h3 id="option-2-apachemod_wsgi">Option 2: Apache/mod_wsgi</h3>
+<p>Create <code>web/wsgi.py</code>:</p>
+<pre><code class="language-python"><span class="hljs-keyword">import</span> sys
+sys.path.insert(<span class="hljs-number">0</span>, <span class="hljs-string">&#x27;/path/to/laqp_processor/web&#x27;</span>)
+<span class="hljs-keyword">from</span> app <span class="hljs-keyword">import</span> app <span class="hljs-keyword">as</span> application
+</code></pre>
+<p>Apache configuration:</p>
+<pre><code class="language-apache"><span class="hljs-section">&lt;VirtualHost *<span class="hljs-number">:80</span>&gt;</span>
+    <span class="hljs-attribute">ServerName</span> laqp.yourdomain.com
+    
+    <span class="hljs-attribute">WSGIDaemonProcess</span> laqp user=www-data group=www-data threads=<span class="hljs-number">5</span>
+    <span class="hljs-attribute">WSGIScriptAlias</span> / /path/to/laqp_processor/web/wsgi.py
+    
+    <span class="hljs-section">&lt;Directory /path/to/laqp_processor/web&gt;</span>
+        <span class="hljs-attribute">WSGIProcessGroup</span> laqp
+        <span class="hljs-attribute">WSGIApplicationGroup</span> <span class="hljs-variable">%{GLOBAL}</span>
+        <span class="hljs-attribute">Require</span> <span class="hljs-literal">all</span> granted
+    <span class="hljs-section">&lt;/Directory&gt;</span>
+<span class="hljs-section">&lt;/VirtualHost&gt;</span>
+</code></pre>
+<h3 id="option-3-nginx--gunicorn">Option 3: Nginx + Gunicorn</h3>
+<p>Nginx configuration:</p>
+<pre><code class="language-nginx"><span class="hljs-section">server</span> {
+    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;
+    <span class="hljs-attribute">server_name</span> laqp.yourdomain.com;
+    
+    <span class="hljs-section">location</span> / {
+        <span class="hljs-attribute">proxy_pass</span> http://127.0.0.1:5000;
+        <span class="hljs-attribute">proxy_set_header</span> Host <span class="hljs-variable">$host</span>;
+        <span class="hljs-attribute">proxy_set_header</span> X-Real-IP <span class="hljs-variable">$remote_addr</span>;
+    }
+    
+    <span class="hljs-section">location</span> /static {
+        <span class="hljs-attribute">alias</span> /path/to/laqp_processor/web/static;
+    }
+}
+</code></pre>
+<h2 id="how-it-works">How It Works</h2>
+<h3 id="user-flow">User Flow</h3>
+<ol>
+<li>
+<p><strong>Contestant arrives at page</strong></p>
+<ul>
+<li>Sees form matching Louisiana Contest Club styling</li>
+<li>Banner says &quot;Sponsored by the Jefferson Amateur Radio Club - <a href="http://w5gad.org">w5gad.org</a>&quot;</li>
+</ul>
+</li>
+<li>
+<p><strong>Fills out required information</strong></p>
+<ul>
+<li>Email address</li>
+<li>Mode category (Mixed, CW/Digital Only, Phone Only)</li>
+<li>Overlay category (None, Wires, TB-Wires, POTA)</li>
+<li>Power level (QRP, Low, High)</li>
+<li>Station type (Fixed, Rover)</li>
+</ul>
+</li>
+<li>
+<p><strong>Submits log</strong></p>
+<ul>
+<li>Either uploads .log/.txt/.cbr file</li>
+<li>OR pastes Cabrillo text into textarea</li>
+<li>Cannot do both (JavaScript prevents this)</li>
+</ul>
+</li>
+<li>
+<p><strong>Backend validates log</strong></p>
+<ul>
+<li>Uses existing <code>laqp.core.validator</code> module</li>
+<li>Checks Cabrillo format</li>
+<li>Validates all QSO lines</li>
+<li>Checks dates/times, frequencies, modes, callsigns</li>
+</ul>
+</li>
+<li>
+<p><strong>Result displayed</strong></p>
+<ul>
+<li><strong>Success</strong>: Green box, shows callsign and QSO count, log saved to <code>logs/incoming/</code></li>
+<li><strong>Error</strong>: Red box, lists all validation errors, log NOT saved</li>
+</ul>
+</li>
+</ol>
+<h3 id="technical-details">Technical Details</h3>
+<p><strong>Form Validation</strong>:</p>
+<ul>
+<li>Required fields checked client-side (HTML5) and server-side</li>
+<li>File type restricted to .log, .txt, .cbr</li>
+<li>Max upload size: 5MB (configurable in <a href="http://config.py">config.py</a>)</li>
+</ul>
+<p><strong>Log Storage</strong>:</p>
+<ul>
+<li>Temporary file created during validation</li>
+<li>If valid: moved to <code>logs/incoming/</code> with proper filename</li>
+<li>If invalid: deleted immediately</li>
+<li>Duplicate filenames handled by adding number suffix</li>
+</ul>
+<p><strong>Security</strong>:</p>
+<ul>
+<li>Filename sanitization using <code>werkzeug.utils.secure_filename</code></li>
+<li>HTML escaping in JavaScript to prevent XSS</li>
+<li>CSRF protection via Flask secret key</li>
+<li>File type restrictions</li>
+</ul>
+<p><strong>Responsive Design</strong>:</p>
+<ul>
+<li>Desktop (&gt;768px): Full width form, horizontal radio buttons</li>
+<li>Tablet (768px-480px): Slightly compressed, radio buttons stack</li>
+<li>Mobile (&lt;480px): Fully stacked layout, touch-friendly buttons</li>
+</ul>
+<h2 id="styling-notes">Styling Notes</h2>
+<p>The CSS matches the Louisiana Contest Club website:</p>
+<ul>
+<li><strong>Background</strong>: #f5efe0 (cream)</li>
+<li><strong>Primary text</strong>: #000 (black)</li>
+<li><strong>Accent color</strong>: #cd2653 (red)</li>
+<li><strong>Secondary text</strong>: #6d6d6d (gray)</li>
+<li><strong>Font</strong>: -apple-system, BlinkMacSystemFont, &quot;Helvetica Neue&quot;</li>
+<li><strong>HR style</strong>: Custom styled-separator with crossed bars (from TwentyTwenty theme)</li>
+</ul>
+<h2 id="customization">Customization</h2>
+<h3 id="change-banner-text">Change Banner Text</h3>
+<p>Edit <code>web/templates/upload.html</code> line with class <code>site-description</code>:</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;site-description&quot;</span>&gt;</span>
+    Your custom text here - <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;https://example.com&quot;</span>&gt;</span>link<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+</code></pre>
+<h3 id="change-accent-color">Change Accent Color</h3>
+<p>Edit <code>web/static/css/upload.css</code>:</p>
+<pre><code class="language-css"><span class="hljs-comment">/* Find all instances of #cd2653 and replace with your color */</span>
+</code></pre>
+<h3 id="add-logo">Add Logo</h3>
+<p>Add to header in <code>upload.html</code>:</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;site-logo&quot;</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;{{ url_for(&#x27;static&#x27;, filename=&#x27;images/logo.png&#x27;) }}&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;Logo&quot;</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+<h2 id="testing">Testing</h2>
+<h3 id="test-with-sample-log">Test with Sample Log</h3>
+<p>Create <code>test_log.txt</code>:</p>
+<pre><code>START-OF-LOG: 3.0
+CALLSIGN: W5TEST
+CONTEST: LA-QSO-PARTY
+CATEGORY-OPERATOR: SINGLE-OP
+CATEGORY-POWER: LOW
+CATEGORY-STATION: FIXED
+EMAIL: test@example.com
+QSO: 7040 CW 2025-04-05 1430 W5TEST 599 GA N5XX 599 ORLE
+QSO: 14255 PH 2025-04-05 1445 W5TEST 59 GA W5XX 59 JEFF
+END-OF-LOG:
+</code></pre>
+<p>Upload this file through the web interface - it should be accepted.</p>
+<h3 id="test-with-invalid-log">Test with Invalid Log</h3>
+<p>Remove the <code>CATEGORY-POWER:</code> line - it should be rejected with an error message.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p><strong>Problem</strong>: &quot;Internal Server Error&quot;</p>
+<ul>
+<li><strong>Solution</strong>: Check Flask console for error messages, ensure all dependencies installed</li>
+</ul>
+<p><strong>Problem</strong>: Uploaded files not appearing in <code>logs/incoming/</code></p>
+<ul>
+<li><strong>Solution</strong>: Check directory permissions, ensure <code>config.ensure_directories()</code> ran</li>
+</ul>
+<p><strong>Problem</strong>: Styling looks wrong</p>
+<ul>
+<li><strong>Solution</strong>: Check browser console for 404 on CSS file, verify static files path</li>
+</ul>
+<p><strong>Problem</strong>: Form submission does nothing</p>
+<ul>
+<li><strong>Solution</strong>: Check browser console for JavaScript errors, verify <code>/upload</code> endpoint is working</li>
+</ul>
+<h2 id="future-enhancements">Future Enhancements</h2>
+<p>Possible additions:</p>
+<ul>
+<li>Email confirmation after successful upload</li>
+<li>Upload progress bar for large files</li>
+<li>Duplicate detection (warn if callsign already uploaded)</li>
+<li>Score estimation (show approximate score after validation)</li>
+<li>Previous submissions list (if user cookies enabled)</li>
+<li>Admin dashboard to view all submissions</li>
+</ul>
+<h2 id="support">Support</h2>
+<p>Questions or issues? Contact <a href="mailto:questions@laqp.org">questions@laqp.org</a></p>
+
+            <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+            
+        </body>
+        </html>
