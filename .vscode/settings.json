@@ -1,13 +1,9 @@
-
 {
-    "editor.fontSize": 14
-}
-{
-    "terminal.integrated.fontSize": 14
-},
-{
-    "debug.console.fontSize": 14
-},
-{
-    "chat.fontSize": 14
+    "python-envs.pythonProjects": [
+        {
+            "path": ".",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ]
 }
