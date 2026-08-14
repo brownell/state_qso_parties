@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>LAQP Processor - Quick Start Guide</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="laqp-processor---quick-start-guide">LAQP Processor - Quick Start Guide</h1>
+<h2 id="summary-whats-been-completed">Summary: What's Been Completed</h2>
+<p>All four core processing modules are now <strong>fully functional</strong>:</p>
+<p>✅ <strong>Validator</strong> - Validates Cabrillo log format and LA rules
+✅ <strong>Preparation</strong> - Converts logs for scoring (band conversion, multi-parish splitting, category determination)
+✅ <strong>Scoring</strong> - Calculates scores with LA rules (2pt phone, 4pt CW/dig, per-band-per-mode multipliers, bonuses)
+✅ <strong>Statistics</strong> - Generates contest statistics and parish activity reports</p>
+<p>You can now process logs end-to-end!</p>
+<h3 id="1-create-project-directory">1. Create Project Directory</h3>
+<pre><code class="language-bash"><span class="hljs-built_in">mkdir</span> ~/laqp_processor
+<span class="hljs-built_in">cd</span> ~/laqp_processor
+</code></pre>
+<h3 id="2-set-up-python-virtual-environment-recommended">2. Set Up Python Virtual Environment (Recommended)</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Python 3 is already installed on Linux Mint</span>
+python3 -m venv venv
+
+<span class="hljs-comment"># Activate virtual environment</span>
+<span class="hljs-built_in">source</span> venv/bin/activate
+
+<span class="hljs-comment"># Your prompt should now show (venv)</span>
+</code></pre>
+<h3 id="3-create-project-structure">3. Create Project Structure</h3>
+<p>Save the <code>init_project.sh</code> script and run it:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">chmod</span> +x init_project.sh
+./init_project.sh
+</code></pre>
+<p>Or manually create the structure from the README.</p>
+<h3 id="4-save-the-core-files">4. Save the Core Files</h3>
+<p>Save these files to the project directory:</p>
+<ul>
+<li><code>requirements.txt</code></li>
+<li><code>setup.py</code></li>
+<li><code>.gitignore</code></li>
+<li><code>README.md</code></li>
+<li><code>config/config.py</code></li>
+<li><code>laqp/models/database.py</code></li>
+<li><code>laqp/core/validator.py</code></li>
+<li><code>scripts/process_all_logs.py</code></li>
+<li><code>data/LA_Parish_Abbrevs.txt</code></li>
+</ul>
+<p>And the <code>__init__.py</code> files in:</p>
+<ul>
+<li><code>config/__init__.py</code></li>
+<li><code>laqp/__init__.py</code></li>
+<li><code>laqp/models/__init__.py</code></li>
+<li><code>laqp/core/__init__.py</code></li>
+<li><code>laqp/utils/__init__.py</code></li>
+<li><code>laqp/cli/__init__.py</code></li>
+<li><code>web/__init__.py</code></li>
+<li><code>tests/__init__.py</code></li>
+</ul>
+<h3 id="5-install-dependencies">5. Install Dependencies</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Make sure virtual environment is activated</span>
+pip install -r requirements.txt
+</code></pre>
+<h3 id="6-verify-sqlite">6. Verify SQLite</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Check SQLite is available (it should be)</span>
+python3 -c <span class="hljs-string">&quot;import sqlite3; print(&#x27;SQLite version:&#x27;, sqlite3.sqlite_version)&quot;</span>
+
+<span class="hljs-comment"># Check SQLAlchemy installed correctly</span>
+python3 -c <span class="hljs-string">&quot;import sqlalchemy; print(&#x27;SQLAlchemy version:&#x27;, sqlalchemy.__version__)&quot;</span>
+</code></pre>
+<h3 id="7-initialize-database">7. Initialize Database</h3>
+<pre><code class="language-bash">python3 -c <span class="hljs-string">&quot;
+from laqp.models.database import Database
+from config.config import DATABASE_URL
+db = Database(DATABASE_URL)
+db.create_tables()
+print(&#x27;Database initialized successfully!&#x27;)
+&quot;</span>
+</code></pre>
+<p>This creates <code>laqp.db</code> in your project root directory.</p>
+<h3 id="8-test-with-sample-log">8. Test with Sample Log</h3>
+<p>The init script created a test log at <code>tests/sample_logs/TEST.log</code>.</p>
+<p>Copy it to incoming:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">cp</span> tests/sample_logs/TEST.<span class="hljs-built_in">log</span> logs/incoming/
+</code></pre>
+<h3 id="9-run-full-processing-pipeline">9. Run Full Processing Pipeline</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Process all logs (validate, prepare, score, statistics)</span>
+python3 scripts/process_all_logs.py
+
+<span class="hljs-comment"># Or just validation</span>
+python3 scripts/process_all_logs.py --validate-only
+</code></pre>
+<p>You should see output for each stage with checkmarks:</p>
+<pre><code>============================================================
+STEP 1: VALIDATION
+============================================================
+Found 1 log files to validate
+Validating TEST.log... ✓ VALID
+
+============================================================
+STEP 2: PREPARATION  
+============================================================
+Preparing TEST.log... ✓ Non-LA Mixed Mode (Low Power (≤100W))
+
+============================================================
+STEP 3: SCORING
+============================================================
+Scoring TEST-prep.log... ✓ 8 points
+
+============================================================
+STEP 4: STATISTICS
+============================================================
+✓ Statistics generated!
+  Total logs: 1
+  Total QSOs: 2
+  Parishes with activity: 2
+</code></pre>
+<h3 id="10-check-results">10. Check Results</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Valid log moved here:</span>
+<span class="hljs-built_in">ls</span> logs/validated/
+
+<span class="hljs-comment"># Database has the file path</span>
+python3 -c <span class="hljs-string">&quot;
+from laqp.models.database import Database
+from config.config import DATABASE_URL
+db = Database(DATABASE_URL)
+session = db.get_session()
+from laqp.models.database import Contestant
+print(&#x27;Contestants in database:&#x27;, session.query(Contestant).count())
+session.close()
+&quot;</span>
+</code></pre>
+<h2 id="common-issues--solutions">Common Issues &amp; Solutions</h2>
+<h3 id="python-not-found">Python Not Found</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Use python3 explicitly on Linux</span>
+python3 --version
+</code></pre>
+<h3 id="permission-denied-on-init_projectsh">Permission Denied on init_project.sh</h3>
+<pre><code class="language-bash"><span class="hljs-built_in">chmod</span> +x init_project.sh
+</code></pre>
+<h3 id="module-not-found-error">Module Not Found Error</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Make sure you&#x27;re in project root when running scripts</span>
+<span class="hljs-built_in">cd</span> ~/laqp_processor
+python3 scripts/process_all_logs.py
+</code></pre>
+<h3 id="virtual-environment-not-activated">Virtual Environment Not Activated</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Activate it</span>
+<span class="hljs-built_in">source</span> venv/bin/activate
+
+<span class="hljs-comment"># Deactivate when done</span>
+deactivate
+</code></pre>
+<h3 id="cant-find-laqpdb">Can't Find laqp.db</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># It&#x27;s created in project root, check:</span>
+<span class="hljs-built_in">ls</span> -la *.db
+
+<span class="hljs-comment"># Force creation:</span>
+python3 &lt;&lt; <span class="hljs-string">&#x27;EOF&#x27;</span>
+from laqp.models.database import Database
+from config.config import DATABASE_URL
+<span class="hljs-built_in">print</span>(f<span class="hljs-string">&quot;Database URL: {DATABASE_URL}&quot;</span>)
+db = Database(DATABASE_URL)
+db.create_tables()
+<span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Database created!&quot;</span>)
+EOF
+</code></pre>
+<h3 id="import-errors">Import Errors</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Make sure you&#x27;re running from project root</span>
+<span class="hljs-comment"># Python needs to find the modules</span>
+<span class="hljs-built_in">pwd</span>  <span class="hljs-comment"># Should show ~/laqp_processor</span>
+
+<span class="hljs-comment"># The scripts use sys.path.insert to find modules</span>
+<span class="hljs-comment"># This is already in process_all_logs.py</span>
+</code></pre>
+<h2 id="next-steps">Next Steps</h2>
+<h3 id="1-adapt-the-tx-scripts">1. Adapt the TX Scripts</h3>
+<p>Now copy your four TX scripts and modify them:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># Your TX scripts</span>
+<span class="hljs-built_in">cp</span> /path/to/preparation.py laqp/core/preparation.py
+<span class="hljs-built_in">cp</span> /path/to/scoring.py laqp/core/scoring.py  
+<span class="hljs-built_in">cp</span> /path/to/statistics.py laqp/core/statistics.py
+
+<span class="hljs-comment"># Edit each file to:</span>
+<span class="hljs-comment"># - Change imports to use config.config</span>
+<span class="hljs-comment"># - Replace &quot;county&quot; with &quot;parish&quot;</span>
+<span class="hljs-comment"># - Update scoring rules (2pt phone, 4pt CW/dig)</span>
+<span class="hljs-comment"># - Update multiplier logic (per band/mode)</span>
+<span class="hljs-comment"># - Update category logic (simpler than TX)</span>
+</code></pre>
+<h3 id="2-create-real-data-files">2. Create Real Data Files</h3>
+<p>Get the actual parish abbreviations from LAQP website and update:</p>
+<ul>
+<li><code>data/LA_Parish_Abbrevs.txt</code></li>
+</ul>
+<h3 id="3-test-with-real-logs">3. Test with Real Logs</h3>
+<p>When you get real contest logs:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># Copy to incoming</span>
+<span class="hljs-built_in">cp</span> /path/to/real_logs/*.<span class="hljs-built_in">log</span> logs/incoming/
+
+<span class="hljs-comment"># Process them</span>
+python3 scripts/process_all_logs.py --validate-only
+</code></pre>
+<h3 id="4-development-workflow">4. Development Workflow</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Always activate virtual environment first</span>
+<span class="hljs-built_in">source</span> venv/bin/activate
+
+<span class="hljs-comment"># Make code changes...</span>
+
+<span class="hljs-comment"># Test</span>
+python3 scripts/process_all_logs.py --validate-only
+
+<span class="hljs-comment"># When done</span>
+deactivate
+</code></pre>
+<h2 id="file-locations-reference">File Locations Reference</h2>
+<pre><code>~/laqp_processor/
+├── laqp.db              ← SQLite database file (auto-created)
+├── venv/                ← Virtual environment (create with python3 -m venv venv)
+├── logs/
+│   ├── incoming/        ← PUT LOGS HERE to process
+│   ├── validated/       ← Valid logs go here
+│   ├── problems/        ← Invalid logs go here
+│   └── reports/         ← Error reports for invalid logs
+└── output/
+    ├── scores/          ← Score reports (future)
+    └── statistics/      ← Statistics reports (future)
+</code></pre>
+<h2 id="getting-help">Getting Help</h2>
+<ul>
+<li>Check the main <a href="http://README.html">README.md</a> for detailed documentation</li>
+<li>Look at the sample log: <code>tests/sample_logs/TEST.log</code></li>
+<li>Examine the validator output in <code>logs/reports/</code> for invalid logs</li>
+<li>Python errors? Check you're in project root and venv is activated</li>
+</ul>
+<h2 id="quick-commands-reference">Quick Commands Reference</h2>
+<pre><code class="language-bash"><span class="hljs-comment"># Activate virtual environment</span>
+<span class="hljs-built_in">source</span> venv/bin/activate
+
+<span class="hljs-comment"># Validate logs only</span>
+python3 scripts/process_all_logs.py --validate-only
+
+<span class="hljs-comment"># Full processing (when modules ready)</span>
+python3 scripts/process_all_logs.py
+
+<span class="hljs-comment"># Check database</span>
+sqlite3 laqp.db <span class="hljs-string">&quot;.tables&quot;</span>
+sqlite3 laqp.db <span class="hljs-string">&quot;SELECT * FROM contestants;&quot;</span>
+
+<span class="hljs-comment"># Deactivate virtual environment</span>
+deactivate
+</code></pre>
+
+            
+            
+        </body>
+        </html>

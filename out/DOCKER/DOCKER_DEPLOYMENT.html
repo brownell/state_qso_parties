@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Louisiana QSO Party - Docker Deployment Guide</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="louisiana-qso-party---docker-deployment-guide">Louisiana QSO Party - Docker Deployment Guide</h1>
+<p>This guide covers deploying the LAQP web application using Docker.</p>
+<h2 id="-what-docker-handles">🐳 What Docker Handles</h2>
+<h3 id="persistent-data-survives-container-restarts">Persistent Data (Survives Container Restarts)</h3>
+<ul>
+<li>✅ <strong>SQLite Database</strong> → Volume: <code>laqp-database</code></li>
+<li>✅ <strong>Uploaded Logs</strong> → Volume: <code>laqp-logs</code></li>
+<li>✅ <strong>HTML Results</strong> → Volume: <code>laqp-results</code></li>
+<li>✅ <strong>Data Files</strong> (parishes, states) → Mounted from host</li>
+</ul>
+<h3 id="temporary-data-cleared-on-restart">Temporary Data (Cleared on Restart)</h3>
+<ul>
+<li>✅ <strong>Temp Files</strong> → Volume: <code>laqp-temp</code> (ephemeral)</li>
+<li>✅ <strong>Application Cache</strong> → Inside container</li>
+</ul>
+<h2 id="-directory-structure">📁 Directory Structure</h2>
+<pre><code>your-project/
+├── Dockerfile
+├── docker-compose.yml
+├── .dockerignore
+├── .env                     # Create from .env.example
+├── app.py
+├── processor.py
+├── html_results.py
+├── requirements.txt
+├── templates/
+│   ├── upload.html
+│   └── results.html
+├── static/
+│   ├── css/
+│   └── js/
+├── data/                    # MUST EXIST with data files
+│   ├── LA_Parish_Abbrevs.txt
+│   └── WVE_Abbrevs.txt
+└── config/                  # Your config files
+    └── config.py
+</code></pre>
+<h2 id="-quick-start">🚀 Quick Start</h2>
+<h3 id="1-prerequisites">1. Prerequisites</h3>
+<ul>
+<li>Docker installed</li>
+<li>Docker Compose installed</li>
+<li>Data files present in <code>data/</code> directory</li>
+</ul>
+<h3 id="2-setup-environment">2. Setup Environment</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Copy example environment file</span>
+<span class="hljs-built_in">cp</span> .env.example .<span class="hljs-built_in">env</span>
+
+<span class="hljs-comment"># Edit with your values (CHANGE SECRET_KEY!)</span>
+nano .<span class="hljs-built_in">env</span>
+</code></pre>
+<p><strong>Important:</strong> Change the <code>SECRET_KEY</code> in <code>.env</code>:</p>
+<pre><code class="language-bash">SECRET_KEY=your-random-secret-key-here-make-it-long-and-random
+</code></pre>
+<h3 id="3-ensure-data-files-exist">3. Ensure Data Files Exist</h3>
+<p>Create the data files if they don't exist:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">mkdir</span> -p data
+
+<span class="hljs-comment"># Create LA_Parish_Abbrevs.txt with all 64 parishes</span>
+<span class="hljs-built_in">cat</span> &gt; data/LA_Parish_Abbrevs.txt &lt;&lt; <span class="hljs-string">&#x27;EOF&#x27;</span>
+ACA
+ALL
+ASC
+...
+EOF
+
+<span class="hljs-comment"># Create WVE_Abbrevs.txt with states and provinces</span>
+<span class="hljs-built_in">cat</span> &gt; data/WVE_Abbrevs.txt &lt;&lt; <span class="hljs-string">&#x27;EOF&#x27;</span>
+AL
+AK
+AZ
+...
+EOF
+</code></pre>
+<h3 id="4-build-and-run">4. Build and Run</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Build and start in detached mode</span>
+docker-compose up -d --build
+
+<span class="hljs-comment"># Check logs</span>
+docker-compose logs -f
+
+<span class="hljs-comment"># Check status</span>
+docker-compose ps
+</code></pre>
+<h3 id="5-access-application">5. Access Application</h3>
+<p>Open browser to: <strong><a href="http://localhost:5000">http://localhost:5000</a></strong></p>
+<ul>
+<li>Log Upload: <a href="http://localhost:5000/">http://localhost:5000/</a></li>
+<li>Results Lookup: <a href="http://localhost:5000/results">http://localhost:5000/results</a></li>
+<li>Health Check: <a href="http://localhost:5000/health">http://localhost:5000/health</a></li>
+</ul>
+<h2 id="-docker-commands">🔧 Docker Commands</h2>
+<h3 id="startstop">Start/Stop</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Start containers</span>
+docker-compose up -d
+
+<span class="hljs-comment"># Stop containers</span>
+docker-compose down
+
+<span class="hljs-comment"># Restart containers</span>
+docker-compose restart
+
+<span class="hljs-comment"># Stop and remove volumes (⚠️ DELETES DATA!)</span>
+docker-compose down -v
+</code></pre>
+<h3 id="logs">Logs</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># View logs (follow mode)</span>
+docker-compose logs -f
+
+<span class="hljs-comment"># View logs (last 100 lines)</span>
+docker-compose logs --<span class="hljs-built_in">tail</span>=100
+
+<span class="hljs-comment"># View logs for specific service</span>
+docker-compose logs -f laqp-web
+</code></pre>
+<h3 id="rebuild">Rebuild</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Rebuild after code changes</span>
+docker-compose up -d --build
+
+<span class="hljs-comment"># Force rebuild (no cache)</span>
+docker-compose build --no-cache
+docker-compose up -d
+</code></pre>
+<h3 id="access-container">Access Container</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Open shell in running container</span>
+docker-compose <span class="hljs-built_in">exec</span> laqp-web bash
+
+<span class="hljs-comment"># Run Python in container</span>
+docker-compose <span class="hljs-built_in">exec</span> laqp-web python
+
+<span class="hljs-comment"># Run one-off command</span>
+docker-compose <span class="hljs-built_in">exec</span> laqp-web <span class="hljs-built_in">ls</span> -la /app/database
+</code></pre>
+<h2 id="-data-persistence">💾 Data Persistence</h2>
+<h3 id="volumes">Volumes</h3>
+<p>Docker creates named volumes for persistent data:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># List volumes</span>
+docker volume <span class="hljs-built_in">ls</span> | grep laqp
+
+<span class="hljs-comment"># Inspect volume</span>
+docker volume inspect laqp-database
+
+<span class="hljs-comment"># Backup volume</span>
+docker run --<span class="hljs-built_in">rm</span> -v laqp-database:/data -v $(<span class="hljs-built_in">pwd</span>):/backup \
+  alpine tar czf /backup/laqp-database-backup.tar.gz -C /data .
+
+<span class="hljs-comment"># Restore volume</span>
+docker run --<span class="hljs-built_in">rm</span> -v laqp-database:/data -v $(<span class="hljs-built_in">pwd</span>):/backup \
+  alpine tar xzf /backup/laqp-database-backup.tar.gz -C /data
+</code></pre>
+<h3 id="database-location">Database Location</h3>
+<p>Inside container: <code>/app/database/laqp.db</code></p>
+<p>To access from host:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># Copy database out</span>
+docker <span class="hljs-built_in">cp</span> laqp-web:/app/database/laqp.db ./laqp.db
+
+<span class="hljs-comment"># Copy database in</span>
+docker <span class="hljs-built_in">cp</span> ./laqp.db laqp-web:/app/database/laqp.db
+</code></pre>
+<h3 id="html-results-location">HTML Results Location</h3>
+<p>Inside container: <code>/app/HTML_RESULTS/</code></p>
+<p>To add pre-generated results:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># Copy results into container</span>
+docker <span class="hljs-built_in">cp</span> HTML_RESULTS/2026/ laqp-web:/app/HTML_RESULTS/
+</code></pre>
+<h2 id="-security">🔐 Security</h2>
+<h3 id="change-secret-key">Change Secret Key</h3>
+<p><strong>Before deploying to production</strong>, change the secret key:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># Generate a random secret key</span>
+python -c <span class="hljs-string">&quot;import secrets; print(secrets.token_hex(32))&quot;</span>
+
+<span class="hljs-comment"># Add to .env file</span>
+SECRET_KEY=&lt;generated-key-here&gt;
+</code></pre>
+<h3 id="run-as-non-root">Run as Non-Root</h3>
+<p>The container runs as user <code>laqp</code> (UID 1000), not root.</p>
+<h3 id="file-permissions">File Permissions</h3>
+<p>If you have permission issues with volumes:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># Check volume ownership</span>
+docker-compose <span class="hljs-built_in">exec</span> laqp-web <span class="hljs-built_in">ls</span> -la /app/database
+
+<span class="hljs-comment"># Fix ownership (if needed)</span>
+docker-compose <span class="hljs-built_in">exec</span> --user root laqp-web <span class="hljs-built_in">chown</span> -R laqp:laqp /app/database
+</code></pre>
+<h2 id="-production-deployment">🌐 Production Deployment</h2>
+<h3 id="using-nginx-reverse-proxy">Using Nginx Reverse Proxy</h3>
+<p>Create <code>nginx.conf</code>:</p>
+<pre><code class="language-nginx"><span class="hljs-section">server</span> {
+    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;
+    <span class="hljs-attribute">server_name</span> laqp.example.com;
+
+    <span class="hljs-section">location</span> / {
+        <span class="hljs-attribute">proxy_pass</span> http://localhost:5000;
+        <span class="hljs-attribute">proxy_set_header</span> Host <span class="hljs-variable">$host</span>;
+        <span class="hljs-attribute">proxy_set_header</span> X-Real-IP <span class="hljs-variable">$remote_addr</span>;
+        <span class="hljs-attribute">proxy_set_header</span> X-Forwarded-For <span class="hljs-variable">$proxy_add_x_forwarded_for</span>;
+        <span class="hljs-attribute">proxy_set_header</span> X-Forwarded-Proto <span class="hljs-variable">$scheme</span>;
+    }
+
+    <span class="hljs-section">location</span> /static {
+        <span class="hljs-attribute">proxy_pass</span> http://localhost:5000/static;
+    }
+
+    <span class="hljs-attribute">client_max_body_size</span> <span class="hljs-number">10M</span>;
+}
+</code></pre>
+<h3 id="ssl-with-lets-encrypt">SSL with Let's Encrypt</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Install certbot</span>
+sudo apt-get install certbot python3-certbot-nginx
+
+<span class="hljs-comment"># Get certificate</span>
+sudo certbot --nginx -d laqp.example.com
+
+<span class="hljs-comment"># Auto-renewal is configured automatically</span>
+</code></pre>
+<h3 id="update-docker-composeyml-for-production">Update docker-compose.yml for Production</h3>
+<pre><code class="language-yaml"><span class="hljs-attr">services:</span>
+  <span class="hljs-attr">laqp-web:</span>
+    <span class="hljs-comment"># ... existing config ...</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">FLASK_ENV=production</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">SECRET_KEY=${SECRET_KEY}</span>  <span class="hljs-comment"># From .env file</span>
+    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span>  <span class="hljs-comment"># Changed from unless-stopped</span>
+</code></pre>
+<h2 id="-monitoring">📊 Monitoring</h2>
+<h3 id="health-check">Health Check</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Check container health</span>
+docker-compose ps
+
+<span class="hljs-comment"># Manual health check</span>
+curl http://localhost:5000/health
+</code></pre>
+<h3 id="resource-usage">Resource Usage</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># View resource usage</span>
+docker stats laqp-web
+
+<span class="hljs-comment"># View disk usage</span>
+docker system <span class="hljs-built_in">df</span>
+</code></pre>
+<h2 id="-updates-and-maintenance">🔄 Updates and Maintenance</h2>
+<h3 id="update-application-code">Update Application Code</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># 1. Pull latest code</span>
+git pull
+
+<span class="hljs-comment"># 2. Rebuild and restart</span>
+docker-compose up -d --build
+
+<span class="hljs-comment"># 3. Check logs</span>
+docker-compose logs -f
+</code></pre>
+<h3 id="update-dependencies">Update Dependencies</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Edit requirements.txt</span>
+<span class="hljs-comment"># Then rebuild</span>
+docker-compose build --no-cache
+docker-compose up -d
+</code></pre>
+<h3 id="database-migrations">Database Migrations</h3>
+<p>If you need to run database migrations:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># Access container</span>
+docker-compose <span class="hljs-built_in">exec</span> laqp-web bash
+
+<span class="hljs-comment"># Run migration script</span>
+python migrate.py
+
+<span class="hljs-comment"># Or directly</span>
+docker-compose <span class="hljs-built_in">exec</span> laqp-web python migrate.py
+</code></pre>
+<h2 id="-troubleshooting">🐛 Troubleshooting</h2>
+<h3 id="container-wont-start">Container Won't Start</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Check logs</span>
+docker-compose logs laqp-web
+
+<span class="hljs-comment"># Check if port 5000 is in use</span>
+lsof -i :5000
+
+<span class="hljs-comment"># Try running without detached mode (see errors)</span>
+docker-compose up
+</code></pre>
+<h3 id="database-locked">Database Locked</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># If SQLite database is locked</span>
+docker-compose restart
+</code></pre>
+<h3 id="permission-denied">Permission Denied</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Fix volume permissions</span>
+docker-compose down
+docker-compose up -d
+docker-compose <span class="hljs-built_in">exec</span> --user root laqp-web <span class="hljs-built_in">chown</span> -R laqp:laqp /app
+</code></pre>
+<h3 id="cant-access-from-outside">Can't Access from Outside</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Check firewall</span>
+sudo ufw status
+sudo ufw allow 5000
+
+<span class="hljs-comment"># Check if container is running</span>
+docker-compose ps
+
+<span class="hljs-comment"># Check port mapping</span>
+docker port laqp-web
+</code></pre>
+<h3 id="data-files-not-found">Data Files Not Found</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Verify data files are mounted</span>
+docker-compose <span class="hljs-built_in">exec</span> laqp-web <span class="hljs-built_in">ls</span> -la /app/data/
+
+<span class="hljs-comment"># If missing, check docker-compose.yml volumes section</span>
+<span class="hljs-comment"># Make sure ./data exists on host</span>
+</code></pre>
+<h2 id="-backup-and-restore">📦 Backup and Restore</h2>
+<h3 id="full-backup">Full Backup</h3>
+<pre><code class="language-bash"><span class="hljs-meta">#!/bin/bash</span>
+<span class="hljs-comment"># backup.sh</span>
+
+DATE=$(<span class="hljs-built_in">date</span> +%Y%m%d_%H%M%S)
+BACKUP_DIR=<span class="hljs-string">&quot;backups/<span class="hljs-variable">$DATE</span>&quot;</span>
+
+<span class="hljs-built_in">mkdir</span> -p <span class="hljs-variable">$BACKUP_DIR</span>
+
+<span class="hljs-comment"># Backup database</span>
+docker run --<span class="hljs-built_in">rm</span> -v laqp-database:/data -v $(<span class="hljs-built_in">pwd</span>)/<span class="hljs-variable">$BACKUP_DIR</span>:/backup \
+  alpine tar czf /backup/database.tar.gz -C /data .
+
+<span class="hljs-comment"># Backup logs</span>
+docker run --<span class="hljs-built_in">rm</span> -v laqp-logs:/data -v $(<span class="hljs-built_in">pwd</span>)/<span class="hljs-variable">$BACKUP_DIR</span>:/backup \
+  alpine tar czf /backup/logs.tar.gz -C /data .
+
+<span class="hljs-comment"># Backup results</span>
+docker run --<span class="hljs-built_in">rm</span> -v laqp-results:/data -v $(<span class="hljs-built_in">pwd</span>)/<span class="hljs-variable">$BACKUP_DIR</span>:/backup \
+  alpine tar czf /backup/results.tar.gz -C /data .
+
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Backup complete: <span class="hljs-variable">$BACKUP_DIR</span>&quot;</span>
+</code></pre>
+<h3 id="restore-from-backup">Restore from Backup</h3>
+<pre><code class="language-bash"><span class="hljs-meta">#!/bin/bash</span>
+<span class="hljs-comment"># restore.sh</span>
+
+BACKUP_DIR=<span class="hljs-variable">$1</span>
+
+<span class="hljs-comment"># Restore database</span>
+docker run --<span class="hljs-built_in">rm</span> -v laqp-database:/data -v $(<span class="hljs-built_in">pwd</span>)/<span class="hljs-variable">$BACKUP_DIR</span>:/backup \
+  alpine tar xzf /backup/database.tar.gz -C /data
+
+<span class="hljs-comment"># Restore logs</span>
+docker run --<span class="hljs-built_in">rm</span> -v laqp-logs:/data -v $(<span class="hljs-built_in">pwd</span>)/<span class="hljs-variable">$BACKUP_DIR</span>:/backup \
+  alpine tar xzf /backup/logs.tar.gz -C /data
+
+<span class="hljs-comment"># Restore results</span>
+docker run --<span class="hljs-built_in">rm</span> -v laqp-results:/data -v $(<span class="hljs-built_in">pwd</span>)/<span class="hljs-variable">$BACKUP_DIR</span>:/backup \
+  alpine tar xzf /backup/results.tar.gz -C /data
+
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Restore complete from: <span class="hljs-variable">$BACKUP_DIR</span>&quot;</span>
+</code></pre>
+<h2 id="-development-vs-production">🎯 Development vs Production</h2>
+<h3 id="development">Development</h3>
+<pre><code class="language-yaml"><span class="hljs-comment"># docker-compose.dev.yml</span>
+<span class="hljs-attr">services:</span>
+  <span class="hljs-attr">laqp-web:</span>
+    <span class="hljs-attr">build:</span> <span class="hljs-string">.</span>
+    <span class="hljs-attr">volumes:</span>
+      <span class="hljs-comment"># Mount code for live reload</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">./app.py:/app/app.py</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">./processor.py:/app/processor.py</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">./templates:/app/templates</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">./static:/app/static</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">FLASK_ENV=development</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">FLASK_DEBUG=1</span>
+    <span class="hljs-attr">command:</span> <span class="hljs-string">flask</span> <span class="hljs-string">run</span> <span class="hljs-string">--host=0.0.0.0</span> <span class="hljs-string">--port=5000</span>
+</code></pre>
+<p>Run with:</p>
+<pre><code class="language-bash">docker-compose -f docker-compose.dev.yml up
+</code></pre>
+<h3 id="production">Production</h3>
+<p>Use the standard <code>docker-compose.yml</code> with:</p>
+<ul>
+<li>Gunicorn (multiple workers)</li>
+<li>Production environment</li>
+<li>Auto-restart enabled</li>
+<li>Health checks</li>
+</ul>
+<h2 id="-environment-variables-reference">📝 Environment Variables Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SECRET_KEY</code></td>
+<td>(required)</td>
+<td>Flask secret key</td>
+</tr>
+<tr>
+<td><code>CONTEST_YEAR</code></td>
+<td>2026</td>
+<td>Current contest year</td>
+</tr>
+<tr>
+<td><code>DATABASE_PATH</code></td>
+<td>/app/database/laqp.db</td>
+<td>SQLite database path</td>
+</tr>
+<tr>
+<td><code>UPLOAD_FOLDER</code></td>
+<td>/app/logs/incoming</td>
+<td>Upload directory</td>
+</tr>
+<tr>
+<td><code>HTML_RESULTS_DIR</code></td>
+<td>/app/HTML_RESULTS</td>
+<td>Results output directory</td>
+</tr>
+<tr>
+<td><code>TEMP_DIR</code></td>
+<td>/app/temp</td>
+<td>Temporary files directory</td>
+</tr>
+<tr>
+<td><code>WORKERS</code></td>
+<td>4</td>
+<td>Gunicorn worker processes</td>
+</tr>
+<tr>
+<td><code>TIMEOUT</code></td>
+<td>120</td>
+<td>Gunicorn timeout (seconds)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="-pre-deployment-checklist">✅ Pre-Deployment Checklist</h2>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Change SECRET_KEY in .env</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Data files exist (LA_Parish_Abbrevs.txt, WVE_Abbrevs.txt)</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Tested locally with docker-compose</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Set up backup schedule</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Configure SSL/HTTPS</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Set up monitoring/logging</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Configure firewall rules</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Test database persistence</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Test volume backups/restores</li>
+</ul>
+<h2 id="-getting-help">🆘 Getting Help</h2>
+<p>If you encounter issues:</p>
+<ol>
+<li>Check logs: <code>docker-compose logs -f</code></li>
+<li>Verify volumes: <code>docker volume ls | grep laqp</code></li>
+<li>Check container status: <code>docker-compose ps</code></li>
+<li>Access container: <code>docker-compose exec laqp-web bash</code></li>
+<li>Review this guide's troubleshooting section</li>
+</ol>
+<hr>
+<p><strong>Ready to deploy!</strong> 🚀</p>
+<p>Start with: <code>docker-compose up -d --build</code></p>
+
+            <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+            
+        </body>
+        </html>

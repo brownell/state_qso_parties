@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Louisiana QSO Party - Processing Workflow</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="louisiana-qso-party---processing-workflow">Louisiana QSO Party - Processing Workflow</h1>
+<p>This document clarifies what happens at each stage of log processing.</p>
+<h2 id="overview">Overview</h2>
+<p><strong>Key Principle:</strong> The database stores the result objects. HTML generation happens separately, later.</p>
+<h2 id="two-processing-paths">Two Processing Paths</h2>
+<h3 id="path-1-web-upload-individual-contestant">Path 1: Web Upload (Individual Contestant)</h3>
+<pre><code>User uploads log
+    ↓
+Validate → Prepare → Score
+    ↓
+result object created (with empty rankings: {})
+    ↓
+Save result to DATABASE
+    ↓
+Format result for HTML display
+    ↓
+Return HTML to browser (displayed immediately, NOT saved to file)
+</code></pre>
+<p><strong>What's Saved:</strong></p>
+<ul>
+<li>✅ Original log file → <code>logs/incoming/</code></li>
+<li>✅ Result object → Database</li>
+</ul>
+<p><strong>What's NOT Saved:</strong></p>
+<ul>
+<li>❌ HTML file (only displayed to user in browser)</li>
+</ul>
+<h3 id="path-2-batch-processing-all-logs">Path 2: Batch Processing (All Logs)</h3>
+<pre><code>Read all logs from incoming/
+    ↓
+For each log:
+    Validate → Prepare → Score
+    ↓
+    result object created (with empty rankings: {})
+    ↓
+    Save result to DATABASE
+    ↓
+Done
+</code></pre>
+<p><strong>What's Saved:</strong></p>
+<ul>
+<li>✅ Result objects → Database (valid AND invalid logs)</li>
+</ul>
+<p><strong>What's NOT Saved:</strong></p>
+<ul>
+<li>❌ HTML files (generated later, after rankings)</li>
+</ul>
+<h2 id="complete-contest-workflow">Complete Contest Workflow</h2>
+<h3 id="phase-1-during-contest-period-what-we-just-built">Phase 1: During Contest Period (What We Just Built)</h3>
+<p><strong>Web Uploads:</strong></p>
+<ol>
+<li>Contestants upload logs anytime</li>
+<li>Each log processed immediately</li>
+<li>Result saved to database</li>
+<li>HTML displayed to contestant (not saved)</li>
+<li>Contestant can resubmit (overwrites database record)</li>
+</ol>
+<p><strong>Or Batch Processing:</strong></p>
+<ol>
+<li>Collect all logs in <code>incoming/</code> directory</li>
+<li>Run <a href="http://batch.py">batch.py</a></li>
+<li>All results saved to database</li>
+<li>No HTML generated yet</li>
+</ol>
+<h3 id="phase-2-after-contest-closes-to-be-built">Phase 2: After Contest Closes (To Be Built)</h3>
+<p><strong>Calculate Rankings:</strong></p>
+<pre><code class="language-python"><span class="hljs-comment"># rankings.py (to be created)</span>
+<span class="hljs-number">1.</span> Get <span class="hljs-built_in">all</span> valid results <span class="hljs-keyword">from</span> database <span class="hljs-keyword">for</span> year
+<span class="hljs-number">2.</span> Group by categories
+<span class="hljs-number">3.</span> Calculate rankings within each category
+<span class="hljs-number">4.</span> Update database <span class="hljs-keyword">with</span> rankings
+</code></pre>
+<p><strong>Generate HTML Reports:</strong></p>
+<pre><code class="language-python"><span class="hljs-comment"># generate_reports.py (to be created)  </span>
+<span class="hljs-number">1.</span> Get <span class="hljs-built_in">all</span> results <span class="hljs-keyword">from</span> database (<span class="hljs-keyword">with</span> rankings populated)
+<span class="hljs-number">2.</span> Generate HTML file <span class="hljs-keyword">for</span> each contestant
+<span class="hljs-number">3.</span> Save to HTML_RESULTS/{year}/{callsign}_results.html
+<span class="hljs-number">4.</span> Generate leaderboards
+</code></pre>
+<h2 id="database-storage">Database Storage</h2>
+<h3 id="whats-stored-in-database">What's Stored in Database:</h3>
+<pre><code class="language-python">{
+    <span class="hljs-string">&#x27;year&#x27;</span>: <span class="hljs-string">&#x27;2026&#x27;</span>,
+    <span class="hljs-string">&#x27;callsign&#x27;</span>: <span class="hljs-string">&#x27;K5ABC&#x27;</span>,
+    <span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;John Smith&#x27;</span>,
+    <span class="hljs-string">&#x27;category&#x27;</span>: <span class="hljs-string">&#x27;nl_ph_lo&#x27;</span>,
+    <span class="hljs-string">&#x27;final_score&#x27;</span>: <span class="hljs-number">1250</span>,
+    <span class="hljs-string">&#x27;qso_points&#x27;</span>: <span class="hljs-number">625</span>,
+    <span class="hljs-string">&#x27;total_qsos&#x27;</span>: <span class="hljs-number">350</span>,
+    <span class="hljs-comment"># ... all scoring details ...</span>
+    <span class="hljs-string">&#x27;parishes_worked&#x27;</span>: {<span class="hljs-string">&#x27;ORL&#x27;</span>, <span class="hljs-string">&#x27;JEF&#x27;</span>, <span class="hljs-string">&#x27;STB&#x27;</span>},  <span class="hljs-comment"># As JSON</span>
+    <span class="hljs-string">&#x27;multipliers_by_band_mode&#x27;</span>: {...},         <span class="hljs-comment"># As JSON</span>
+    <span class="hljs-string">&#x27;rankings&#x27;</span>: {},  <span class="hljs-comment"># Empty initially, populated later</span>
+    <span class="hljs-string">&#x27;is_valid&#x27;</span>: <span class="hljs-literal">True</span>,
+    <span class="hljs-string">&#x27;errors&#x27;</span>: [],
+    <span class="hljs-string">&#x27;warnings&#x27;</span>: []
+}
+</code></pre>
+<h3 id="whats-not-stored">What's NOT Stored:</h3>
+<ul>
+<li>❌ <code>_qso_lines</code> - Internal processing only</li>
+<li>❌ <code>_header</code> - Internal processing only</li>
+<li>❌ HTML output</li>
+<li>❌ Original log file content (stored separately in filesystem)</li>
+</ul>
+<h2 id="file-locations">File Locations</h2>
+<pre><code>Project/
+├── laqp/
+│   ├── logs/
+│   │   └── incoming/          # Original log files
+│   │       ├── K5ABC.log
+│   │       ├── W5XYZ.log
+│   │       └── ...
+│   └── database/
+│       └── laqp.db           # SQLite database with result objects
+│
+└── HTML_RESULTS/              # Generated LATER after rankings
+    └── 2026/
+        ├── K5ABC_results.html    # Generated from database
+        ├── W5XYZ_results.html    # Generated from database
+        └── ...
+</code></pre>
+<h2 id="current-state-phase-1-complete">Current State (Phase 1 Complete)</h2>
+<p>✅ <strong>Web Upload:</strong></p>
+<ul>
+<li>Processes log</li>
+<li>Saves to database</li>
+<li>Displays HTML to user</li>
+<li>Initializes rankings as <code>{}</code></li>
+</ul>
+<p>✅ <strong>Batch Processing:</strong></p>
+<ul>
+<li>Processes all logs</li>
+<li>Saves to database</li>
+<li>Initializes rankings as <code>{}</code></li>
+<li>Does NOT generate HTML yet</li>
+</ul>
+<p>✅ <strong>Database:</strong></p>
+<ul>
+<li>Stores all result objects</li>
+<li>Keyed by (year, callsign)</li>
+<li>Rankings field present but empty</li>
+<li>Ready for Phase 2</li>
+</ul>
+<h2 id="next-phase-to-be-built">Next Phase (To Be Built)</h2>
+<p>⬜ <strong>Calculate Rankings:</strong></p>
+<ul>
+<li>Read all results from database</li>
+<li>Group by categories</li>
+<li>Rank contestants</li>
+<li>Update rankings field</li>
+</ul>
+<p>⬜ <strong>Generate HTML Reports:</strong></p>
+<ul>
+<li>Read results from database (with rankings)</li>
+<li>Generate HTML for each contestant</li>
+<li>Save to HTML_RESULTS/</li>
+<li>Generate leaderboards</li>
+<li>Make available via /results lookup</li>
+</ul>
+<h2 id="why-this-approach">Why This Approach?</h2>
+<h3 id="benefits">Benefits:</h3>
+<ol>
+<li><strong>Database is source of truth</strong> - All results in one place</li>
+<li><strong>Rankings calculated once</strong> - After contest closes</li>
+<li><strong>HTML generated once</strong> - After rankings calculated</li>
+<li><strong>Resubmissions easy</strong> - Just replace database record</li>
+<li><strong>No duplicate data</strong> - Don't store HTML in DB</li>
+</ol>
+<h3 id="timeline">Timeline:</h3>
+<ul>
+<li><strong>During contest:</strong> Results flow into database</li>
+<li><strong>Contest closes:</strong> Run rankings calculation</li>
+<li><strong>After rankings:</strong> Generate all HTML reports</li>
+<li><strong>Ongoing:</strong> Users can look up their results</li>
+</ul>
+<h2 id="example-complete-flow">Example: Complete Flow</h2>
+<h3 id="during-contest-current-implementation">During Contest (Current Implementation)</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Contestant uploads via web</span>
+User: Upload K5ABC.<span class="hljs-built_in">log</span>
+Web:  Process → Save to DB → Display HTML
+DB:   {year: 2026, callsign: K5ABC, score: 1250, rankings: {}}
+
+<span class="hljs-comment"># Or batch process</span>
+Admin: python batch.py
+Batch: Process all → Save all to DB
+DB:    Multiple records with rankings: {}
+</code></pre>
+<h3 id="after-contest-next-phase">After Contest (Next Phase)</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Calculate rankings</span>
+Admin: python rankings.py --year 2026
+Script: Read DB → Calculate → Update DB
+DB:     {year: 2026, callsign: K5ABC, rankings: {overall: 5, nl_ph_lo: 2}}
+
+<span class="hljs-comment"># Generate HTML</span>
+Admin: python generate_reports.py --year 2026
+Script: Read DB → Generate HTML files
+Files:  HTML_RESULTS/2026/K5ABC_results.html
+        HTML_RESULTS/2026/W5XYZ_results.html
+        ...
+
+<span class="hljs-comment"># Users view results</span>
+User:  Go to /results → Enter K5ABC, 2026
+Web:   Serve HTML_RESULTS/2026/K5ABC_results.html
+</code></pre>
+<h2 id="summary">Summary</h2>
+<p><strong>Current (Phase 1):</strong></p>
+<ul>
+<li>✅ Web: Process → DB → Display (no HTML file)</li>
+<li>✅ Batch: Process → DB (no HTML files)</li>
+<li>✅ Rankings field: Empty <code>{}</code></li>
+</ul>
+<p><strong>Next (Phase 2):</strong></p>
+<ul>
+<li>⬜ Calculate rankings → Update DB</li>
+<li>⬜ Generate HTML files from DB</li>
+<li>⬜ Serve HTML via /results</li>
+</ul>
+<p>The database is the single source of truth. HTML files are generated output, created later from the database.</p>
+
+            
+            
+        </body>
+        </html>

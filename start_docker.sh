@@ -47,7 +47,7 @@ if [ ! -d data ]; then
     mkdir -p data
     echo ""
     echo "You need to add these files to data/:"
-    echo "  - LA_Parish_Abbrevs.txt (all 64 Louisiana parishes)"
+    echo "  - LA_County_Abbrevs.txt (all 64 Louisiana counties)"
     echo "  - WVE_Abbrevs.txt (US states and Canadian provinces)"
     echo ""
     read -p "Press Enter to continue (you can add files later)..."
@@ -55,8 +55,8 @@ fi
 
 # Check if data files exist
 missing_files=()
-if [ ! -f data/LA_Parish_Abbrevs.txt ]; then
-    missing_files+=("data/LA_Parish_Abbrevs.txt")
+if [ ! -f data/LA_County_Abbrevs.txt ]; then
+    missing_files+=("data/LA_County_Abbrevs.txt")
 fi
 if [ ! -f data/WVE_Abbrevs.txt ]; then
     missing_files+=("data/WVE_Abbrevs.txt")

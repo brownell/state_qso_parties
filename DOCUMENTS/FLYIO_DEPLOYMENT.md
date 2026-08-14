@@ -924,8 +924,8 @@ bashdocker-compose up -d --build
 Does the container actually start? If yes, you're good! The warnings are just your IDE being overly cautious about undefined variables, even though they ARE defined in .env.
 What happens when you run the command?temp.txttxtNot running. I have uploaded the log fileMar 8Check the error logCheck the error logPerfect! Now I see the real problem:
 🔴 The Real Error
-ImportError: cannot import name 'LA_PARISHES_FILE' from 'config.config'
-Your processor.py is trying to import LA_PARISHES_FILE but your config/config.py doesn't have it!
+ImportError: cannot import name 'COUNTIES_FILE' from 'config.config'
+Your processor.py is trying to import COUNTIES_FILE but your config/config.py doesn't have it!
 ✅ Fix Your config.py
 Add these lines to your config/config.py:
 pythonimport os
@@ -936,14 +936,14 @@ pythonimport os
 REFERENCE_DATA_DIR = os.environ.get('REFERENCE_DATA_DIR', 'laqp/data/reference_data')
 
 # Reference files (ADD THESE!)
-LA_PARISHES_FILE = os.path.join(REFERENCE_DATA_DIR, 'LA_Parish_Abbrevs.txt')
+COUNTIES_FILE = os.path.join(REFERENCE_DATA_DIR, 'LA_Parish_Abbrevs.txt')
 WVE_ABBREVS_FILE = os.path.join(REFERENCE_DATA_DIR, 'WVE_Abbrevs.txt')
 🔍 Check What processor.py Needs
 Check what your processor.py is importing:
 bashgrep "from config.config import" processor.py
 You'll see something like:
 pythonfrom config.config import (
-    LA_PARISHES_FILE,
+    COUNTIES_FILE,
     WVE_ABBREVS_FILE,
     # ... other imports
 )
@@ -955,7 +955,7 @@ python# ========================================================================
 # ============================================================================
 REFERENCE_DATA_DIR = os.environ.get('REFERENCE_DATA_DIR', 'laqp/data/reference_data')
 
-LA_PARISHES_FILE = os.path.join(REFERENCE_DATA_DIR, 'LA_Parish_Abbrevs.txt')
+COUNTIES_FILE = os.path.join(REFERENCE_DATA_DIR, 'LA_Parish_Abbrevs.txt')
 WVE_ABBREVS_FILE = os.path.join(REFERENCE_DATA_DIR, 'WVE_Abbrevs.txt')
 Then rebuild:
 bashdocker-compose down

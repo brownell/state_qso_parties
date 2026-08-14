@@ -222,12 +222,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        if (result.location_type == 'LA_ROVER' && result.parishes_activated && result.parishes_activated.length > 0) {
+        if (result.location_type == 'LA_ROVER' && result.counties_activated && result.counties_activated.length > 0) {
             hasBonuses = true;
-            bonusesHTML += renderResultItem('Parishes Activated (Rover)', result.parishes_activated.length);
+            bonusesHTML += renderResultItem('Counties Activated (Rover)', result.counties_activated.length);
             bonusesHTML += '<div class="result-list">';
-            result.parishes_activated.forEach(parish => {
-                bonusesHTML += `<span class="result-list-item">${parish}</span>`;
+            result.counties_activated.forEach(county => {
+                bonusesHTML += `<span class="result-list-item">${county}</span>`;
             });
             bonusesHTML += '</div>';
         }
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
         html += '<thead><tr><th>Multiplier Type</th><th>Count</th></tr></thead>';
         html += '<tbody>';
         html += `<tr><td>Total Multipliers</td><td>${result.total_multipliers}</td></tr>`;
-        html += `<tr><td>Parish Multiplier</td><td>${result.parishes_worked_multiplier}</td></tr>`;
+        html += `<tr><td>County Multiplier</td><td>${result.counties_worked_multiplier}</td></tr>`;
         html += `<tr><td>State Multiplier</td><td>${result.states_worked_multiplier}</td></tr>`;
         html += `<tr><td>Province Multiplier</td><td>${result.provinces_worked_multiplier}</td></tr>`;
         html += `<tr><td>DX Multiplier</td><td>${result.dx_worked_multiplier}</td></tr>`;
@@ -265,22 +265,22 @@ document.addEventListener('DOMContentLoaded', function() {
         html += '</div>';
 
 
-        // parishes activated for LA-FIXED
-        if (result.location_type == 'LA-FIXED' && result.parishes_activated && result.parishes_activated.length > 0) {
-            html += renderResultItem('Parish Activated', result.parishes_activated.length);
+        // counties activated for LA-FIXED
+        if (result.location_type == 'LA-FIXED' && result.counties_activated && result.counties_activated.length > 0) {
+            html += renderResultItem('County Activated', result.counties_activated.length);
             html += '<div class="result-list">';
-            result.parishes_activated.forEach(parish => {
-                html += `<span class="result-list-item">${parish}</span>`;
+            result.counties_activated.forEach(county => {
+                html += `<span class="result-list-item">${county}</span>`;
             });
             html += '</div>';
         }
         
-        // Parishes worked (for NON-LA stations)
-        if (result.parishes_worked && result.parishes_worked.length > 0) {
-            html += renderResultItem('Parishes Worked', result.parishes_worked_multiplier);
+        // Counties worked (for NON-LA stations)
+        if (result.counties_worked && result.counties_worked.length > 0) {
+            html += renderResultItem('Counties Worked', result.counties_worked_multiplier);
             html += '<div class="result-list">';
-            result.parishes_worked.forEach(parish => {
-                html += `<span class="result-list-item">${parish}</span>`;
+            result.counties_worked.forEach(county => {
+                html += `<span class="result-list-item">${county}</span>`;
             });
             html += '</div>';
         }

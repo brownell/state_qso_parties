@@ -17,7 +17,7 @@ import json
 from datetime import datetime, timedelta
 from collections import defaultdict
 from pathlib import Path
-from config.config import CONTEST_YEAR, LA_PARISHES_FILE, STATES_FILE, PROVINCES_FILE, DXCC_ENTITIES_FILE, DATABASE_FILE
+from config.config import CONTEST_YEAR, COUNTIES_FILE, STATES_FILE, PROVINCES_FILE, DXCC_ENTITIES_FILE, DATABASE_FILE
 from database import ContestDatabase, save_result
 from processor import UnifiedLogProcessor
 
@@ -80,7 +80,7 @@ def cross_check_all_logs(year=CONTEST_YEAR):
     
     # Create processor instance for recalculation
     print("\nInitializing processor for score recalculation...")
-    processor = UnifiedLogProcessor(Path(LA_PARISHES_FILE), Path(STATES_FILE), Path(PROVINCES_FILE), Path(DXCC_ENTITIES_FILE))
+    processor = UnifiedLogProcessor(Path(COUNTIES_FILE), Path(STATES_FILE), Path(PROVINCES_FILE), Path(DXCC_ENTITIES_FILE))
     
     # Recalculate final scores
     print("Recalculating final scores...")

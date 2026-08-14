@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Louisiana QSO Party - Rankings System</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="louisiana-qso-party---rankings-system">Louisiana QSO Party - Rankings System</h1>
+<h2 id="overview">Overview</h2>
+<p>The rankings system stores each operator's ranking in various categories. Rankings are stored as a JSON dict in the <code>rankings</code> field of the <code>contest_results</code> table.</p>
+<h2 id="design-decision-json-field-vs-separate-table">Design Decision: JSON Field vs Separate Table</h2>
+<p><strong>Chosen Approach:</strong> JSON dict in <code>rankings</code> field ✅</p>
+<h3 id="why">Why?</h3>
+<p><strong>Primary Use Case:</strong> User-centric lookups</p>
+<ul>
+<li>&quot;Show me K5ABC's results&quot; → Need all their rankings</li>
+<li>&quot;Generate K5ABC's HTML report&quot; → Need all their rankings</li>
+<li>Individual results page → Display all rankings for that user</li>
+</ul>
+<p><strong>NOT the primary use case:</strong></p>
+<ul>
+<li>&quot;Show me everyone ranked 3rd in category X&quot;</li>
+</ul>
+<p>The JSON approach is optimal for user-centric queries.</p>
+<h3 id="storage-format">Storage Format</h3>
+<pre><code class="language-python"><span class="hljs-comment"># In database (JSON string)</span>
+rankings = <span class="hljs-string">&#x27;{&quot;NQ&quot;: 5, &quot;NL&quot;: 12, &quot;NC&quot;: 3}&#x27;</span>
+
+<span class="hljs-comment"># When retrieved (Python dict)</span>
+rankings = {
+    <span class="hljs-string">&quot;NQ&quot;</span>: <span class="hljs-number">5</span>,    <span class="hljs-comment"># 5th place in Non-LA QRP</span>
+    <span class="hljs-string">&quot;NL&quot;</span>: <span class="hljs-number">12</span>,   <span class="hljs-comment"># 12th place in Non-LA LOW</span>
+    <span class="hljs-string">&quot;NC&quot;</span>: <span class="hljs-number">3</span>     <span class="hljs-comment"># 3rd place in Non-LA CW/Digital</span>
+}
+</code></pre>
+<h2 id="configuration">Configuration</h2>
+<h3 id="rankings-dict-in-configpy">RANKINGS Dict (in <a href="http://config.py">config.py</a>)</h3>
+<p>Maps ranking codes to display strings:</p>
+<pre><code class="language-python">RANKINGS = {
+    <span class="hljs-comment"># Louisiana Stations</span>
+    <span class="hljs-string">&#x27;LFQ&#x27;</span>: <span class="hljs-string">&#x27;Louisiana - Fixed QRP Power&#x27;</span>,
+    <span class="hljs-string">&#x27;LFL&#x27;</span>: <span class="hljs-string">&#x27;Louisiana - Fixed LOW Power&#x27;</span>,
+    <span class="hljs-string">&#x27;LFH&#x27;</span>: <span class="hljs-string">&#x27;Louisiana - Fixed HIGH Power&#x27;</span>,
+    <span class="hljs-string">&#x27;LFC&#x27;</span>: <span class="hljs-string">&#x27;Louisiana - Fixed CW/Digital Mode&#x27;</span>,
+    <span class="hljs-string">&#x27;LFS&#x27;</span>: <span class="hljs-string">&#x27;Louisiana - Fixed SSB (phone) Mode&#x27;</span>,
+    <span class="hljs-string">&#x27;LFM&#x27;</span>: <span class="hljs-string">&#x27;Louisiana - Fixed MIXED Modes&#x27;</span>,
+    <span class="hljs-string">&#x27;LRQ&#x27;</span>: <span class="hljs-string">&#x27;Louisiana - Rover QRP Power&#x27;</span>,
+    <span class="hljs-string">&#x27;LRL&#x27;</span>: <span class="hljs-string">&#x27;Louisiana - Rover LOW Power&#x27;</span>,
+    <span class="hljs-string">&#x27;LRH&#x27;</span>: <span class="hljs-string">&#x27;Louisiana - Rover HIGH Power&#x27;</span>,
+    <span class="hljs-string">&#x27;LRC&#x27;</span>: <span class="hljs-string">&#x27;Louisiana - Rover CW/Digital Mode&#x27;</span>,
+    <span class="hljs-string">&#x27;LRS&#x27;</span>: <span class="hljs-string">&#x27;Louisiana - Rover SSB (phone) Mode&#x27;</span>,
+    <span class="hljs-string">&#x27;LRM&#x27;</span>: <span class="hljs-string">&#x27;Louisiana - Rover MIXED Modes&#x27;</span>,
+    
+    <span class="hljs-comment"># Non-Louisiana Stations</span>
+    <span class="hljs-string">&#x27;NQ&#x27;</span>: <span class="hljs-string">&#x27;Non Louisiana - QRP Power&#x27;</span>,
+    <span class="hljs-string">&#x27;NL&#x27;</span>: <span class="hljs-string">&#x27;Non Louisiana - LOW Power&#x27;</span>,
+    <span class="hljs-string">&#x27;NH&#x27;</span>: <span class="hljs-string">&#x27;Non Louisiana - HIGH Power&#x27;</span>,
+    <span class="hljs-string">&#x27;NC&#x27;</span>: <span class="hljs-string">&#x27;Non Louisiana - CW/Digital Mode&#x27;</span>,
+    <span class="hljs-string">&#x27;NS&#x27;</span>: <span class="hljs-string">&#x27;Non Louisiana - SSB (phone) Mode&#x27;</span>,
+    <span class="hljs-string">&#x27;NM&#x27;</span>: <span class="hljs-string">&#x27;Non Louisiana - MIXED Modes&#x27;</span>,
+    
+    <span class="hljs-comment"># Add more as needed...</span>
+}
+</code></pre>
+<h3 id="leaderboards-config-updated">LEADERBOARDS Config (Updated)</h3>
+<p>Now uses ranking codes instead of full titles:</p>
+<pre><code class="language-python">LEADERBOARDS = [
+    [
+        {<span class="hljs-string">&#x27;section_title&#x27;</span>: <span class="hljs-string">&#x27;Louisiana Stations&#x27;</span>,
+         <span class="hljs-string">&#x27;show&#x27;</span>: [[<span class="hljs-string">&#x27;callsign&#x27;</span>, <span class="hljs-string">&#x27;CallSign&#x27;</span>], [<span class="hljs-string">&#x27;final_score&#x27;</span>, <span class="hljs-string">&#x27;Score&#x27;</span>], ...]},
+        
+        <span class="hljs-comment"># OLD: {&#x27;title&#x27;: &#x27;LA Fixed QRP&#x27;, ...}</span>
+        <span class="hljs-comment"># NEW: Uses ranking code</span>
+        {<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;LFQ&#x27;</span>, <span class="hljs-string">&#x27;ands&#x27;</span>: [[<span class="hljs-string">&#x27;location_type&#x27;</span>, <span class="hljs-string">&#x27;LA-FIXED&#x27;</span>], [<span class="hljs-string">&#x27;power_level&#x27;</span>, <span class="hljs-string">&#x27;QRP&#x27;</span>]]},
+        {<span class="hljs-string">&#x27;title&#x27;</span>: <span class="hljs-string">&#x27;LFL&#x27;</span>, <span class="hljs-string">&#x27;ands&#x27;</span>: [[<span class="hljs-string">&#x27;location_type&#x27;</span>, <span class="hljs-string">&#x27;LA-FIXED&#x27;</span>], [<span class="hljs-string">&#x27;power_level&#x27;</span>, <span class="hljs-string">&#x27;LOW&#x27;</span>]]},
+        ...
+    ],
+    ...
+]
+</code></pre>
+<h2 id="how-it-works">How It Works</h2>
+<h3 id="1-generate-rankings">1. Generate Rankings</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Run after all logs processed</span>
+python generate_rankings.py 2026
+</code></pre>
+<p>This:</p>
+<ol>
+<li>Clears all rankings for the year</li>
+<li>Generates each leaderboard table</li>
+<li>For each user in each table:
+<ul>
+<li>Saves ranking code + rank to their <code>rankings</code> field</li>
+</ul>
+</li>
+<li>Updates database with all rankings</li>
+</ol>
+<h3 id="2-ranking-storage-process">2. Ranking Storage Process</h3>
+<p>For each leaderboard table (e.g., &quot;NQ&quot; - Non-LA QRP):</p>
+<pre><code class="language-python"><span class="hljs-comment"># Query returns users sorted by score</span>
+results = [
+    (<span class="hljs-string">&#x27;K5ABC&#x27;</span>, <span class="hljs-number">1250</span>),  <span class="hljs-comment"># Rank 1</span>
+    (<span class="hljs-string">&#x27;W5XYZ&#x27;</span>, <span class="hljs-number">980</span>),   <span class="hljs-comment"># Rank 2</span>
+    (<span class="hljs-string">&#x27;N5TEST&#x27;</span>, <span class="hljs-number">750</span>),  <span class="hljs-comment"># Rank 3</span>
+]
+
+<span class="hljs-comment"># For each user, save ranking</span>
+K5ABC.rankings = {<span class="hljs-string">&quot;NQ&quot;</span>: <span class="hljs-number">1</span>, ...}  <span class="hljs-comment"># Add NQ: 1</span>
+W5XYZ.rankings = {<span class="hljs-string">&quot;NQ&quot;</span>: <span class="hljs-number">2</span>, ...}  <span class="hljs-comment"># Add NQ: 2</span>
+N5TEST.rankings = {<span class="hljs-string">&quot;NQ&quot;</span>: <span class="hljs-number">3</span>, ...}  <span class="hljs-comment"># Add NQ: 3</span>
+</code></pre>
+<h3 id="3-multiple-rankings-per-user">3. Multiple Rankings Per User</h3>
+<p>A user may appear in multiple categories:</p>
+<pre><code class="language-python"><span class="hljs-comment"># K5ABC&#x27;s rankings after all leaderboards generated</span>
+{
+    <span class="hljs-string">&quot;NQ&quot;</span>: <span class="hljs-number">1</span>,   <span class="hljs-comment"># 1st in Non-LA QRP</span>
+    <span class="hljs-string">&quot;NL&quot;</span>: <span class="hljs-number">5</span>,   <span class="hljs-comment"># 5th in Non-LA LOW (if also submitted LOW)</span>
+    <span class="hljs-string">&quot;NS&quot;</span>: <span class="hljs-number">2</span>,   <span class="hljs-comment"># 2nd in Non-LA SSB</span>
+    <span class="hljs-string">&quot;NM&quot;</span>: <span class="hljs-number">3</span>    <span class="hljs-comment"># 3rd in Non-LA MIXED (if also submitted MIXED)</span>
+}
+</code></pre>
+<h2 id="database-schema">Database Schema</h2>
+<pre><code class="language-sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> contest_results (
+    ...
+    rankings TEXT,  <span class="hljs-comment">-- JSON dict: {&quot;NQ&quot;: 1, &quot;NL&quot;: 5, ...}</span>
+    ...
+)
+</code></pre>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="generate-all-rankings">Generate All Rankings</h3>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> leaderboards <span class="hljs-keyword">import</span> generate_leaderboards
+<span class="hljs-keyword">from</span> config.config <span class="hljs-keyword">import</span> LEADERBOARDS, RANKINGS
+
+<span class="hljs-comment"># Generate and save rankings</span>
+sections = generate_leaderboards(<span class="hljs-string">&#x27;2026&#x27;</span>, LEADERBOARDS, RANKINGS, save_rankings=<span class="hljs-literal">True</span>)
+</code></pre>
+<h3 id="get-users-rankings">Get User's Rankings</h3>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> database <span class="hljs-keyword">import</span> get_result
+
+result = get_result(<span class="hljs-string">&#x27;2026&#x27;</span>, <span class="hljs-string">&#x27;K5ABC&#x27;</span>)
+rankings = result[<span class="hljs-string">&#x27;rankings&#x27;</span>]
+
+<span class="hljs-comment"># Display to user</span>
+<span class="hljs-keyword">for</span> code, rank <span class="hljs-keyword">in</span> rankings.items():
+    title = RANKINGS[code]
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">{title}</span>: Rank <span class="hljs-subst">{rank}</span>&quot;</span>)
+
+<span class="hljs-comment"># Output:</span>
+<span class="hljs-comment"># Non Louisiana - QRP Power: Rank 1</span>
+<span class="hljs-comment"># Non Louisiana - SSB (phone) Mode: Rank 2</span>
+</code></pre>
+<h3 id="display-on-results-page">Display on Results Page</h3>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">h3</span>&gt;</span>Your Rankings<span class="hljs-tag">&lt;/<span class="hljs-name">h3</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">table</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">th</span>&gt;</span>Category<span class="hljs-tag">&lt;/<span class="hljs-name">th</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">th</span>&gt;</span>Rank<span class="hljs-tag">&lt;/<span class="hljs-name">th</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span>
+  {% for code, rank in result.rankings.items() %}
+  <span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>{{ RANKINGS[code] }}<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>{{ rank }}<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span>
+  {% endfor %}
+<span class="hljs-tag">&lt;/<span class="hljs-name">table</span>&gt;</span>
+</code></pre>
+<h2 id="complete-workflow">Complete Workflow</h2>
+<h3 id="during-contest">During Contest</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Users upload logs (web or batch)</span>
+python web.py  <span class="hljs-comment"># or python batch.py</span>
+<span class="hljs-comment"># Results saved to database with rankings = {}</span>
+</code></pre>
+<h3 id="after-contest-closes">After Contest Closes</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Step 1: Generate rankings</span>
+python generate_rankings.py 2026
+<span class="hljs-comment"># All users now have their rankings populated</span>
+
+<span class="hljs-comment"># Step 2: Generate HTML reports (next phase)</span>
+python generate_reports.py 2026
+<span class="hljs-comment"># Creates HTML files for each user with their rankings</span>
+
+<span class="hljs-comment"># Step 3: Publish results</span>
+<span class="hljs-comment"># Users can look up their results at /results</span>
+</code></pre>
+<h2 id="example-database-record">Example Database Record</h2>
+<pre><code class="language-python">{
+    <span class="hljs-string">&#x27;year&#x27;</span>: <span class="hljs-string">&#x27;2026&#x27;</span>,
+    <span class="hljs-string">&#x27;callsign&#x27;</span>: <span class="hljs-string">&#x27;K5ABC&#x27;</span>,
+    <span class="hljs-string">&#x27;final_score&#x27;</span>: <span class="hljs-number">1250</span>,
+    <span class="hljs-string">&#x27;location_type&#x27;</span>: <span class="hljs-string">&#x27;NON-LA&#x27;</span>,
+    <span class="hljs-string">&#x27;power_level&#x27;</span>: <span class="hljs-string">&#x27;QRP&#x27;</span>,
+    <span class="hljs-string">&#x27;mode_category&#x27;</span>: <span class="hljs-string">&#x27;PHONE&#x27;</span>,
+    <span class="hljs-comment"># ... other fields ...</span>
+    <span class="hljs-string">&#x27;rankings&#x27;</span>: {
+        <span class="hljs-string">&#x27;NQ&#x27;</span>: <span class="hljs-number">1</span>,     <span class="hljs-comment"># 1st in Non-LA QRP</span>
+        <span class="hljs-string">&#x27;NS&#x27;</span>: <span class="hljs-number">2</span>,     <span class="hljs-comment"># 2nd in Non-LA SSB</span>
+        <span class="hljs-string">&#x27;NL&#x27;</span>: <span class="hljs-number">5</span>      <span class="hljs-comment"># 5th in Non-LA LOW (if multiple submissions)</span>
+    }
+}
+</code></pre>
+<h2 id="advantages-of-json-storage">Advantages of JSON Storage</h2>
+<p>✅ <strong>Simple</strong> - One field, one query
+✅ <strong>Fast</strong> - Single SELECT gets all user's rankings
+✅ <strong>Atomic</strong> - All rankings updated together
+✅ <strong>Perfect for display</strong> - Already in dict format
+✅ <strong>Scalable</strong> - Dozens of categories OK (JSON is small)</p>
+<h2 id="when-to-regenerate-rankings">When to Regenerate Rankings</h2>
+<p>Regenerate rankings if:</p>
+<ul>
+<li>New logs added after initial ranking</li>
+<li>Scoring rules change</li>
+<li>Categories added/modified</li>
+</ul>
+<pre><code class="language-bash"><span class="hljs-comment"># Regenerate rankings</span>
+python generate_rankings.py 2026
+</code></pre>
+<p>This clears and recalculates all rankings.</p>
+<h2 id="code-flow">Code Flow</h2>
+<pre><code>generate_rankings.py
+    ↓
+generate_leaderboards(year, LEADERBOARDS, RANKINGS)
+    ↓
+For each section:
+    For each table (ranking category):
+        1. Clear old rankings for this year
+        2. Query database with AND conditions
+        3. Sort by final_score DESC
+        4. For each user (rank 1, 2, 3...):
+            Get current rankings dict
+            Add: rankings[code] = rank
+            Save back to database
+    ↓
+All users now have complete rankings dict
+</code></pre>
+<h2 id="testing">Testing</h2>
+<pre><code class="language-python"><span class="hljs-comment"># Test rankings generation</span>
+<span class="hljs-keyword">from</span> leaderboards <span class="hljs-keyword">import</span> generate_leaderboards
+<span class="hljs-keyword">from</span> database <span class="hljs-keyword">import</span> get_result
+
+<span class="hljs-comment"># Generate</span>
+sections = generate_leaderboards(<span class="hljs-string">&#x27;2026&#x27;</span>, LEADERBOARDS, RANKINGS)
+
+<span class="hljs-comment"># Check a user</span>
+result = get_result(<span class="hljs-string">&#x27;2026&#x27;</span>, <span class="hljs-string">&#x27;K5ABC&#x27;</span>)
+<span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Rankings: <span class="hljs-subst">{result[<span class="hljs-string">&#x27;rankings&#x27;</span>]}</span>&quot;</span>)
+<span class="hljs-comment"># {&#x27;NQ&#x27;: 1, &#x27;NS&#x27;: 2, &#x27;NL&#x27;: 5}</span>
+
+<span class="hljs-comment"># Verify ranking count</span>
+<span class="hljs-keyword">for</span> code, rank <span class="hljs-keyword">in</span> result[<span class="hljs-string">&#x27;rankings&#x27;</span>].items():
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;  <span class="hljs-subst">{RANKINGS[code]}</span>: Rank <span class="hljs-subst">{rank}</span>&quot;</span>)
+</code></pre>
+<p>The rankings system is now complete and ready to populate individual rankings!</p>
+
+            
+            
+        </body>
+        </html>

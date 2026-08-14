@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Installation Checklist - LAQP Scoring Updates</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="installation-checklist---laqp-scoring-updates">Installation Checklist - LAQP Scoring Updates</h1>
+<h2 id="files-to-update">Files to Update</h2>
+<h3 id="1-config-file">1. Config File</h3>
+<pre><code class="language-bash"><span class="hljs-built_in">cd</span> /home/brownell/Development/laqp
+
+<span class="hljs-comment"># Backup current config</span>
+<span class="hljs-built_in">cp</span> config/config.py config/config.py.backup
+
+<span class="hljs-comment"># Copy new config</span>
+<span class="hljs-built_in">cp</span> /path/to/config_updated.py config/config.py
+</code></pre>
+<p><strong>Check for</strong>: <code>ROVER_PARISH_BONUS</code> (not <code>ROVER_PARISH_ACTIVATION_BONUS</code>)</p>
+<h3 id="2-categories-module-new">2. Categories Module (NEW)</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Add categories module at top level of laqp/</span>
+<span class="hljs-built_in">cp</span> /path/to/categories.py laqp/categories.py
+</code></pre>
+<h3 id="3-individual-results-module-new">3. Individual Results Module (NEW)</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Add individual results generator</span>
+<span class="hljs-built_in">cp</span> /path/to/individual_results_v2.py laqp/core/individual_results.py
+</code></pre>
+<h3 id="4-scoring-module">4. Scoring Module</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Backup old scoring</span>
+<span class="hljs-built_in">mv</span> laqp/core/scoring.py laqp/core/scoring.py.backup
+
+<span class="hljs-comment"># Copy new scoring</span>
+<span class="hljs-built_in">cp</span> /path/to/scoring_updated.py laqp/core/scoring.py
+</code></pre>
+<h3 id="5-update-initpy">5. Update <strong>init</strong>.py</h3>
+<pre><code class="language-bash">nano laqp/core/__init__.py
+</code></pre>
+<p><strong>Change FROM:</strong></p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> .scoring_OLD <span class="hljs-keyword">import</span> ScoreCalculator, score_single_log, generate_score_report
+</code></pre>
+<p><strong>Change TO:</strong></p>
+<pre><code class="language-python"><span class="hljs-keyword">from</span> .scoring <span class="hljs-keyword">import</span> ScoreCalculator, score_single_log, generate_score_report
+<span class="hljs-keyword">from</span> .individual_results <span class="hljs-keyword">import</span> IndividualResultsGenerator, generate_all_individual_results
+</code></pre>
+<p><strong>And update <strong>all</strong>:</strong></p>
+<pre><code class="language-python">__all__ = [
+    <span class="hljs-string">&#x27;LogValidator&#x27;</span>,
+    <span class="hljs-string">&#x27;ValidationResult&#x27;</span>,
+    <span class="hljs-string">&#x27;validate_single_log&#x27;</span>,
+    <span class="hljs-string">&#x27;LogPreparation&#x27;</span>,
+    <span class="hljs-string">&#x27;prepare_single_log&#x27;</span>,
+    <span class="hljs-string">&#x27;ScoreCalculator&#x27;</span>,
+    <span class="hljs-string">&#x27;score_single_log&#x27;</span>,
+    <span class="hljs-string">&#x27;generate_score_report&#x27;</span>,
+    <span class="hljs-string">&#x27;StatisticsGenerator&#x27;</span>,
+    <span class="hljs-string">&#x27;generate_statistics_from_logs&#x27;</span>,
+    <span class="hljs-string">&#x27;IndividualResultsGenerator&#x27;</span>,           <span class="hljs-comment"># ADD THIS</span>
+    <span class="hljs-string">&#x27;generate_all_individual_results&#x27;</span>,      <span class="hljs-comment"># ADD THIS</span>
+]
+</code></pre>
+<h3 id="6-process-script">6. Process Script</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Backup old script</span>
+<span class="hljs-built_in">cp</span> scripts/process_all_logs.py scripts/process_all_logs.py.backup
+
+<span class="hljs-comment"># Copy new script</span>
+<span class="hljs-built_in">cp</span> /path/to/process_all_logs_updated.py scripts/process_all_logs.py
+<span class="hljs-built_in">chmod</span> +x scripts/process_all_logs.py
+</code></pre>
+<hr>
+<h2 id="quick-check-before-running">Quick Check Before Running</h2>
+<p>Run these checks to make sure everything is in place:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">cd</span> /home/brownell/Development/laqp
+
+<span class="hljs-comment"># 1. Check config has new constants</span>
+grep <span class="hljs-string">&quot;ROVER_PARISH_BONUS&quot;</span> config/config.py
+grep <span class="hljs-string">&quot;DATA_OUTPUT_DIR&quot;</span> config/config.py
+grep <span class="hljs-string">&quot;INDIVIDUAL_RESULTS_DIR&quot;</span> config/config.py
+
+<span class="hljs-comment"># 2. Check categories module exists</span>
+<span class="hljs-built_in">ls</span> -l laqp/categories.py
+
+<span class="hljs-comment"># 3. Check individual_results exists</span>
+<span class="hljs-built_in">ls</span> -l laqp/core/individual_results.py
+
+<span class="hljs-comment"># 4. Check scoring is updated (not scoring_OLD)</span>
+grep <span class="hljs-string">&quot;get_category_short_name&quot;</span> laqp/core/scoring.py
+
+<span class="hljs-comment"># 5. Check __init__.py imports individual_results</span>
+grep <span class="hljs-string">&quot;individual_results&quot;</span> laqp/core/__init__.py
+
+<span class="hljs-comment"># 6. Test imports work</span>
+python3 -c <span class="hljs-string">&quot;from laqp.categories import CATEGORIES; print(f&#x27;{len(CATEGORIES)} categories loaded&#x27;)&quot;</span>
+python3 -c <span class="hljs-string">&quot;from laqp.core import IndividualResultsGenerator; print(&#x27;individual_results imported OK&#x27;)&quot;</span>
+</code></pre>
+<hr>
+<h2 id="if-you-get-errors">If You Get Errors</h2>
+<h3 id="error-cannot-import-name-rover_parish_activation_bonus">Error: &quot;cannot import name 'ROVER_PARISH_ACTIVATION_BONUS'&quot;</h3>
+<p><strong>Fix</strong>: Update <a href="http://config.py">config.py</a> - it should be <code>ROVER_PARISH_BONUS</code> not <code>ROVER_PARISH_ACTIVATION_BONUS</code></p>
+<h3 id="error-cannot-import-name-get_category_name">Error: &quot;cannot import name 'get_category_name'&quot;</h3>
+<p><strong>Fix</strong>: Add compatibility shim to bottom of <a href="http://config.py">config.py</a>:</p>
+<pre><code class="language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_category_name</span>(<span class="hljs-params">location_type, mode_category, power_level, overlay</span>):
+    <span class="hljs-keyword">from</span> laqp.categories <span class="hljs-keyword">import</span> get_category_short_name
+    <span class="hljs-keyword">return</span> get_category_short_name(location_type, mode_category, power_level, overlay)
+</code></pre>
+<h3 id="error-no-module-named-laqpcategories">Error: &quot;No module named 'laqp.categories'&quot;</h3>
+<p><strong>Fix</strong>: Copy <a href="http://categories.py">categories.py</a> to <code>laqp/categories.py</code> (not in core/)</p>
+<h3 id="error-import-from-scoring_old">Error: Import from scoring_OLD</h3>
+<p><strong>Fix</strong>: Edit <code>laqp/core/__init__.py</code> and change <code>scoring_OLD</code> to <code>scoring</code></p>
+<hr>
+<h2 id="after-everything-is-installed">After Everything is Installed</h2>
+<p>Test the pipeline:</p>
+<pre><code class="language-bash"><span class="hljs-built_in">cd</span> /home/brownell/Development/laqp
+
+<span class="hljs-comment"># Full pipeline (if you have test logs)</span>
+python3 scripts/process_all_logs.py
+
+<span class="hljs-comment"># Or just validation</span>
+python3 scripts/process_all_logs.py --validate-only
+</code></pre>
+<hr>
+<h2 id="directory-structure-check">Directory Structure Check</h2>
+<p>After installation, you should have:</p>
+<pre><code>laqp/
+├── categories.py                    ← NEW (top level)
+├── core/
+│   ├── __init__.py                 ← UPDATED
+│   ├── validator.py                ← Existing
+│   ├── preparation.py              ← Existing  
+│   ├── scoring.py                  ← UPDATED (new 36-category system)
+│   ├── scoring.py.backup           ← Backup of old
+│   ├── individual_results.py       ← NEW
+│   └── statistics.py               ← Existing
+
+config/
+├── config.py                       ← UPDATED (new directories, ROVER_PARISH_BONUS)
+└── config.py.backup                ← Backup of old
+
+scripts/
+├── process_all_logs.py             ← UPDATED
+└── process_all_logs.py.backup      ← Backup of old
+</code></pre>
+<hr>
+<h2 id="summary-of-changes">Summary of Changes</h2>
+<p>✅ <strong>New 36-category system</strong> (location × mode × power)
+✅ <strong>Individual DOCX result files</strong> for each contestant
+✅ <strong>Overlay tracking</strong> (logs appear in both categories)
+✅ <strong>Detailed statistics</strong> (parishes, states, provinces, DX, bands, modes)
+✅ <strong>Better spacing and formatting</strong> in DOCX files</p>
+<p>Not yet done:
+⏳ Summary_Report.docx generation (Step 4 - next)
+⏳ Updated statistics module for category breakdowns</p>
+
+            
+            
+        </body>
+        </html>

@@ -55,15 +55,15 @@ class ContestDatabase:
                     total_qsos INTEGER,
                     valid_qsos INTEGER,
                     total_multipliers INTEGER,
-                    parishes_worked TEXT,
-                    parishes_worked_multiplier INTEGER,
+                    counties_worked TEXT,
+                    counties_worked_multiplier INTEGER,
                     states_worked TEXT,
                     states_worked_multiplier INTEGER,
                     provinces_worked TEXT,
                     provinces_worked_multiplier INTEGER,
                     dx_worked TEXT,
                     dx_worked_multiplier INTEGER,
-                    parishes_activated TEXT,
+                    counties_activated TEXT,
                     rover_bonus_points INTEGER,
                     worked_n5lcc INTEGER,
                     num_n5lcc_contacts INTEGER,
@@ -118,7 +118,7 @@ class ContestDatabase:
             'year', 'callsign', 'name', 'club', 'exchange', 'overlay',
             'location_type', 'dxcc_code', 'dxcc_entity', 'mode_category', 'power_level',
             'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
-            'total_multipliers', 'parishes_worked_multiplier',
+            'total_multipliers', 'counties_worked_multiplier',
             'states_worked_multiplier', 'provinces_worked_multiplier',
             'dx_worked_multiplier', 'rover_bonus_points',
             'num_n5lcc_contacts', 'claimed_score'
@@ -139,8 +139,8 @@ class ContestDatabase:
         
         # Set fields (convert to JSON lists)
         set_fields = [
-            'parishes_worked', 'states_worked', 'provinces_worked',
-            'dx_worked', 'parishes_activated', 'bands_worked'
+            'counties_worked', 'states_worked', 'provinces_worked',
+            'dx_worked', 'counties_activated', 'bands_worked'
         ]
         
         for field in set_fields:
@@ -197,8 +197,8 @@ class ContestDatabase:
         
         # Convert JSON back to Python objects
         json_fields = [
-            'parishes_worked', 'states_worked', 'provinces_worked',
-            'dx_worked', 'parishes_activated', 'bands_worked',
+            'counties_worked', 'states_worked', 'provinces_worked',
+            'dx_worked', 'counties_activated', 'bands_worked',
             'qsos_by_band', 'qsos_by_mode', 'qsos_by_hour',
             'errors', 'warnings', 'rankings', 'qsos'
         ]
@@ -209,9 +209,9 @@ class ContestDatabase:
                     result[field] = json.loads(result[field])
                     
                     # Convert lists back to sets where appropriate
-                    if field in ['parishes_worked', 'states_worked', 
+                    if field in ['counties_worked', 'states_worked', 
                                'provinces_worked', 'dx_worked', 
-                               'parishes_activated', 'bands_worked']:
+                               'counties_activated', 'bands_worked']:
                         result[field] = set(result[field])
 
                 except json.JSONDecodeError:
@@ -287,61 +287,6 @@ class ContestDatabase:
                 columns = [desc[0] for desc in cursor.description]
                 return self._deserialize_result(row, columns)
             return None
-    
-    # def get_results_by_year(self, year: str, valid_only: bool = True) -> List[Dict]:
-    #     """
-    #     Get all results for a specific year.
-        
-    #     Args:
-    #         year: Contest year
-    #         valid_only: If True, only return valid logs
-            
-    #     Returns:
-    #         List of result dicts, sorted by score descending
-    #     """
-    #     with sqlite3.connect(self.db_path) as conn:
-    #         cursor = conn.cursor()
-            
-    #         sql = '''
-    #             SELECT * FROM contest_results
-    #             WHERE year = ?
-    #         '''
-            
-    #         if valid_only:
-    #             sql += ' AND is_valid = 1'
-            
-    #         sql += ' ORDER BY final_score DESC'
-            
-    #         cursor.execute(sql, (year,))
-            
-    #         rows = cursor.fetchall()
-    #         columns = [desc[0] for desc in cursor.description]
-            
-    #         return [self._deserialize_result(row, columns) for row in rows]
-    
-    # def get_results_by_category(self, year: str, mode_category: str) -> List[Dict]:
-    #     """
-    #     Get all results for a specific year and mode_category.
-        
-    #     Args:
-    #         year: Contest year
-    #         category: mode_category code (e.g., 'LA-ROVER')
-            
-    #     Returns:
-    #         List of result dicts, sorted by score descending
-    #     """
-    #     with sqlite3.connect(self.db_path) as conn:
-    #         cursor = conn.cursor()
-    #         cursor.execute('''
-    #             SELECT * FROM contest_results
-    #             WHERE year = ? AND mode_category = ? AND is_valid = 1
-    #             ORDER BY final_score DESC
-    #         ''', (year, mode_category))
-            
-    #         rows = cursor.fetchall()
-    #         columns = [desc[0] for desc in cursor.description]
-            
-    #         return [self._deserialize_result(row, columns) for row in rows]
     
     def update_rankings(self, year: str, rankings_dict: Dict[str, Dict[str, int]]):
         """

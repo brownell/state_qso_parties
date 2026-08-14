@@ -98,12 +98,12 @@ function generateResultsHTML(result) {
     html += '<div class="result-group">';
     html += '<h4>Multipliers</h4>';
     
-    // Parishes worked (for NON-LA stations)
-    if (result.parishes_worked && result.parishes_worked.length > 0) {
-        html += renderResultItem('Parishes Worked', result.parishes_worked_multiplier);
+    // Counties worked (for NON-LA stations)
+    if (result.counties_worked && result.counties_worked.length > 0) {
+        html += renderResultItem('Counties Worked', result.counties_worked_multiplier);
         html += '<div class="result-list">';
-        result.parishes_worked.forEach(parish => {
-            html += `<span class="result-list-item">${parish}</span>`;
+        result.counties_worked.forEach(county => {
+            html += `<span class="result-list-item">${county}</span>`;
         });
         html += '</div>';
     }
@@ -153,12 +153,12 @@ function generateResultsHTML(result) {
         }
     }
 
-    if (result.parishes_activated && result.parishes_activated.length > 0) {
+    if (result.counties_activated && result.counties_activated.length > 0) {
         hasBonuses = true;
-        bonusesHTML += renderResultItem('Parishes Activated (Rover)', result.parishes_activated.length);
+        bonusesHTML += renderResultItem('Counties Activated (Rover)', result.counties_activated.length);
         bonusesHTML += '<div class="result-list">';
-        result.parishes_activated.forEach(parish => {
-            bonusesHTML += `<span class="result-list-item">${parish}</span>`;
+        result.counties_activated.forEach(county => {
+            bonusesHTML += `<span class="result-list-item">${county}</span>`;
         });
         bonusesHTML += '</div>';
     }

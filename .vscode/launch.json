@@ -36,13 +36,13 @@
             "console": "integratedTerminal",
             "python": "${workspaceFolder}/venv/bin/python"
         },
-                {
+        {
             "name": "WIN Batch app",
             "type": "debugpy",
             "request": "launch",
             "program": "batch.py",
             "console": "integratedTerminal",
-            "python": "${workspaceFolder}/venv/Scripts/python"
+            "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
         },
         {
             "name": "WIN Final Report (batch)",
@@ -50,7 +50,7 @@
             "request": "launch",
             "program": "final_report.py",
             "console": "integratedTerminal",
-            "python": "${workspaceFolder}/venv/Scripts/python"
+            "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
         },        
         {
             "name": "Web app",
@@ -74,7 +74,7 @@
             "type": "debugpy",
             "request": "launch",
             "module": "flask",
-            "python": "${workspaceFolder}/venv/Scripts/python",
+            "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
             "env": {
                 "FLASK_APP": "web.py",
                 "FLASK_DEBUG": "1"
@@ -87,5 +87,6 @@
             "jinja": true,
             "justMyCode": true
         }
+        
     ]
 }

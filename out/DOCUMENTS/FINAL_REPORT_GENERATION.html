@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Louisiana QSO Party - Final Report HTML Generation</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="louisiana-qso-party---final-report-html-generation">Louisiana QSO Party - Final Report HTML Generation</h1>
+<h2 id="overview">Overview</h2>
+<p>The <code>generate_final_report.py</code> script creates a complete HTML final report with all leaderboards in an Excel-like table format.</p>
+<h2 id="features">Features</h2>
+<h3 id="excel-like-tables">Excel-Like Tables</h3>
+<ul>
+<li>✅ Fixed-width font (Courier New)</li>
+<li>✅ Gridlines on all cells (black borders)</li>
+<li>✅ Blue header row</li>
+<li>✅ Alternating row colors (white/gray)</li>
+<li>✅ Gold/Silver/Bronze highlighting for top 3</li>
+<li>✅ Rank column centered and bold</li>
+</ul>
+<h3 id="report-structure">Report Structure</h3>
+<ul>
+<li>Contest title and year</li>
+<li>Generation date</li>
+<li>Introductory text (from <code>FINAL_REPORT_TXT</code>)</li>
+<li>Sections with leaderboard tables</li>
+<li>Professional footer</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<h3 id="generate-report">Generate Report</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># For current/default year</span>
+python generate_final_report.py
+
+<span class="hljs-comment"># For specific year</span>
+python generate_final_report.py 2026
+
+<span class="hljs-comment"># Custom output directory</span>
+python generate_final_report.py 2026 /custom/path
+</code></pre>
+<h3 id="in-contest-workflow">In Contest Workflow</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Step 1: Process all logs</span>
+python batch.py
+
+<span class="hljs-comment"># Step 2: Calculate rankings</span>
+python generate_rankings.py 2026
+
+<span class="hljs-comment"># Step 3: Generate final report HTML</span>
+python generate_final_report.py 2026
+
+<span class="hljs-comment"># Result: laqp/data/results/final_report_2026.html</span>
+</code></pre>
+<h2 id="output">Output</h2>
+<h3 id="file-location">File Location</h3>
+<pre><code>laqp/data/results/
+└── final_report_2026.html
+</code></pre>
+<h3 id="html-structure">HTML Structure</h3>
+<pre><code class="language-html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Louisiana QSO Party 2026 - Final Results<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"><span class="hljs-comment">/* Excel-like styling */</span></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;container&quot;</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">header</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Louisiana QSO Party 2026<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Final Results<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Generated: March 5, 2026<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">header</span>&gt;</span>
+
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;report-intro&quot;</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Introductory text...<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+        <span class="hljs-comment">&lt;!-- Section 1 --&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;section&quot;</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Louisiana Stations<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+            
+            <span class="hljs-comment">&lt;!-- Table 1 --&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;table-container&quot;</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">h3</span>&gt;</span>Louisiana - Fixed QRP Power<span class="hljs-tag">&lt;/<span class="hljs-name">h3</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;leaderboard-table&quot;</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">thead</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span>
+                            <span class="hljs-tag">&lt;<span class="hljs-name">th</span>&gt;</span>Rank<span class="hljs-tag">&lt;/<span class="hljs-name">th</span>&gt;</span>
+                            <span class="hljs-tag">&lt;<span class="hljs-name">th</span>&gt;</span>CallSign<span class="hljs-tag">&lt;/<span class="hljs-name">th</span>&gt;</span>
+                            <span class="hljs-tag">&lt;<span class="hljs-name">th</span>&gt;</span>Score<span class="hljs-tag">&lt;/<span class="hljs-name">th</span>&gt;</span>
+                            ...
+                        <span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span>
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">thead</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">tbody</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span> <span class="hljs-comment">&lt;!-- Gold for 1st --&gt;</span>
+                            <span class="hljs-tag">&lt;<span class="hljs-name">td</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;rank-cell&quot;</span>&gt;</span>1<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span>
+                            <span class="hljs-tag">&lt;<span class="hljs-name">td</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;data-cell&quot;</span>&gt;</span>K5ABC<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span>
+                            <span class="hljs-tag">&lt;<span class="hljs-name">td</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;data-cell&quot;</span>&gt;</span>1250<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span>
+                        <span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span> <span class="hljs-comment">&lt;!-- Silver for 2nd --&gt;</span>
+                            <span class="hljs-tag">&lt;<span class="hljs-name">td</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;rank-cell&quot;</span>&gt;</span>2<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span>
+                            <span class="hljs-tag">&lt;<span class="hljs-name">td</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;data-cell&quot;</span>&gt;</span>W5XYZ<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span>
+                            <span class="hljs-tag">&lt;<span class="hljs-name">td</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;data-cell&quot;</span>&gt;</span>980<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span>
+                        <span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span>
+                        ...
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">tbody</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">table</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+            
+            <span class="hljs-comment">&lt;!-- More tables... --&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+        <span class="hljs-comment">&lt;!-- More sections... --&gt;</span>
+
+        <span class="hljs-tag">&lt;<span class="hljs-name">footer</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span><span class="hljs-symbol">&amp;copy;</span> 2026 Jefferson Amateur Radio Club<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">footer</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+<h2 id="styling-features">Styling Features</h2>
+<h3 id="table-appearance">Table Appearance</h3>
+<p><strong>Headers:</strong></p>
+<ul>
+<li>Blue background (#4472C4)</li>
+<li>White text</li>
+<li>Bold font</li>
+<li>Black gridlines</li>
+</ul>
+<p><strong>Rows:</strong></p>
+<ul>
+<li>Alternating white/gray (#f0f0f0)</li>
+<li>Black gridlines on all cells</li>
+<li>Hover effect (light blue)</li>
+</ul>
+<p><strong>Top 3 Highlighting:</strong></p>
+<ul>
+<li>1st place: Gold background (#FFD700)</li>
+<li>2nd place: Silver background (#C0C0C0)</li>
+<li>3rd place: Bronze background (#CD7F32)</li>
+</ul>
+<p><strong>Rank Column:</strong></p>
+<ul>
+<li>Centered text</li>
+<li>Bold font</li>
+<li>Gray background (#f9f9f9)</li>
+<li>Fixed width (60px)</li>
+</ul>
+<h3 id="fonts">Fonts</h3>
+<ul>
+<li><strong>Tables:</strong> Courier New (fixed-width, Excel-like)</li>
+<li><strong>Headers:</strong> Georgia (serif, professional)</li>
+<li><strong>Body text:</strong> Georgia</li>
+</ul>
+<h2 id="configuration-required">Configuration Required</h2>
+<h3 id="in-configconfigpy">In config/config.py</h3>
+<pre><code class="language-python"><span class="hljs-comment"># Introductory text for final report</span>
+FINAL_REPORT_TXT = <span class="hljs-string">&quot;&quot;&quot;
+Congratulations to all participants in the 2026 Louisiana QSO Party!
+This report contains the final results across all categories.
+&quot;&quot;&quot;</span>
+
+<span class="hljs-comment"># Rankings dict (already defined)</span>
+RANKINGS = {
+    <span class="hljs-string">&#x27;LFQ&#x27;</span>: <span class="hljs-string">&#x27;Louisiana - Fixed QRP Power&#x27;</span>,
+    ...
+}
+
+<span class="hljs-comment"># Leaderboards config (already defined)</span>
+LEADERBOARDS = [...]
+
+<span class="hljs-comment"># Output directory</span>
+FINAL_REPORTS_DIR = <span class="hljs-string">&#x27;laqp/data/results&#x27;</span>
+</code></pre>
+<h2 id="example-output">Example Output</h2>
+<pre><code>=============================================================
+Louisiana QSO Party - Generate Final Report HTML (2026)
+=============================================================
+
+Generating leaderboards...
+Creating HTML report...
+
+=============================================================
+Summary
+=============================================================
+Sections: 3
+Tables: 18
+Total entries: 247
+Saved to: laqp/data/results/final_report_2026.html
+</code></pre>
+<h2 id="integration-with-results-page">Integration with Results Page</h2>
+<p>Once generated, the HTML file is automatically available:</p>
+<pre><code>User visits: /results
+Selects year: 2026
+Clicks: &quot;Show Final Report&quot;
+→ System reads: laqp/data/results/final_report_2026.html
+→ Displays in browser
+</code></pre>
+<h2 id="print-friendly">Print-Friendly</h2>
+<p>The report includes print styles:</p>
+<ul>
+<li>Clean white background</li>
+<li>No shadows or hover effects</li>
+<li>Page breaks avoid splitting tables</li>
+<li>Professional formatting</li>
+</ul>
+<h2 id="customization">Customization</h2>
+<h3 id="change-table-colors">Change Table Colors</h3>
+<pre><code class="language-python"><span class="hljs-comment"># In _get_css() function</span>
+
+<span class="hljs-comment"># Header color</span>
+.leaderboard-table thead {
+    background-color: <span class="hljs-comment">#4472C4;  # Change blue</span>
+}
+
+<span class="hljs-comment"># Top 3 colors</span>
+.leaderboard-table tbody tr:nth-child(<span class="hljs-number">1</span>) {
+    background-color: <span class="hljs-comment">#FFD700 !important;  # Gold</span>
+}
+</code></pre>
+<h3 id="change-font">Change Font</h3>
+<pre><code class="language-python"><span class="hljs-comment"># Tables</span>
+.leaderboard-table {
+    font-family: <span class="hljs-string">&#x27;Courier New&#x27;</span>, Courier, monospace;
+}
+
+<span class="hljs-comment"># Headers</span>
+.report-header h1 {
+    font-family: Georgia, serif;
+}
+</code></pre>
+<h3 id="add-logo">Add Logo</h3>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">header</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;report-header&quot;</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;logo.png&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;Club Logo&quot;</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Louisiana QSO Party {year}<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+    ...
+<span class="hljs-tag">&lt;/<span class="hljs-name">header</span>&gt;</span>
+</code></pre>
+<h2 id="testing">Testing</h2>
+<pre><code class="language-bash"><span class="hljs-comment"># 1. Ensure data exists</span>
+python batch.py
+python generate_rankings.py 2026
+
+<span class="hljs-comment"># 2. Generate report</span>
+python generate_final_report.py 2026
+
+<span class="hljs-comment"># 3. View in browser</span>
+<span class="hljs-comment"># Open: laqp/data/results/final_report_2026.html</span>
+
+<span class="hljs-comment"># 4. Test via web interface</span>
+python web.py
+<span class="hljs-comment"># Visit: http://localhost:5000/results</span>
+<span class="hljs-comment"># Select year: 2026</span>
+<span class="hljs-comment"># Click: &quot;Show Final Report&quot;</span>
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="report-file-not-found">Report file not found</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Check if directory exists</span>
+<span class="hljs-built_in">ls</span> -la laqp/data/results/
+
+<span class="hljs-comment"># Create directory if needed</span>
+<span class="hljs-built_in">mkdir</span> -p laqp/data/results
+
+<span class="hljs-comment"># Run generator</span>
+python generate_final_report.py 2026
+</code></pre>
+<h3 id="empty-tables">Empty tables</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Ensure rankings were generated</span>
+python generate_rankings.py 2026
+
+<span class="hljs-comment"># Check database has data</span>
+sqlite3 laqp/database/laqp.db <span class="hljs-string">&quot;SELECT COUNT(*) FROM contest_results WHERE year = &#x27;2026&#x27;;&quot;</span>
+</code></pre>
+<h3 id="styling-issues">Styling issues</h3>
+<ul>
+<li>CSS is embedded in HTML (no external files needed)</li>
+<li>Clear browser cache if styles don't update</li>
+<li>Check browser console for errors</li>
+</ul>
+<h2 id="files">Files</h2>
+<ul>
+<li>✅ <code>generate_final_report.py</code> - Main generator script</li>
+<li>✅ Output: <code>laqp/data/results/final_report_{year}.html</code></li>
+</ul>
+<p>The final report generator creates professional Excel-like leaderboards ready for web display and printing!</p>
+
+            
+            
+        </body>
+        </html>

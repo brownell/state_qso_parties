@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Louisiana QSO Party Log Processor</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="louisiana-qso-party-log-processor">Louisiana QSO Party Log Processor</h1>
+<p>Contest log processing system for the Louisiana QSO Party, hosted by Jefferson Amateur Radio Club.</p>
+<h3 id="adapted-from-texas-qso-party-software-created-by-charles-sanders-no5w">Adapted from Texas QSO Party software created by Charles Sanders, NO5W</h3>
+<h2 id="leaderboards-and-certificates">Leaderboards and Certificates</h2>
+<p>The current rules specify awards for the following categories. In 2026, we are not sending out awards or certificates. For everyone - no matter were they placed - the may come to the website 15 days after the contest and see an HTML certificate, which they may print, that shows where they placed in all the relevent categories:</p>
+<h3 id="leaderboard-categories">Leaderboard Categories</h3>
+<p>TBH</p>
+<h3 id="clarifications-to-the-rules">Clarifications to the Rules</h3>
+<ul>
+<li>
+<p>Users fill out a web form to upload the Cabrillo log file. If anything in the header section of the log file disagrees with what was entered - or is missing -  the log file is rejected immediately and the user is asked to fix the log file or change the responses on the form, and resubmit. A log file may be resubmitted any number of times, with each new upload replacing the previous ones. Fields required on the form and in the Cabrillo log file are: call sign, email, power, mode, and station type. Overlay is an OPTIONAL field, but if included the values on the upload form and in the Cabrillo file must match.</p>
+</li>
+<li>
+<p>QSOs that do not match the “CATEGORY-MODE” are ignored and receive no points. For example, Phone QSOs are ignored if the mode is “CW/DIGITAL”. Of course, &quot;MIXED&quot; mode allows any mode in QSOs.</p>
+</li>
+<li>
+<p>The operator’s QTH is taken from the QSOs present, and not the &quot;LOCATION&quot; element in the Cabrillo file. Except for someone who has declared himself as a “Rover” all QSOs after the first must have the same QTH as the first. Any that do not meet that requirement are ignored and receive no points.</p>
+</li>
+<li>
+<p>QSOs from one non-LA operator to another are ignored and receive no points. But QSOs from one LA operator to another are valid for points and multipliers.</p>
+</li>
+<li>
+<p>The &quot;bonus&quot; LA call sign used is N5LCC. One OR MORE QSOs to N5LCC, regardless of band or mode, receive 100 bonus points. Contacting N5LCC multiple times does not increase bonus points. This callsign is not part of the rankings in the contest. Also it may have multiple calling QTH, and may be operating at two different frequencies on the same band as long as the mode is different.</p>
+</li>
+<li>
+<p>Warning messages are generated for all these situations so the user knows which QSOs were ignored. The log has been accepted for scoring if there are warning messages, but if the user wants to make corrections and resubmit, the last submission is used for scoring and ranking.</p>
+</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<h3 id="1-install-python-dependencies">1. Install Python Dependencies</h3>
+<pre><code class="language-bash">pip install -r requirements.txt
+</code></pre>
+<p>Required packages:</p>
+<ul>
+<li>sqlalchemy (database ORM)</li>
+<li>flask (web framework)</li>
+<li>pandas (data analysis)</li>
+<li>python-dateutil (date parsing)</li>
+</ul>
+<h3 id="2-create-data-files">2. Create Data Files</h3>
+<p>Create the county abbreviations file at <code>data/LA_County_Abbrevs.txt</code>:</p>
+<pre><code>ACAD
+ALLE
+ASCE
+...
+(all 64 Louisiana counties)
+</code></pre>
+<h3 id="3-initialize-database">3. Initialize Database</h3>
+<pre><code class="language-bash">python -c <span class="hljs-string">&quot;from laqp.models.database import Database; from config.config import DATABASE_URL; db = Database(DATABASE_URL); db.create_tables()&quot;</span>
+</code></pre>
+<h3 id="4-create-directory-structure">4. Create Directory Structure</h3>
+<pre><code class="language-bash">python -c <span class="hljs-string">&quot;from config.config import ensure_directories; ensure_directories()&quot;</span>
+</code></pre>
+<h2 id="usage">Usage</h2>
+<h3 id="batch-processing-command-line">Batch Processing (Command Line)</h3>
+<p>Process all logs in the <code>logs/incoming/</code> directory:</p>
+<pre><code class="language-bash"><span class="hljs-comment"># Full processing pipeline</span>
+python scripts/process_all_logs.py
+
+<span class="hljs-comment"># Validation only</span>
+python scripts/process_all_logs.py --validate-only
+
+<span class="hljs-comment"># Skip database storage</span>
+python scripts/process_all_logs.py --skip-db
+</code></pre>
+<p><strong>Important Notes</strong>:</p>
+<ul>
+<li><strong>Incoming logs are preserved</strong>: Files in <code>logs/incoming/</code> are copied (not moved), so they remain there for reference</li>
+<li><strong>Output directories are cleaned</strong>: On each run, the following directories are emptied before processing:
+<ul>
+<li><code>logs/validated/</code></li>
+<li><code>logs/prepared/</code></li>
+<li><code>logs/problems/</code></li>
+<li><code>logs/reports/</code></li>
+<li><code>output/scores/</code></li>
+<li><code>output/statistics/</code></li>
+</ul>
+</li>
+<li>This ensures you're always looking at results from the current run, not mixed with previous runs</li>
+</ul>
+<h3 id="web-application-future">Web Application (Future)</h3>
+<pre><code class="language-bash"><span class="hljs-comment"># Start Flask development server</span>
+python -m flask --app web.app run
+
+<span class="hljs-comment"># Production with gunicorn</span>
+gunicorn -w 4 web.app:app
+</code></pre>
+<h2 id="key-differences-laqp-vs-tqp">Key Differences: LAQP vs TQP</h2>
+<h3 id="categories">Categories</h3>
+<ul>
+<li><strong>TQP</strong>: Power (QRP/LOW/HIGH) × Mode (CWO/PHO/DGO/MIX) × Location (DX/NTX/TX-Fixed/TX-Mobile) × Operators (SO/MO)</li>
+<li><strong>LAQP</strong>: Mode only (Phone/CW-Digital/Mixed) × Location (DX/Non-LA/LA-Fixed/LA-Rover)
+<ul>
+<li>Power is tracked but doesn't create separate categories</li>
+<li>Number of operators is ignored (everyone lumped together)</li>
+<li>Overlays (WIRES/TB-WIRES/POTA) are separate awards, not categories</li>
+</ul>
+</li>
+</ul>
+<h3 id="scoring">Scoring</h3>
+<ul>
+<li><strong>TQP</strong>: 2 pts phone, 3 pts CW/digital</li>
+<li><strong>LAQP</strong>: 2 pts phone, 4 pts CW/digital</li>
+</ul>
+<h3 id="multipliers">Multipliers</h3>
+<ul>
+<li><strong>TQP</strong>: Counted once for entire contest</li>
+<li><strong>LAQP</strong>: Counted per band AND per mode type (CW/Digital vs Phone)
+<ul>
+<li>Example: Working CADDO county on 40m CW and 40m SSB = 2 multipliers</li>
+</ul>
+</li>
+</ul>
+<h3 id="bonuses">Bonuses</h3>
+<ul>
+<li><strong>TQP</strong>:
+<ul>
+<li>Mobile tracking: 500 pts per 5 counties worked per mobile</li>
+<li>County activation: 1000 pts per county with 5+ QSOs</li>
+</ul>
+</li>
+<li><strong>LAQP</strong>:
+<ul>
+<li>N5LCC bonus: 100 pts one-time for working club station</li>
+<li>Rover activation: 50 pts per county activated (rovers only)</li>
+</ul>
+</li>
+</ul>
+<h3 id="contest-period">Contest Period</h3>
+<ul>
+<li><strong>TQP</strong>: Two sessions (Saturday afternoon + Sunday afternoon)</li>
+<li><strong>LAQP</strong>: Single session (Saturday 1400Z - Sunday 0200Z)</li>
+</ul>
+<h2 id="development-roadmap">Development Roadmap</h2>
+<h3 id="phase-1-core-processing-current">Phase 1: Core Processing (Current)</h3>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" checked=""type="checkbox"> Project structure</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" checked=""type="checkbox"> Configuration system</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" checked=""type="checkbox"> Database schema</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" checked=""type="checkbox"> Log validator</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Log preparation (adapt from TQP)</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Scoring engine (adapt from TQP)</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Statistics generator (adapt from TQP)</li>
+</ul>
+<h3 id="phase-2-command-line-tools">Phase 2: Command Line Tools</h3>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox" checked=""type="checkbox"> Batch processor</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Report generator</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Database utilities</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Leaderboard generator</li>
+</ul>
+<h3 id="phase-3-web-application">Phase 3: Web Application</h3>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Flask app setup</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Log upload interface</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Real-time validation</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Score lookup</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Public results page</li>
+</ul>
+<h3 id="phase-4-advanced-features">Phase 4: Advanced Features</h3>
+<ul class="contains-task-list">
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Duplicate detection across logs</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Log checking (spot mismatches)</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Certificate generation</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Email notifications</li>
+<li class="task-list-item enabled"><input class="task-list-item-checkbox"type="checkbox"> Admin dashboard</li>
+</ul>
+<h2 id="la-rules-summary">LA Rules Summary</h2>
+<h3 id="scoring-1">Scoring</h3>
+<ol>
+<li><strong>QSO Points</strong>: 2 for phone, 4 for CW/digital</li>
+<li><strong>Multipliers</strong>:
+<ul>
+<li>Non-LA: LA counties worked (per band/mode)</li>
+<li>LA: counties + states + provinces + DXCC (per band/mode)</li>
+</ul>
+</li>
+<li><strong>Score</strong>: QSO points × multipliers + bonuses</li>
+</ol>
+<h3 id="categories-12-total">Categories (12 total)</h3>
+<ul>
+<li>Non-LA: Phone Only, CW/Digital Only, Mixed</li>
+<li>LA Fixed: Phone Only, CW/Digital Only, Mixed</li>
+<li>LA Rover: Phone Only, CW/Digital Only, Mixed</li>
+<li>(Each category can have 3 power levels: QRP/Low/High)</li>
+</ul>
+<h3 id="overlays-separate-awards">Overlays (Separate Awards)</h3>
+<ul>
+<li>WIRES: Wire antennas only</li>
+<li>TB-WIRES: Tribander + wires</li>
+<li>POTA: Parks/campgrounds/refuges</li>
+</ul>
+<h2 id="contact">Contact</h2>
+<p>Louisiana QSO Party
+Jefferson Amateur Radio Club
+<a href="mailto:questions@laqp.org">questions@laqp.org</a></p>
+<p>Contest Manager: KJ5BYZ</p>
+
+            
+            
+        </body>
+        </html>
