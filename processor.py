@@ -17,7 +17,6 @@ from pathlib import Path
 from typing import Dict, List, Set, Optional
 from datetime import datetime
 from unittest import result
-from pyhamtools import LookupLib, Callinfo
 import csv
 
 # Import your existing modules
