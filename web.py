@@ -46,7 +46,7 @@ def format_result_for_display(result):
     simple_fields = [
         'callsign', 'exchange', 'overlay', 'location_type', 'mode_category',
         'power_level', 'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
-        'total_multipliers', 'parishes_worked_multiplier', 'states_worked_multiplier',
+        'total_multipliers', 'counties_worked_multiplier', 'states_worked_multiplier',
         'provinces_worked_multiplier', 'dx_worked_multiplier', 'rover_bonus_points',
         'worked_n5lcc', 'num_n5lcc_contacts', 'name', 'club', 'claimed_score', 'year'
     ]
@@ -55,11 +55,11 @@ def format_result_for_display(result):
         display_result[field] = result.get(field, 'N/A')
     
     # Convert sets to sorted lists
-    display_result['parishes_worked'] = format_set_as_list(result.get('parishes_worked', set()))
+    display_result['counties_worked'] = format_set_as_list(result.get('counties_worked', set()))
     display_result['states_worked'] = format_set_as_list(result.get('states_worked', set()))
     display_result['provinces_worked'] = format_set_as_list(result.get('provinces_worked', set()))
     display_result['dx_worked'] = format_set_as_list(result.get('dx_worked', set()))
-    display_result['parishes_activated'] = format_set_as_list(result.get('parishes_activated', set()))
+    display_result['counties_activated'] = format_set_as_list(result.get('counties_activated', set()))
     display_result['bands_worked'] = format_set_as_list(result.get('bands_worked', set()))
     
     # Format QSOs by band
@@ -101,17 +101,17 @@ def home():
 
 @app.route('/abbreviations')
 def abbreviations():
-    """Render the LA parish abbreviations page (placeholder)"""
+    """Render the LA county abbreviations page (placeholder)"""
     return render_template('abbreviations.html')
 
 @app.route('/activate')
 def activate():
-    """Render the parish activation page (placeholder)"""
+    """Render the county activation page (placeholder)"""
     return render_template('activate.html')
 
 @app.route('/map')
 def map():
-    """ parish map """
+    """ county map """
     return render_template('map.html')
 
 # @app.route('/operations')

@@ -21,12 +21,12 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 from pathlib import Path
 from processor import UnifiedLogProcessor
-from config.config import CONTEST_YEAR, CW_DIGITAL_QSO_POINTS, EXTRA_BONUS_POINTS, LA_PARISHES_FILE, STATES_FILE, PROVINCES_FILE, DXCC_ENTITIES_FILE, DATABASE_FILE, TIME_WINDOW_MINUTES, ENABLE_FUZZY_MATCHING, MAX_EDIT_DISTANCE, BONUS_CALLSIGN, LA_PARISHES_FILE, OVERLAY_VALUE_OPTIONS, POWER_VALUE_OPTIONS, STATION_VALUE_OPTIONS, STATES_FILE, PROVINCES_FILE, EXTRA_BONUS_YEAR, EXTRA_BONUS_CALLS, EXTRA_BONUS_POINTS, US_PREFIXES, CANADIAN_PREFIXES,QRZ_CALLSIGN, QRZ_PASSWORD, PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE, CALLSIGN_BONUS_POINTS, ROVER_PARISH_BONUS, PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES
+from config.config import CONTEST_YEAR, CW_DIGITAL_QSO_POINTS, EXTRA_BONUS_POINTS, COUNTIES_FILE, STATES_FILE, PROVINCES_FILE, DXCC_ENTITIES_FILE, DATABASE_FILE, TIME_WINDOW_MINUTES, ENABLE_FUZZY_MATCHING, MAX_EDIT_DISTANCE, BONUS_CALLSIGN, COUNTIES_FILE, OVERLAY_VALUE_OPTIONS, POWER_VALUE_OPTIONS, STATION_VALUE_OPTIONS, STATES_FILE, PROVINCES_FILE, EXTRA_BONUS_YEAR, EXTRA_BONUS_CALLS, EXTRA_BONUS_POINTS, US_PREFIXES, CANADIAN_PREFIXES,QRZ_CALLSIGN, QRZ_PASSWORD, PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE, CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS, PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES
 
 
 printout = False # printout
 all_callsigns = set() # populated in cross_check_all_logs
-processor = UnifiedLogProcessor(LA_PARISHES_FILE, STATES_FILE, PROVINCES_FILE, DXCC_ENTITIES_FILE)
+processor = UnifiedLogProcessor(COUNTIES_FILE, STATES_FILE, PROVINCES_FILE, DXCC_ENTITIES_FILE)
 
 def score_qsos(result: Dict, contest_year: str) -> None:
     """Phase 3: Score QSOs and calculate multipliers"""
@@ -74,16 +74,16 @@ def score_qsos(result: Dict, contest_year: str) -> None:
             print(f"Exception {e} sender {result['callsign']} cannot determine if rcvd_qth is DX for callsign on line {qso['line_num']} WORKED: band {band} mode {mode_cat} remote op {rcvd_call}")
 
         # NOT DX - ROVER gets a qso_check that includes his QTH because he can call same
-        # station multiple toimes from different parishes
+        # station multiple toimes from different counties
         if result['location_type'] == "LA-ROVER":
                 qso_check = band + mode_cat + sent_qth + rcvd_call
-                if sent_qth not in result['parishes_activated']:
-                    result['parishes_activated'].add(sent_qth)
+                if sent_qth not in result['counties_activated']:
+                    result['counties_activated'].add(sent_qth)
         else: ## MUST be LA Fixed or State or Province
             qso_check = band + mode_cat + rcvd_call
 
-        if result['location_type'] == "LA-FIXED" and sent_qth not in result['parishes_activated']:
-            result['parishes_activated'].add(sent_qth)
+        if result['location_type'] == "LA-FIXED" and sent_qth not in result['counties_activated']:
+            result['counties_activated'].add(sent_qth)
                 
         if qso_check in qso_dups:
             result['warnings'].append(f"DUPLICATE QSO line {qso['line_num']} band/mode/call worked:  {band}, {mode_cat}, {rcvd_call}")
@@ -129,10 +129,10 @@ def score_qsos(result: Dict, contest_year: str) -> None:
         if mult_check not in mult_dups:
             mult_dups.append(mult_check)
 
-            ## Everyone gets parish multiplier for parishes, but only LA stations get state/province/DX multipliers
-            if rcvd_qth in processor.parishes:
-                result['parishes_worked'].add(rcvd_qth)
-                result['parishes_worked_multiplier'] += 1
+            ## Everyone gets county multiplier for counties, but only LA stations get state/province/DX multipliers
+            if rcvd_qth in processor.counties:
+                result['counties_worked'].add(rcvd_qth)
+                result['counties_worked_multiplier'] += 1
             
             # LA stations get state, province, and DX multipliers
             if result['location_type'] == 'LA-FIXED' or result['location_type'] == 'LA-ROVER':
@@ -151,7 +151,7 @@ def score_qsos(result: Dict, contest_year: str) -> None:
 
     # print("break before points")
     # Finished with points, now sum the individual multipliers
-    for i in ['parishes', 'states', 'provinces', 'dx']:
+    for i in ['counties', 'states', 'provinces', 'dx']:
         result['total_multipliers'] += result[f'{i}_worked_multiplier']
         
     ## score before bonuses
@@ -161,9 +161,9 @@ def score_qsos(result: Dict, contest_year: str) -> None:
     if result['worked_n5lcc']:
         result['final_score'] += CALLSIGN_BONUS_POINTS
 
-    ## Add rover bonus points for activated parishes
+    ## Add rover bonus points for activated counties
     if result['location_type'] == 'LA-ROVER':
-        result['rover_bonus_points'] = len(result['parishes_activated']) * ROVER_PARISH_BONUS
+        result['rover_bonus_points'] = len(result['counties_activated']) * ROVER_COUNTY_BONUS
         result['final_score'] += result['rover_bonus_points']
 
     ## Bonus for something outside of QSOs

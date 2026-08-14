@@ -51,15 +51,15 @@ def test_result_formatting():
         'total_qsos': 350,
         'valid_qsos': 313,
         'total_multipliers': 2,
-        'parishes_worked': {'ORL', 'JEF', 'STB', 'PLQ', 'TAN'},
-        'parishes_worked_multiplier': 5,
+        'counties_worked': {'ORL', 'JEF', 'STB', 'PLQ', 'TAN'},
+        'counties_worked_multiplier': 5,
         'states_worked': set(),
         'states_worked_multiplier': 0,
         'provinces_worked': set(),
         'provinces_worked_multiplier': 0,
         'dx_worked': set(),
         'dx_worked_multiplier': 0,
-        'parishes_activated': set(),
+        'counties_activated': set(),
         'rover_bonus_points': 0,
         'worked_n5lcc': True,
         'num_n5lcc_contacts': 3,
@@ -77,14 +77,14 @@ def test_result_formatting():
     # Verify key fields
     assert display_result['callsign'] == 'K5ABC'
     assert display_result['final_score'] == 1250
-    assert isinstance(display_result['parishes_worked'], list)
-    assert len(display_result['parishes_worked']) == 5
+    assert isinstance(display_result['counties_worked'], list)
+    assert len(display_result['counties_worked']) == 5
     assert isinstance(display_result['qsos_by_band'], list)
     
     print("✓ Result formatting successful!")
     print(f"  - Callsign: {display_result['callsign']}")
     print(f"  - Score: {display_result['final_score']}")
-    print(f"  - Parishes: {len(display_result['parishes_worked'])}")
+    print(f"  - Counties: {len(display_result['counties_worked'])}")
     print(f"  - Bands: {len([b for b in display_result['qsos_by_band'] if b['count'] > 0])}")
     print("✓ All result formatting tests passed!\n")
 
@@ -161,7 +161,7 @@ def test_json_serialization():
     mock_result = {
         'callsign': 'K5ABC',
         'final_score': 1250,
-        'parishes_worked': {'ORL', 'JEF', 'STB'},
+        'counties_worked': {'ORL', 'JEF', 'STB'},
         'qsos_by_band': {'80': 45, '40': 123}
     }
     

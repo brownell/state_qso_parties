@@ -1,1 +1,0 @@
-flyctl ssh sftp get data/database/laqp.db ~/Documents/LAQP/laqp.db

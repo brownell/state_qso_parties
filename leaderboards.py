@@ -9,6 +9,8 @@ Also saves individual rankings to contest_results.rankings field.
 
 import sqlite3
 import json
+import os
+from dotenv import load_dotenv
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -27,10 +29,7 @@ class LeaderboardGenerator:
         Args:
             db_path: Path to SQLite database file
         """
-        load_dotenv()
-        project_root = Path(__file__).resolve().parent  # or .parent.parent if .env is one level up
-        self.db_path = (project_root / os.getenv("DATABASE_FILE")).resolve()
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.db_path = Path(db_path)
     
     def generate_leaderboards(self, year: str, leaderboards_config: List, 
                             rankings_dict: Dict = None, 

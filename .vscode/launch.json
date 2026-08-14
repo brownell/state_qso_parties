@@ -4,40 +4,39 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
-        // {
-        //     "name": "Batch app",
-        //     "type": "debugpy",
-        //     "request": "launch",
-        //     "program": "batch.py",
-        //     "console": "integratedTerminal",
-        //     "python": "${workspaceFolder}/venv/bin/python"
-        // },
-        // {
-        //     "name": "Gen Final Rpt (batch)",
-        //     "type": "debugpy",
-        //     "request": "launch",
-        //     "program": "generate_final_report.py",
-        //     "console": "integratedTerminal",
-        //     "python": "${workspaceFolder}/venv/bin/python"
-        // },
-        // {
-        //     "name": "Generate Rankings (batch)",
-        //     "type": "debugpy",
-        //     "request": "launch",
-        //     "program": "generate_rankings.py",
-        //     "console": "integratedTerminal",
-        //     "python": "${workspaceFolder}/venv/bin/python"
-        // },
-        // {
-        //     "name": "Cross Check (batch)",
-        //     "type": "debugpy",
-        //     "request": "launch",
-        //     "program": "cross_check.py",
-        //     "console": "integratedTerminal",
-        //     "python": "${workspaceFolder}/venv/bin/python"
-        // },
         {
+            "name": "Batch app",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "batch.py",
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}/venv/bin/python"
+        },
+        {
+            "name": "Gen Final Rpt (batch)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "generate_final_report.py",
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}/venv/bin/python"
+        },
+        {
+            "name": "Generate Rankings (batch)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "generate_rankings.py",
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}/venv/bin/python"
+        },
+        {
+            "name": "Cross Check (batch)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "cross_check.py",
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}/venv/bin/python"
+        },
+                {
             "name": "WIN Batch app",
             "type": "debugpy",
             "request": "launch",
@@ -88,5 +87,6 @@
             "jinja": true,
             "justMyCode": true
         }
+        
     ]
 }
