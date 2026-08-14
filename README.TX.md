@@ -1,23 +1,18 @@
-# Texas QSO Party Log Processor
+# State QSO Party Log Processor
 
-### Contest log processing system for the Texas QSO Party, sponsored by the Texas DX Society.
-#### Adapted from Texas QSO Party software created by Charles Sanders, NO5W
+### Contest log processing system for the State QSO Parties
+### Used and sponsored by the Texas DX Society and the Jefferson Amateur Radio Club
+#### Initial development for TQP and LAQP by Brownell Chalstrom, KJ5BYZ and Charles Sanders, NO5W
 
 # Overview
 
 ## What it does and produces
-This software processes log files that have been captured and pre-processed by Bruce Horn's log upload system. LAQP's site hosted by Bruce is at https://laqp.contesting.com/
-
-The system produces and makes available on the web two things. The first is an individual html page (at the TQP website) for each operator. This site contains the operators certificate with his/her rankings in several catetegories.
-
-Second it contains an html page that contains the Final Report, showing all the leaderboards and commentary on the contest
+This software processes log files that have been captured and pre-processed by the log upload system created by Bruce Horn, WA7BNM, bhorn@hornucopia.com . LAQP's site hosted by Bruce is at https://laqp.contesting.com/. Log files MUST be obtained from this system. It does two important things. It makes sure the log file is valid Cabrillo. And it makes operators fill out a form and select from a list of options, and using that it "standardizes" the Cabrillo values. An example of this is the entry of the "CLUB" name for the TQP.
 
 ## How it does the work (high level)
 There are two parts of the system:
-1. The batch job is run once after all the logs are received. (It must be run in its entirety is additional logs are accepted.) More about the batch job next.
-1. The web interface. This presents a page to visitors of the QSO Party when they request the Results of the contest. (see below for more information about this application)
-
-Both parts of the sysstem are contained in the same Github epo, since they share some functions in common.
+1. The system is really two different apps that share common code. The first is a batch process that inputs the log files, cross-checks them, scores them and then writes the results to an Sqlite3 database. This is more compute intensive and usually run on a development computer. More about the batch job in the next section.
+1. The second app is a web app that uses the database to deliver individual operator results, including printable certificates; and to deliver the Final Report including overall results and leaderboards. This can be run on a very light web server. The Final Report is a single HTML file, which can be converted to a PDF for email and other distribution. The databasae contains data for ALL the years for which the contest's logs have been processed. It can be made available to others who might want to do their own analysis and reporting, for example comparing different years to each other, or tracking a specific operator's performance over time.
 
 ### Batch app - run once
 1. First all supporting data is read into the program (e.g. county abbreviations)
@@ -51,9 +46,9 @@ Both parts of the sysstem are contained in the same Github epo, since they share
   1. Next the Final Report is generated. This is a single HTML file that is stored on the system and is rendered in it's entirety when requested.
 
   ### Web app
-  It is meant to be included as a page in the Contest website.
+  The app is a page that is meant to be included as a page in the Contest website. It can be styled to be consistent with the rest of the site.
 
-  The web app renders a query page asking the user to select either a single operator's results or the Final Report. The visitor must specify which year for the results.
+  The web app renders a query page asking the visitor to select either a single operator's results or the Final Report. The visitor must specify which year for the results.
 
   For the Final Report, the app simply renders the full HTML file for the requested year.
 
@@ -65,7 +60,7 @@ The database software used is sqlite3. There is one record for each year-operato
 - indications of QSOs that will not be counted in the score
 - detailed stats about a log used in creating the total score and for presenting to visitors who request individual results
 - error and warning messages
-- ranking of the operator in every category in which he falls.
+- ranking of the operator in every category in which he/she falls.
 
 The schema is shown here:
 ```
@@ -138,11 +133,11 @@ The indices created to efficiently access the data are:
             ''')
 ```
 # Leaderboards
-All information about each leaderboard is contained in the config.py file. To add, modify, or remove a leaderboard from the Final Report. Each leaderboard constitutes a set of criteria and a ranking for each operator matching that ranking.
+All information about each leaderboard is contained in the leaderboard.py file, which is used to add, modify, or remove a leaderboard from the Final Report. Each leaderboard constitutes a set of criteria and a ranking for each operator matching that ranking.
 
 Each leaderboard is essentially a database query. Operators are queried from the database using the criteria for a category and the operators match that query are ranked in that category.
 
-To create the leaderboards, first a dictionary is made of short keys and the leaderboard title. This is the disctionary for the Louisianba QSO Party for 2026:
+To create the leaderboards, first a dictionary is made of short keys and the leaderboard title. This is the python dictionary for the Louisianba QSO Party for 2026:
 ```
 RANKINGS = {
     # All Operators
@@ -240,32 +235,26 @@ If an element of the 'and' list is a list of just two values, e.g. ['mode_catego
 
 If an element uses the 'in' construction, like [["location_type in ('NON-LA', 'DX')"]], this implies the location type must be EITHER 'NON-LA' OR 'DX'.
 # Technical Overview
-The system is written in Python. The Web app uses the Flask package to manage HTML requests. It is in a repository called 'laqp' in the JeffersonARC organization on Github.com
-## Batch system
+The system is written in Python. The Web app uses the Flask package to manage HTML requests. It is in a repository called 'state_qso_parties' in the https://github.com/brownell/state_qso_parties
 The batch system is run on a Linux system to product the results that are going to be used by the web system to serve the results to users visiting the contest website. Those results consist of:
-- the database, either laqp.db or tqp.db. This usually includes multiple years of data.
+- the database, party.db. This usually includes multiple years of data.
 - the final report(s) for each year, using a naming convention: final_report_<year>.html
 ## Web system
-The web system for LAQP is currently running on the Fly.io hosting system, at https://laqp.w5gad.org. It runs in a DOCKER container, and there are files to create the Fly.io Docker, including fly.toml, Dockerfile. There is also a docker-compose.yml for running the web system locally. It uses wsgi for running locally, but Fly.io uses nginx (I think).
+The web system for LAQP is currently running on the Fly.io hosting system, at https://laqp.w5gad.org. It runs in a DOCKER container, and there are files to create the Fly.io Docker, including fly.toml, Dockerfile. There is also a docker-compose.yml for running the web system locally. It uses wsgi for running locally, but Fly.io uses nginx (we think).
 
 ## File structure for both Batch and Web
-Resource files - like county abbreviations - live in the repo.
+Reference data files - like county abbreviations - live in the repo in /reference_data
 
-But the input log files and the output of the Batch system live elsewhere. The location of these other files can be changes in the .env or config.py files, but the default location is in a folder at the same level in the file system as the repo. It is structures like this
+But the input log files and the output of the Batch system live elsewhere. The location of these other files can be changed in the .env or config.py files, but the default location is in a folder at the same level in the file system as the repo. It is structures like this
 ```
-parent folder --- repo (laqp) --- reference_data (files like country abbreviations)
+parent folder --- repo (state_qso_party) --- reference_data (files like country abbreviations)
               |
-              --- data (laqp_data) --- database (laqp.db)
+              --- data (state_qso_party_data) --- database (party.db)
                                    |
                                    ---Final_reports --- final_report_<year>.html
                                    |
                                    --- batch_inputs (log files) --- <year> --- *.log, .cbr
 ```
-
-## LAQP full static website
-The repo also contains the static HTML, CSS, JS, and favicon files for the entier LAQP website. If a different contest has its own website, then the Fly.io website can just be used to render the pages in that sites "Results" section.
-
-
 # Converting to a different contest
 
 Here are some guildelines for someone wishing to use this software for a contest different from the Louisiana or Texas QSO Parties.
@@ -273,7 +262,7 @@ Here are some guildelines for someone wishing to use this software for a contest
 The software uses the word "county" instead of "parish", since that is what a new contest will have. (I guess it could be province.)
 
 There are several resource files required to run the system. Some are common to all US state QSO parties, and one is state specific:
-- tx_counties.txt
+- counties.txt (repo has Texas)
 - cty.plist
 - dxcc_entities.csv
 - states.txt
@@ -287,11 +276,10 @@ Much of the operation of the code will be common for most state QSO Parties, esp
 All the scoring is done in cross_check.py in a function called "score_qsos" and the other functions that it calls.
 
 ## Leaderboards/categories
-As described above, these are defined in config.py. A new contest may want to use parts of what is there or remove all of it and start fresh. 
+As described above, these are defined in leaderboard.py. A new contest may want to use parts of what is there or remove all of it and start fresh. 
 
 ## Database
 It will be easiest to use the sqlite3 database, but if another database is used, it may require some changes to the database.py file.
-
 
 ## Setup
 
@@ -299,7 +287,7 @@ It will be easiest to use the sqlite3 database, but if another database is used,
 Make sure your system is set up to do python development, including using environments like venv.
 
 ### Clone the repository
-Start with the main branch which is what is deployed at LAQP
+There is a branch called "distribution" which is kept identical to the "main" branch in the repo. This allows devs to keep the usual "dev" and "main" branches for development and deployment.
 
 ### Install Python Dependencies
 
@@ -319,7 +307,7 @@ There are many constants defined here which are used in the program.
 
 ### Batch Processing (Command Line)
 
-Here is how to process all the log files in /batch_input/<year>. Remember that the batch app must be run with all the log files being present. If any are added or removed, the database should be deleted and the batch app run again.
+Here is how to process all the log files in /batch_input/<year>. Remember that the batch app must be run with all the log files being present. If even a single log is added or removed, the database should be deleted and the batch app run again. This requirement is due to the cross-checking, which needs all the logs together.
 
 ```bash
 # cd to the repo
@@ -335,7 +323,7 @@ http://0.0.0.0:5000
 ```
 
 ### Fly.io
-It's best to read their documentation if using this hosting for the Web app. There is a good GUI for creating and deploying an app. You must set up some secrets manually before you can deploy.
+It's best to read their documentation if using this hosting for the Web app. There is a good GUI for creating and deploying an app. You should set up some secrets manually before you can deploy.
 
 ## Contact
 
@@ -343,6 +331,7 @@ Louisiana QSO Party
 Jefferson Amateur Radio Club   
 laqp@w5gad.org      
 Contest Manager: KJ5BYZ  
+or brownell.kj5byz@w5gad.org, no5w@w5gad.org, or brownell@chalstrom.com
 #
 #
 # Partial information - needs editing and restructuring

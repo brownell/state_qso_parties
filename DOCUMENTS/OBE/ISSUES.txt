@@ -1,4 +1,0 @@
-20260120:
----------------------------------------------------------------------
-need to get "claimed-score" if present and check with calculated score
-need list of TXQP global stats and make sure we are doing them all
