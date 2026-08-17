@@ -9,6 +9,32 @@
 ## What it does and produces
 This software processes log files that have been captured and pre-processed by the log upload system created by Bruce Horn, WA7BNM, bhorn@hornucopia.com . LAQP's site hosted by Bruce is at https://laqp.contesting.com/. Log files MUST be obtained from this system. It does two important things. It makes sure the log file is valid Cabrillo. And it makes operators fill out a form and select from a list of options, and using that it "standardizes" the Cabrillo values. An example of this is the entry of the "CLUB" name for the TQP.
 
+## Log Validation
+The log uploader system created by Bruce Horn, WA7BNM, bhorn@hornucopia.com does some of the work we would otherwise have to do. This is why it is REQUIRED
+- rewrites the CATEGORY- tags in the log header that correspond to the questions on the uploader web form based on the answers provided by the entrant so they're guaranteed to be valid. In the case of the TXQP, these are:
+    - CATEGORY-OPERATOR:
+    - CATEGORY-MODE:
+    - CATEGORY-POWER:
+    - CATEGORY-STATION:
+    - LOCATION:
+    - CLUB: (if a Texas club is selected/entered on the form)
+
+- It also creates the text string that describes the overall entry category derived from the CATEGORY- values and adds it to the header. For example: TX CWO SO LP
+
+- For QSO lines, the uploader checks that the following are valid for the contest:
+    - freq/band
+    - mode
+    - date
+    - time
+    - call-sent (checks that callsign is structured like a callsign, but doesn't check that the callsign is actually valid)
+    - rst-sent
+    - qth-sent (only checks that it's a text string containing the characters expected of a qth, but doesn't check that the value is valid)
+    - call-copied (same as call-sent)
+    - rst-copied
+    - qth-copied (same as qth-sent)
+
+- The uploader does no cross-checking of QSOs.
+
 ## How it does the work (high level)
 There are two parts of the system:
 1. The system is really two different apps that share common code. The first is a batch process that inputs the log files, cross-checks them, scores them and then writes the results to an Sqlite3 database. This is more compute intensive and usually run on a development computer. More about the batch job in the next section.

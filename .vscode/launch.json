@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "batch.py",
             "console": "integratedTerminal",
-            "python": "${workspaceFolder}/venv/bin/python"
+            "python": "${workspaceFolder}/.venv/bin/python"
         },
         {
             "name": "Gen Final Rpt (batch)",

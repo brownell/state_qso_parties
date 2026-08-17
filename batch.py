@@ -7,11 +7,19 @@ contest year specified in .env or config.py
 Batch Control program to process ALL the logs in the incoming directory
 """
 
-from pyhamtools import LookupLib, Callinfo
 from typing import Dict, List, Set, Optional
+import csv
+from pyhamtools import LookupLib, Callinfo
+from cabrillo.parser import parse_log_file
 
-from config.config import BATCH_INPUT_DIR
-from processor import process_batch_logs
+from config.config import (
+    BONUS_CALLSIGN, COUNTIES_FILE, BATCH_INPUT_DIR, OVERLAY_VALUE_OPTIONS, POWER_VALUE_OPTIONS, STATION_VALUE_OPTIONS, 
+    STATES_FILE, PROVINCES_FILE, EXTRA_BONUS_YEAR, EXTRA_BONUS_CALLS, EXTRA_BONUS_POINTS,
+    US_PREFIXES, CANADIAN_PREFIXES, QRZ_CALLSIGN, QRZ_PASSWORD,
+    PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE,
+    CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS,
+    PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES
+    )
 from database import save_result
 from cross_check import cross_check_all_logs
 from generate_rankings import generate_rankings
@@ -38,17 +46,16 @@ def main(contest_year: str):
         the first QTH sent in a log.
         """
         
-        def __init__(self, counties_file: Path, states_file: Path, 
-                     provinces_file: Path, dxcc_entities_file: Path):
+        def __init__(self):
             """Initialize with reference data files"""
             # Load counties, states, and provinces
-            with open(counties_file, 'r') as f:
+            with open(COUNTIES_FILE, 'r') as f:
                 self.counties = set(line.strip().upper() for line in f if line.strip())
 
-            with open(states_file, 'r') as f:
+            with open(STATES_FILE, 'r') as f:
                 self.states = set(line.strip().upper() for line in f if line.strip())
 
-            with open(provinces_file, 'r') as f:
+            with open(PROVINCES_FILE, 'r') as f:
                 self.provinces = set(line.strip().upper() for line in f if line.strip())
             
             # to get country name and ADIF number from callsign
@@ -57,27 +64,24 @@ def main(contest_year: str):
 
             ## create DXCC code (same as ADIF number) to DXCC entity. Needed for DX mults
             self.dxcc_entities = [None] * 750
-            with open(dxcc_entities_file, 'r') as f:
+            with open(DXCC_ENTITIES_FILE, 'r') as f:
                 reader = csv.reader(f)
                 for row in reader:
                     self.dxcc_entities[int(row[0])] = row[1].split('  ')[0]
             
             self.first_call_qth = None  # To track the sent QTH in a log for checking other QSOs against it
+
+            self.results = []  # List to hold results for all logs processed
         
         def _init_result(self, contest_year: str) -> Dict:
             """Initialize result dictionary with standardized structure"""
             return {
+                'attribs': {},  # Parsed attributes from Cabrillo header
                 'year': contest_year,
-                'callsign': '',
-                'name': '',
-                'club': '',
                 'exchange': '',     # from first QSO in this operator's log
-                'overlay': None,  # 'WIRES', 'TB-WIRES', 'POTA', or None
-                'location_type': 'NON-LA',  # 'DX', 'NON-LA', 'LA-FIXED', 'LA-ROVER'
+                'category': 'NON-LA',  # 'DX', 'NON-LA', 'LA-FIXED', 'LA-ROVER'
                 'dxcc_code': 0,
                 'dxcc_entity': '',
-                'mode_category': 'MIXED',  # 'PHONE', 'CW/DIGITAL', 'MIXED'
-                'power_level': 'LOW',  # 'QRP', 'LOW', 'HIGH'
                 'final_score': 0,
                 'qso_points': 0,
                 'total_qsos': 0, # total number validated, whether dups or not
@@ -99,22 +103,25 @@ def main(contest_year: str):
                 'qsos_by_mode': {'Phone': 0, 'CW/Digital': 0},
                 'qsos_by_hour': {i: 0 for i in range(1400,2600, 100)},  # Hour of day (1400 - 2500)
                 'bands_worked': set(),
-                'claimed_score': 0,
                 'errors': [],
                 'warnings': [],
-                'is_valid': True,
-                'qsos': [],
-                # for processing the Cabrillo header records
-                '_header': {}
+                'is_valid': True
             }
-        
-    
+    shared = SHARED(contest_year)
+    if BATCH_INPUT_DIR:
+            with open(BATCH_INPUT_DIR, 'r', encoding='utf-8', errors='replace') as f:
+                cab = parse_log_file(f)
+                new_result = shared.init_result(contest_year)
+                new_result['attribs'] = vars(cab)
+                shared.results.append(new_result)
+    print(f"Processed {len(shared.results)} logs for year {contest_year}.")
+    print("stop")
 
     # Process all logs
     # print(f"before process_batch_logs, input_dir: {input_dir}")
-    results = process_batch_logs(input_dir, contest_year)
+    # results = process_batch_logs(input_dir, contest_year)
 
-    results, stats = cross_check_all_logs(results, contest_year)
+    # results, stats = cross_check_all_logs(results, contest_year)
 
 
     #  Save results to database (valid and invalid)
@@ -122,7 +129,7 @@ def main(contest_year: str):
     invalid_count = 0
     saved_count = 0
     
-    for result in results:
+    for result in shared.results:
         
         if result['is_valid']:
             valid_count += 1
