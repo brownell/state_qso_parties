@@ -11,6 +11,7 @@ from typing import Dict, List, Set, Optional
 import csv
 from pyhamtools import LookupLib, Callinfo
 from cabrillo.parser import parse_log_file
+from collections import defaultdict
 
 from config.config import (
     BONUS_CALLSIGN, COUNTIES_FILE, BATCH_INPUT_DIR, OVERLAY_VALUE_OPTIONS, POWER_VALUE_OPTIONS, STATION_VALUE_OPTIONS, 
@@ -20,6 +21,7 @@ from config.config import (
     CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS,
     PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES
     )
+from read_prepare import read_prepare
 from database import save_result
 from cross_check import cross_check_all_logs
 from generate_rankings import generate_rankings
@@ -72,8 +74,23 @@ def main(contest_year: str):
             self.first_call_qth = None  # To track the sent QTH in a log for checking other QSOs against it
 
             self.results = []  # List to hold results for all logs processed
-        
-        def _init_result(self, contest_year: str) -> Dict:
+            self.statistics = {
+                'total_logs': 0,
+                'valid_logs': 0,
+                'invalid_logs': 0,
+                'total_qsos': 0,
+                'valid_qsos': 0,
+                'total_multipliers': 0,
+                'counties_worked': set(),
+                'states_worked': set(),
+                'provinces_worked': set(),
+                'dx_worked': set()
+            }
+            self.all_callsigns = set()  # To track all callsigns that submitted logs for UNIQUE detection
+            self.qso_index_dict = defaultdict(list)
+
+  # Each of the objects in self.results is a dictionary with the following structure:      
+        def _init_result(self) -> Dict:
             """Initialize result dictionary with standardized structure"""
             return {
                 'attribs': {},  # Parsed attributes from Cabrillo header
@@ -107,19 +124,12 @@ def main(contest_year: str):
                 'warnings': [],
                 'is_valid': True
             }
-    shared = SHARED(contest_year)
-    if BATCH_INPUT_DIR:
-            with open(BATCH_INPUT_DIR, 'r', encoding='utf-8', errors='replace') as f:
-                cab = parse_log_file(f)
-                new_result = shared.init_result(contest_year)
-                new_result['attribs'] = vars(cab)
-                shared.results.append(new_result)
-    print(f"Processed {len(shared.results)} logs for year {contest_year}.")
-    print("stop")
+    #END of SHARED class
 
-    # Process all logs
-    # print(f"before process_batch_logs, input_dir: {input_dir}")
-    # results = process_batch_logs(input_dir, contest_year)
+    shared = SHARED(contest_year)
+
+    read_prepare()
+    
 
     # results, stats = cross_check_all_logs(results, contest_year)
 
