@@ -22,11 +22,10 @@ from config.config import (
     CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS,
     PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES
     )
-from read_prepare import read_prepare
 from database import save_result
-from cross_check import cross_check
 from generate_rankings import generate_rankings
 from generate_final_report import generate_final_report_html
+from process import process
 
 def main(contest_year: str):
     import sys
@@ -141,20 +140,9 @@ def main(contest_year: str):
             }
     #END of SHARED class
 
-    shared = SHARED(contest_year)
+    shared = SHARED()
 
-    '''
-    Read in all the log files, save the Cabrillo object and the data, 
-    save values that will be needed later
-    '''
-    read_prepare()
-
-    '''
-    Do the cross-checking, marking qsos that fail the match test.
-    Warning messages are generated when qso fails match
-    Failed qsos marked invalid so not counted in score
-    '''
-    cross_check()
+    process()
     
 
 
