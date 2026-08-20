@@ -39,7 +39,7 @@ from typing import Dict, List, Set, Optional
 from datetime import datetime
 from unittest import result
 import csv
-from batch import shared as s
+from share import shared as s
 from cabrillo.parser import parse_log_file
 from cabrillo.qso import frequency_to_band
 
@@ -50,7 +50,7 @@ from config.config import (
     STATES_FILE, PROVINCES_FILE, EXTRA_BONUS_YEAR, EXTRA_BONUS_CALLS, EXTRA_BONUS_POINTS,
     US_PREFIXES, CANADIAN_PREFIXES, QRZ_CALLSIGN, QRZ_PASSWORD,
     PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE,
-    CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS,
+    CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS, CONTEST_YEAR,
     PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES, BATCH_INPUT_DIR
 )
 
@@ -64,7 +64,7 @@ def read_prepare():
     - save cab Cabrillo object both as object and dict of vars
     """
     if BATCH_INPUT_DIR:
-            with open(BATCH_INPUT_DIR, 'r', encoding='utf-8', errors='replace') as f:
+            with open(BATCH_INPUT_DIR + '/' + CONTEST_YEAR, 'r', encoding='utf-8', errors='replace') as f:
                 try:
                   cab = parse_log_file(f, ignore_unknown_key=True)
                 except Exception as e:
