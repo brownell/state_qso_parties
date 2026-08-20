@@ -16,6 +16,22 @@ No scoring can be done at this point because we have not done cross-checking of 
 Called only by batch.py
 """
 
+"""
+This module reads each of the log files in the incoming directory. It uses the 
+Cabrillo parser to read and parse the log files. Most of the validation of the log file
+has been done by Bruce Horn's log uploaders, but the Cabrillo parser will catch some errors and
+do additional validation of the log file.
+
+Some of the processing of log files must wait until all the files are in hand, like cross-checking, scoring, and reporting. But other tasks are done as the individual files are read in, indluding:
+- parse the header and QSO lines into a cabrillo object
+- validate both the header and QSO lines
+- extract the QSO information into a more convenient data structure for later use
+- create an qso_index_dict index file of QSOs key'ed by received call (dx_call in the cabrillo object), 
+        which is used in cross-checking for quick lookup
+- create a set of all callsigns that submitted logs for UNIQUE detection
+
+"""
+
 from pprint import pprint
 import sys
 from pathlib import Path
@@ -25,6 +41,7 @@ from unittest import result
 import csv
 from batch import shared as s
 from cabrillo.parser import parse_log_file
+from cabrillo.qso import frequency_to_band
 
 # Import your existing modules
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -41,49 +58,44 @@ def read_prepare():
     """
     Main loop to read, parse, and validate log files in the incoming directory.
     This function is called by batch.py and processes all logs for the specified contest year.
+
+    For each log file:
+    - parse file
+    - save cab Cabrillo object both as object and dict of vars
     """
-    results_index = -1
     if BATCH_INPUT_DIR:
             with open(BATCH_INPUT_DIR, 'r', encoding='utf-8', errors='replace') as f:
                 try:
                   cab = parse_log_file(f, ignore_unknown_key=True)
                 except Exception as e:
-                    print(f"Error parsing log file {BATCH_INPUT_DIR}: {e}")
+                    print(f"Error parsing log file {f}: {e}")
                     return
 
                 new_result = s.init_result()
                 new_result['cab'] = cab
-                new_result['attribs'] = vars(cab)
+                new_result['header_attribs'] = vars(cab)
+
+                # Add the callsign to the set of all callsigns for UNIQUE detection
+                s.all_callsigns.add(new_result['header_attribs']['callsign'])
+
+                update_qso_index_dict(cab.qso)
+                extract_qso_info(new_result)
                 s.results.append(new_result)
-                s.all_callsigns.add(new_result['attribs']['callsign'])
-                update_qso_index(new_result['attribs'])
-                extract_qso_info(cab.qso, results_index)
-                results_index += 1
-    
-def update_qso_index(a):
+   
+def update_qso_index_dict(qsos):
     """
-    Update the QSO index for quick lookup of QSOs by band, mode, and received call.
-    This function is called after reading and preparing the log files.
+    Update the qso_index_dict for quick lookup of QSOs by 
+    received call (dx_call in the cabrillo object) plus mode plus band
+    This function is called after reading and preparing each log file.
     """
-    for qso in a['qso']:
-        s.qso_index_dict[qso.call].append(qso)
+    for qso in qsos:
+        s.qso_index_dict[s.generate_index_key(qso, True)].append(qso)
         
-def extract_qso_info(qso_list, results_index):
-    s.results[results_index]['qsos'] = []
-    
+def extract_qso_info(new_result):
+
+    qso_list = vars(new_result['cab'].qso)
     for qso in qso_list:
-        qso_info = {
-            'date': qso.date,
-            'de_call': qso.de_call,
-            'de_exch': qso.de_exch, 
-            'dx_call': qso.de_call, 
-            'dx_exch': qso.dx_exch, 
-            'freq': qso.freq,
-            'mo': qso.mo,
-            't': qso.t,
-            'valid': qso.valid
-        }
-        s.results[results_index]['qsos'].append(qso_info)
+        new_result['qso_data'].append(qso_list)
      
 
     

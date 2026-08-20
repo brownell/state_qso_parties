@@ -31,26 +31,34 @@ def cross_check():
         We use the cabrillo python package to check for duplicate QSOs and to cross-check the QSOs in each log against the other logs.  The Cabrillo package has a QSO.match() function that checks for matching QSOs in two logs.  It returns True if the QSOs match, False if they do not match, and None if the QSO is not found in the other log.
     '''
     
-    for results_index in range(len(s.results)):
-        for qso_index in range(len(s.results[results_index]['cab'].qso)):
-            qso = s.results[results_index]['cab'].qso[qso_index]
+    for result in s.results:
+        for qso_i, qso in enumerate(result['cab'].qso):
+            # Skip invalid QSOs
             if not qso.valid:
-                continue  # Skip invalid QSOs
-            # see if this dx_call is in the qso_index
-            qso = s.qso_index.get(s.results[i].cab.callsign, [])
-        if not qso:
-            return False
-    
-        else:
-            match = QSO.match(s.results[i].cab, qso)
-            if match == True:  # qso cross-checked and scored
-                score
-                return False
+                s.result.errors.append(f"qso with {qso.dx_call} was not valid")
+                continue  
 
-        '''
-        If the QSO is valid, then we score it, first checking whether it is a duplicate.
-        
-        There are two types of duplicates: a point dup and a mult dup.  A point dup is when all of band/mode/rcvd_call are the same, in which case it should not count for points or multipliers.  A mult dup is when a QSO is a duplicate for multiplier purposes (same band/mode/rcvd_qth) but not a point dup (different rcvd_call).  These get qso points (if otherwise valid) but not multipliers.
-        '''
-        
+            # receiving call did not submit a log - UNIQUE
+            if qso.dx_call not in s.all_callsigns:
+                continue
+
+            else:
+                # from the qso_index_dict, get all POTENTIAL matches, based
+                # on callsign, exchange, mode, and band
+                potential_matches = s.qso_index_dict(s.generate_index_key(qso, False))
+
+                if len(potential_matches) == 0:
+                    # this should not be possible.
+                    print(f"***  IMPOSSIBLE: callsign {qso.dx_call} was in all_callsigns, but nothing from qso_index_dict")
+                    continue
+
+                for p in potential_matches:
+                    match = QSO.match(qso, p)
+                    if  match:  # qso cross-checked
+                        break
+                if not match:
+                    qso.valid = False
+                    result['qso_data'][qso_i].valid = False
+                    s.result.warnings.append(f"qso found no match with {qso.dx_call} even though dx did submit a log")
+       
         return True
