@@ -37,5 +37,5 @@ pyhamtools>=0.12.0
 pycountry>=26.2.16
 dotenv>=0.9.9
 
-cabrillo>=0.3.0
+-e ../cabrillo
 
