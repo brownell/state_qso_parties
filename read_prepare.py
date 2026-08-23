@@ -62,20 +62,22 @@ def read_prepare(s):
     - parse file
     - save cab Cabrillo object both as object and dict of vars
     """
+    input_dir =  BATCH_INPUT_DIR + "/" + CONTEST_YEAR
+    SCRIPT_DIR = Path(__file__).resolve().parent
+    input_path = SCRIPT_DIR.parent / "tqp_data" / "batch_input" / CONTEST_YEAR
 
-    input_dir = BATCH_INPUT_DIR + '/'  + CONTEST_YEAR + '/'
-    filenames = [p.name for p in Path(input_dir).iterdir() if p.is_file()]
+    filenames = [p.name for p in input_path.iterdir() if p.is_file()]
     for file in filenames:
         try:
-            cab = parse_log_file(input_dir + file, ignore_unknown_key=True, check_categories=False,
-                   ignore_order=False, check_mode=False)
-            print(f"parsing {cab.callsign}")
+            cab = parse_log_file(input_dir + "/" + file, ignore_unknown_key=True, check_categories=False,
+                   ignore_order=True, check_mode=False)
         except Exception as e:
             print(f"Error parsing log file {file}: {e}")
             continue
 
         new_result = s._init_result()
         new_result['cab'] = cab
+        new_result['callsign'] = cab.callsign
         new_result['header_attribs'] = vars(cab)
 
         # Add the callsign to the set of all callsigns for UNIQUE detection

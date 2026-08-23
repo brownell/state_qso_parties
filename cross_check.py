@@ -35,17 +35,16 @@ def cross_check(s):
         return False
     
     for result in s.results:
-        print(f"cross-checking {result['callsign']}")
         for qso_i, qso in enumerate(result['cab'].qso):
             # Skip invalid QSOs
             if not qso.valid:
                 result["errors"].append(f"qso with {qso.dx_call} was not valid")
-                print(f"qso with {qso.dx_call} was not valid")
+                print(f"qso for {result['callsign']}: qso with {qso.dx_call} was not valid")
                 continue  
 
             # receiving call did not submit a log - UNIQUE
             if qso.dx_call not in s.all_callsigns:
-                print(f"for qso {vars(qso)} {qso.dx_call} did not submit a log")
+                # print(f"for qso {vars(qso)} {qso.dx_call} did not submit a log")
                 continue
 
             else:
@@ -55,7 +54,7 @@ def cross_check(s):
 
                 if len(potential_matches) == 0:
                     # this should not be possible.
-                    print(f"***  IMPOSSIBLE: callsign {qso.dx_call} was in all_callsigns, but nothing from qso_index_dict")
+                    print(f"qso for {result['callsign']}: dx_call {qso.dx_call} was in all_callsigns, but nothing from qso_index_dict. COULD be a mismatch time/band/mode")
                     continue
 
                 for p in potential_matches:
@@ -66,7 +65,7 @@ def cross_check(s):
                     qso.valid = False
                     result['qso_data'][qso_i]["valid"] = False
                     result["warnings"].append(f"qso found no match with {qso.dx_call} even though dx did submit a log")
-                    print(f"qso {vars(qso)} found no match with {qso.dx_call} even though dx did submit a log")
+                    print(f"qso for {result['callsign']} found no match with {qso.dx_call} even though dx did submit a log")
        
     return True
 
