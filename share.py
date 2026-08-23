@@ -11,7 +11,7 @@ from config.config import (
     STATES_FILE, PROVINCES_FILE, EXTRA_BONUS_YEAR, EXTRA_BONUS_CALLS, EXTRA_BONUS_POINTS,
     US_PREFIXES, CANADIAN_PREFIXES, QRZ_CALLSIGN, QRZ_PASSWORD,
     PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE,
-    CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS,
+    CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS, CONTEST_YEAR,
     PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES, COUNTIES_FILE, STATES_FILE, PROVINCES_FILE
     )
 import sys
@@ -19,7 +19,6 @@ from pathlib import Path
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 input_dir = Path(f"{BATCH_INPUT_DIR}/{CONTEST_YEAR}")
-print(f"Processing logs from directory: {input_dir}")
 
 '''
 Much of the processing of log files is done with the log data in memory in a large
@@ -85,8 +84,8 @@ class SHARED:
         else:
             return qso.dx_call + qso.dx_exch[1] + qso.mo + frequency_to_band_m(qso.freq)
 
-# One of these is created for each log file
-# Each of the objects in self.results is a python with the following structure:      
+    # One of these is created for each log file
+    # Each of the objects in self.results is a python with the following structure:      
     def _init_result(self) -> Dict:
         """Initialize result dictionary with standardized structure"""
         return {
@@ -94,7 +93,7 @@ class SHARED:
             'cab': None,    # the Cabrillo object from the cabrillo.parser
             'header_attribs': {},  # Parsed attributes from Cabrillo header
             'qso_data': [],     # list of dicts, one for each qso
-            'year': contest_year,
+            'year': CONTEST_YEAR,
             'exchange': '',     # from first QSO in this operator's log
             'category': 'NON-LA',  # 'DX', 'NON-LA', 'LA-FIXED', 'LA-ROVER'
             'dxcc_code': 0,
@@ -125,5 +124,3 @@ class SHARED:
             'is_valid': True
         }
 #END of SHARED class
-
-shared = SHARED()

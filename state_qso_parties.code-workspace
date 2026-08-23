@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../cabrillo"
+		},
+		{
+			"path": "../tqp_data"
 		}
 	],
 	"settings": {}

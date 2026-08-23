@@ -1,5 +1,5 @@
 """
-Texas QSO Party - Configuration
+State QSO Party - Configuration
 Application logic and contest rules (NOT secrets/credentials)
 
 This file must be copied to config.py to do a run as TQP

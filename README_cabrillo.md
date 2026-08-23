@@ -11,7 +11,7 @@ A Python library to parse Cabrillo-format amateur radio contest logs, with no ex
 
 ```python
 >>> from cabrillo.parser import parse_log_file
->>> cab = parse_log_file('../laqp_data/batch_input/2026/aa0aw.log',ignore_unknown_key=True)
+>>> cab = parse_log_file('../tqp_data/batch_input/2025/AA0AW.log', ignore_unknown_key=True, check_categories=False, ignore_order=False, check_mode=False)
 >>> cab.callsign
 'AA1ZZZ'
 >>> cab.qso

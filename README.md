@@ -32,6 +32,7 @@ The log uploader system created by Bruce Horn, WA7BNM, bhorn@hornucopia.com does
     - call-copied (same as call-sent)
     - rst-copied
     - qth-copied (same as qth-sent)
+    parse_log_file('../tqp_data/batch_input/2025/AA0AW.log', ignore_unknown_key=True, check_categories=False, ignore_order=False, check_mode=False)
 
 - The uploader does no cross-checking of QSOs.
 

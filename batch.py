@@ -19,7 +19,7 @@ from config.config import (
     STATES_FILE, PROVINCES_FILE, EXTRA_BONUS_YEAR, EXTRA_BONUS_CALLS, EXTRA_BONUS_POINTS,
     US_PREFIXES, CANADIAN_PREFIXES, QRZ_CALLSIGN, QRZ_PASSWORD,
     PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE,
-    CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS,
+    CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS, CONTEST_YEAR,
     PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES
     )
 from database import save_result
@@ -27,27 +27,28 @@ from generate_rankings import generate_rankings
 from generate_final_report import generate_final_report_html
 from read_prepare import read_prepare
 from cross_check import cross_check
+from share import SHARED
 
-def batch():
-
+def main(contest_year):
     '''
         Read in all the log files, save the Cabrillo object and the data, 
         save values that will be needed later
     '''
-    read_prepare()
+    read_prepare(context)
 
     '''
     Do the cross-checking, marking qsos that fail the match test.
     Warning messages are generated when qso fails match
     Failed qsos marked invalid so not counted in score
     '''
-    cross_check()
+    cross_check(context)
 
+print(f"after cross-check results - len(context._results)")
 
     #  Save results to database (valid and invalid)
-    valid_count = 0
-    invalid_count = 0
-    saved_count = 0
+    # valid_count = 0
+    # invalid_count = 0
+    # saved_count = 0
     
     # for result in shared.results:
         
@@ -97,4 +98,5 @@ if __name__ == "__main__":
     else:
         year = CONTEST_YEAR
     print(f"{'*' * 10} Processing logs for year: {year}")
+    context = SHARED()
     main(year)
