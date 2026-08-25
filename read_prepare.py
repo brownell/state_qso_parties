@@ -68,24 +68,30 @@ def read_prepare(s):
 
     filenames = [p.name for p in input_path.iterdir() if p.is_file()]
     for file in filenames:
+        if file == 'w6afa.log':
+            print("BREAK")
         try:
             cab = parse_log_file(input_dir + "/" + file, ignore_unknown_key=True, check_categories=False,
                    ignore_order=True, check_mode=False)
         except Exception as e:
+            if file:
+                s.rejected_logs.add(file)
             print(f"Error parsing log file {file}: {e}")
             continue
 
         new_result = s._init_result()
         new_result['cab'] = cab
-        new_result['callsign'] = cab.callsign
+        new_result['callsign'] = cab.callsign.upper()
         new_result['header_attribs'] = vars(cab)
 
         # Add the callsign to the set of all callsigns for UNIQUE detection
-        s.all_callsigns.add(new_result['header_attribs']['callsign'])
+        s.all_callsigns.add(new_result['callsign'])
 
         update_qso_index_dict(s, cab.qso)
         extract_qso_info(new_result)
         s.results.append(new_result)
+
+    print('BREAK')
    
 def update_qso_index_dict(s, qsos):
     """
@@ -94,7 +100,13 @@ def update_qso_index_dict(s, qsos):
     This function is called after reading and preparing each log file.
     """
     for qso in qsos:
-        s.qso_index_dict[s._generate_index_key(qso, True)].append(qso)
+        s.cross_check_stats['total_qsos'] += 1
+        k = s._generate_index_key(qso, False) # key for myself
+        # print(f"k: {k}, my call {qso.de_call} his call {qso.dx_call}")
+        s.qso_index_dict[k].append(qso)
+        # print(f"added key {k} to qso_index_dict")
+        if qso.de_call.upper() in ['N5T', 'W6AFA'] and qso.dx_call.upper() in ['N5T', 'W6AFA']:
+            print('BREAK')
         
 def extract_qso_info(new_result):
     qso_list = new_result['cab'].qso

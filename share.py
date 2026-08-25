@@ -59,7 +59,23 @@ class SHARED:
         self.first_call_qth = None  # To track the sent QTH in a log for checking other QSOs against it
 
         self.results = []  # List to hold results for all logs processed
-
+        '''
+            When cross checking, there are four results:
+            - QSO has a match in other log
+            - NIL - your claimed contact submitted a log, but no matching QSO in it - no points or penalty
+            - BUSTED(B) - QSO in contact's log, but something does not match - no points or penalty
+            - UNIQUE(U) - claimed contact did not submit a log - points
+        '''
+        self.cross_check_stats = {
+            'total_qsos': 0,
+            'nils': 0,
+            'busteds': 0,
+            'uniques': 0,
+            'parser_not_valid': 0,
+            # for a qso, the dx_call has a log, but there are NO potential matches
+            'dx_log_de_missing': 0 
+        }
+        self.busteds = []
         # not sure this is needed
         # self.statistics = {
         #     'total_logs': 0,
@@ -74,15 +90,16 @@ class SHARED:
         #     'dx_worked': set()
         # }
         self.all_callsigns = set()  # To track all callsigns that submitted logs for UNIQUE detection
+        self.rejected_logs= set()
         self.qso_index_dict = defaultdict(list)
 
-    def _generate_index_key(self, qso, store):
+    def _generate_index_key(self, qso, mirror):
         # to generate the index key for the qso_index_dict
         # this is used to search for matches in cross_check
-        if store:
-            return qso.de_call + qso.de_exch[1] + qso.mo + frequency_to_band_m(qso.freq)
+        if mirror == False:
+            return qso.de_call.upper() + qso.de_exch[1].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
         else:
-            return qso.dx_call + qso.dx_exch[1] + qso.mo + frequency_to_band_m(qso.freq)
+            return qso.dx_call.upper() + qso.dx_exch[1].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
 
     # One of these is created for each log file
     # Each of the objects in self.results is a python with the following structure:      
