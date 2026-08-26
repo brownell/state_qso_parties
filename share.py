@@ -66,31 +66,27 @@ class SHARED:
             - BUSTED(B) - QSO in contact's log, but something does not match - no points or penalty
             - UNIQUE(U) - claimed contact did not submit a log - points
         '''
-        self.cross_check_stats = {
+        self.stats = {
+            'total_logs': 0,
+            'valid_logs': 0,
+            'rejected_logs': 0,
+            'rejected_logs_files': [], # callsigns of PARSER not_valids
             'total_qsos': 0,
+            'qso_valids': 0,
+            'qso_parser_not_valid': 0,
+            'calls_w_not_valid_qsos': set(),
             'nils': 0,
             'busteds': 0,
+            'busted_calls': [],
             'uniques': 0,
-            'parser_not_valid': 0,
-            # for a qso, the dx_call has a log, but there are NO potential matches
-            'dx_log_de_missing': 0 
+            'dx_log_de_missing': 0,
+            'total_multipliers': 0,
+            'counties_worked_names': set(),
+            'states_worked_names': set(),
+            'provinces_worked_names': set(),
+            'dx_worked_names': set()
         }
-        self.busteds = []
-        # not sure this is needed
-        # self.statistics = {
-        #     'total_logs': 0,
-        #     'valid_logs': 0,
-        #     'invalid_logs': 0,
-        #     'total_qsos': 0,
-        #     'valid_qsos': 0,
-        #     'total_multipliers': 0,
-        #     'counties_worked': set(),
-        #     'states_worked': set(),
-        #     'provinces_worked': set(),
-        #     'dx_worked': set()
-        # }
         self.all_callsigns = set()  # To track all callsigns that submitted logs for UNIQUE detection
-        self.rejected_logs= set()
         self.qso_index_dict = defaultdict(list)
 
     def _generate_index_key(self, qso, mirror):

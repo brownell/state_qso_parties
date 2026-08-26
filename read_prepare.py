@@ -68,17 +68,16 @@ def read_prepare(s):
 
     filenames = [p.name for p in input_path.iterdir() if p.is_file()]
     for file in filenames:
-        if file == 'w6afa.log':
-            print("BREAK")
+        s.stats["total_logs"] += 1
         try:
             cab = parse_log_file(input_dir + "/" + file, ignore_unknown_key=True, check_categories=False,
                    ignore_order=True, check_mode=False)
         except Exception as e:
             if file:
-                s.rejected_logs.add(file)
-            print(f"Error parsing log file {file}: {e}")
+                s.stats["rejected_logs"] += 1
+                s.stats["rejected_logs_files"].append(file)
             continue
-
+        s.stats["valid_logs"] += 1
         new_result = s._init_result()
         new_result['cab'] = cab
         new_result['callsign'] = cab.callsign.upper()
@@ -87,26 +86,26 @@ def read_prepare(s):
         # Add the callsign to the set of all callsigns for UNIQUE detection
         s.all_callsigns.add(new_result['callsign'])
 
-        update_qso_index_dict(s, cab.qso)
+        update_qso_index_dict(s, new_result, cab.qso)
         extract_qso_info(new_result)
         s.results.append(new_result)
-
-    print('BREAK')
    
-def update_qso_index_dict(s, qsos):
+def update_qso_index_dict(s, new_result, qsos):
     """
     Update the qso_index_dict for quick lookup of QSOs by 
     received call (dx_call in the cabrillo object) plus mode plus band
     This function is called after reading and preparing each log file.
     """
     for qso in qsos:
-        s.cross_check_stats['total_qsos'] += 1
-        k = s._generate_index_key(qso, False) # key for myself
-        # print(f"k: {k}, my call {qso.de_call} his call {qso.dx_call}")
-        s.qso_index_dict[k].append(qso)
-        # print(f"added key {k} to qso_index_dict")
-        if qso.de_call.upper() in ['N5T', 'W6AFA'] and qso.dx_call.upper() in ['N5T', 'W6AFA']:
-            print('BREAK')
+        s.stats['total_qsos'] += 1
+        if not qso.valid:
+            s.stats['qso_parser_not_valid'] += 1
+            s.stats['calls_w_not_valid_qsos'].add(new_result['callsign'])
+            continue
+        s.stats['qso_valids'] += 1
+        k = s._generate_index_key(qso, False) # FALSE = key for myself
+        if len(s.qso_index_dict[k]) == 0:
+            s.qso_index_dict[k].append(qso)
         
 def extract_qso_info(new_result):
     qso_list = new_result['cab'].qso
