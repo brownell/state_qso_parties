@@ -35,8 +35,9 @@ def cross_check(s):
         return False
     c = s.stats
     r = 0
-    for result in s.results:
-        r += 1
+    for result in s.results:        
+        if result['callsign'] in ['AA0AW', 'K5OT', 'KA5D', 'KK5TY', 'N5NA', 'W5LO']:
+            print('BREAK')
         for qso_i, qso in enumerate(result['cab'].qso):
             print(f"result {r} {result['cab'].callsign} qso {qso_i} de {qso.de_call} dx {qso.dx_call} ")
             # if result['callsign'].upper() == 'AA0AW' and qso.dx_call.upper() == 'N5OT':
@@ -62,7 +63,8 @@ def cross_check(s):
                 #     print('BREAK')
                 if len(potential_matches) == 0:
                     s.stats['dx_log_de_missing'] += 1
-                    s.stats['busteds'] += 1
+                    s.stats['nils'] += 1
+                    s.stats['nill_calls'].append([qso.de_call, qso.dx_call])
                     qso.valid = False
                     result['qso_data'][qso_i]['valid'] = False
                     # print(f"qso for {result['callsign']}: dx_call {qso.dx_call} has log but no QSO for de_call with same exchange, mode, and band")
@@ -84,13 +86,13 @@ def cross_check(s):
                         but no matching qso was found in the log of the dx_call
                     '''
                     if not good_qso:
-                        if keep_qso and keep_qso.de_call == "AA0AW":
+                        if qso and qso.de_call == "AA0AW":
                             print('BREAK')
                         c['busteds'] += 1
-                        c['busted_calls'].append([keep_qso.de_call, keep_qso.dx_call])
-                        keep_qso.valid = False
-                        result['qso_data'][keep_i]["valid"] = False
-                        result["warnings"].append(f"qso found no match with {keep_qso.dx_call} even though dx did submit a log")
+                        c['busted_calls'].append([qso.de_call, qso.dx_call])
+                        qso.valid = False
+                        result['qso_data'][qso_i]["valid"] = False
+                        result["warnings"].append(f"busted qso found no match with {qso.dx_call} even though dx did submit a log")
                    
                 
     print(f"end of cross-check")

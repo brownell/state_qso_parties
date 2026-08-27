@@ -1,3 +1,517 @@
+{'callsign': 'AA0AW', 'cab': <cabrillo.cabrillo.Cabrillo object at 0x000002BA3BA6BA10>, 'header_attribs': {'callsign': 'AA0AW', 'operators': [...], 'contest': 'TX-QSO-PARTY', 'claimed_score': 6156, 'certificate': None, 'category_operator': 'SINGLE-OP', 'category_assisted': 'ASSISTED', 'category_band': 'ALL', 'category_power': 'LOW', 'category_mode': 'MIXED', 'category_station': 'FIXED', 'category_time': None, 'category_transmitter': 'ONE', 'category_overlay': None, 'offtime': None, 'club': None, 'name': 'Douglas Nelson', 'email': 'aa0aw@arrl.net', 'location': 'MN', ...}, 'qso_data': [{...}, {...}, {...}, {...}, {...}, {...}, {...}], 'year': '2025', 'exchange': '', 'category': 'NON-LA', 'dxcc_code': 0, 'dxcc_entity': '', 'final_score': 0, 'qso_points': 0, 'total_qsos': 0, 'valid_qsos': 0, 'total_multipliers': 0, 'counties_worked': {}, 'counties_worked_multiplier': 0, 'states_worked': {}, 'states_worked_multiplier': 0, 'provinces_worked': {}, 'provinces_worked_multiplier': 0, 'dx_worked': {}, 'dx_worked_multiplier': 0, 'counties_activated': {}, 'rover_bonus_points': 0, 'worked_n5lcc': False, 'num_n5lcc_contacts': 0, 'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}, 'qsos_by_mode': {'Phone': 0, 'CW/Digital': 0}, 'qsos_by_hour': {1400: 0, 1500: 0, 1600: 0, 1700: 0, 1800: 0, 1900: 0, 2000: 0, 2100: 0, 2200: 0, 2300: 0, 2400: 0, 2500: 0}, 'bands_worked': {}, 'errors': [], 'warnings': ['busted qso found no match with KA5D even though dx did submit a log'], 'is_valid': True}
+special variables
+function variables
+'callsign' =
+'AA0AW'
+'cab' =
+<cabrillo.cabrillo.Cabrillo object at 0x000002BA3BA6BA10>
+'header_attribs' =
+{'callsign': 'AA0AW', 'operators': ['AA0AW'], 'contest': 'TX-QSO-PARTY', 'claimed_score': 6156, 'certificate': None, 'category_operator': 'SINGLE-OP', 'category_assisted': 'ASSISTED', 'category_band': 'ALL', 'category_power': 'LOW', 'category_mode': 'MIXED', 'category_station': 'FIXED', 'category_time': None, 'category_transmitter': 'ONE', 'category_overlay': None, 'offtime': None, 'club': None, 'name': 'Douglas Nelson', 'email': 'aa0aw@arrl.net', 'location': 'MN', 'grid_locator': 'EN36VQ', 'address': ['1411 101st Avenue West'], 'address_city': 'Duluth', 'address_state_province': 'MN', 'address_postalcode': '55808-1618', 'address_country': 'UNITED STATES', 'created_by': 'N1MM Logger+ 1.0.10919.0', 'soapbox': None, 'x_anything': OrderedDict([]), 'version': '3.0', 'qso': [<cabrillo.qso.QSO object at 0x000002BA3BA6B8C0>, <cabrillo.qso.QSO object at 0x000002BA3BB35950>, <cabrillo.qso.QSO object at 0x000002BA3BB35A90>, <cabrillo.qso.QSO object at 0x000002BA3BB0AC40>, <cabrillo.qso.QSO object at 0x000002BA3BB0AD70>...
+'qso_data' =
+[{'freq': '21040', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 19, 32), 'de_call': 'AA0AW', 'de_exch': [...], 'dx_call': 'K5OT', 'dx_exch': [...], 't': None, 'valid': True}, {'freq': '21030', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 19, 44), 'de_call': 'AA0AW', 'de_exch': [...], 'dx_call': 'KA5D', 'dx_exch': [...], 't': None, 'valid': False}, {'freq': '21033', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 19, 44), 'de_call': 'AA0AW', 'de_exch': [...], 'dx_call': 'N5NA', 'dx_exch': [...], 't': None, 'valid': False}, {'freq': '21034', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 19, 45), 'de_call': 'AA0AW', 'de_exch': [...], 'dx_call': 'W5LXS', 'dx_exch': [...], 't': None, 'valid': True}, {'freq': '21040', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 19, 47), 'de_call': 'AA0AW', 'de_exch': [...], 'dx_call': 'N5OT', 'dx_exch': [...], 't': None, 'valid': True}, {'freq': '7219', 'mo': 'PH', 'date': datetime.datetime(2025, 9, 20, 23, 49), 'de_call': 'AA0AW', 'de_exch': [...], 'dx_c...
+'year' =
+'2025'
+'exchange' =
+''
+'category' =
+'NON-LA'
+'dxcc_code' =
+0
+'dxcc_entity' =
+''
+'final_score' =
+0
+'qso_points' =
+0
+'total_qsos' =
+0
+'valid_qsos' =
+0
+'total_multipliers' =
+0
+'counties_worked' =
+{}
+'counties_worked_multiplier' =
+0
+'states_worked' =
+{}
+'states_worked_multiplier' =
+0
+'provinces_worked' =
+{}
+'provinces_worked_multiplier' =
+0
+'dx_worked' =
+{}
+special variables
+function variables
+len() =
+0
+'dx_worked_multiplier' =
+0
+'counties_activated' =
+{}
+'rover_bonus_points' =
+0
+'worked_n5lcc' =
+False
+'num_n5lcc_contacts' =
+0
+'qsos_by_band' =
+{'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}
+'qsos_by_mode' =
+{'Phone': 0, 'CW/Digital': 0}
+'qsos_by_hour' =
+{1400: 0, 1500: 0, 1600: 0, 1700: 0, 1800: 0, 1900: 0, 2000: 0, 2100: 0, 2200: 0, 2300: 0, 2400: 0, 2500: 0}
+'bands_worked' =
+{}
+'errors' =
+[]
+'warnings' =
+['busted qso found no match with KA5D even though dx did submit a log']
+'is_valid' =
+True
+len() =
+33
+{'callsign': 'K5OT', 'cab': <cabrillo.cabrillo.Cabrillo object at 0x000002BA3BB35D10>, 'header_attribs': {'callsign': 'K5OT', 'operators': [...], 'contest': 'TX-QSO-PARTY', 'claimed_score': 262890, 'certificate': None, 'category_operator': 'SINGLE-OP', 'category_assisted': 'NON-ASSISTED', 'category_band': 'ALL', 'category_power': 'HIGH', 'category_mode': 'CW', 'category_station': 'FIXED', 'category_time': None, 'category_transmitter': 'ONE', 'category_overlay': None, 'offtime': None, 'club': 'CENTRAL TEXAS DX AND CONTEST CLUB', 'name': 'LARRY HAMMEL', 'email': 'k5ohtee@gmail.com', 'location': 'STX', ...}, 'qso_data': [{...}, {...}, {...}], 'year': '2025', 'exchange': '', 'category': 'NON-LA', 'dxcc_code': 0, 'dxcc_entity': '', 'final_score': 0, 'qso_points': 0, 'total_qsos': 0, 'valid_qsos': 0, 'total_multipliers': 0, 'counties_worked': {}, 'counties_worked_multiplier': 0, 'states_worked': {}, 'states_worked_multiplier': 0, 'provinces_worked': {}, 'provinces_worked_multiplier': 0, 'dx_worked': {}, 'dx_worked_multiplier': 0, 'counties_activated': {}, 'rover_bonus_points': 0, 'worked_n5lcc': False, 'num_n5lcc_contacts': 0, 'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}, 'qsos_by_mode': {'Phone': 0, 'CW/Digital': 0}, 'qsos_by_hour': {1400: 0, 1500: 0, 1600: 0, 1700: 0, 1800: 0, 1900: 0, 2000: 0, 2100: 0, 2200: 0, 2300: 0, 2400: 0, 2500: 0}, 'bands_worked': {}, 'errors': [], 'warnings': ['busted qso found no match with AA0AW even though dx did submit a log'], 'is_valid': True}
+special variables
+function variables
+'callsign' =
+'K5OT'
+'cab' =
+<cabrillo.cabrillo.Cabrillo object at 0x000002BA3BB35D10>
+'header_attribs' =
+{'callsign': 'K5OT', 'operators': ['K5OT', '@K5TR'], 'contest': 'TX-QSO-PARTY', 'claimed_score': 262890, 'certificate': None, 'category_operator': 'SINGLE-OP', 'category_assisted': 'NON-ASSISTED', 'category_band': 'ALL', 'category_power': 'HIGH', 'category_mode': 'CW', 'category_station': 'FIXED', 'category_time': None, 'category_transmitter': 'ONE', 'category_overlay': None, 'offtime': None, 'club': 'CENTRAL TEXAS DX AND CONTEST CLUB', 'name': 'LARRY HAMMEL', 'email': 'k5ohtee@gmail.com', 'location': 'STX', 'grid_locator': 'EM00', 'address': ['310 DAVIS MOUNTAIN CIR'], 'address_city': 'GEORGETOWN', 'address_state_province': 'TX', 'address_postalcode': '78633', 'address_country': 'UNITED STATES', 'created_by': 'N1MM Logger+ 1.0.10923.0', 'soapbox': None, 'x_anything': OrderedDict([]), 'version': '3.0', 'qso': [<cabrillo.qso.QSO object at 0x000002BA3BB26360>, <cabrillo.qso.QSO object at 0x000002BA3BAD3550>, <cabrillo.qso.QSO object at 0x000002BA3F794250>], 'ignore_order': True}
+'qso_data' =
+[{'freq': '21040', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 19, 32), 'de_call': 'K5OT', 'de_exch': [...], 'dx_call': 'AA0AW', 'dx_exch': [...], 't': None, 'valid': False}, {'freq': '7039', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 23, 34), 'de_call': 'K5OT', 'de_exch': [...], 'dx_call': 'AA0AW', 'dx_exch': [...], 't': None, 'valid': False}, {'freq': '7036', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 21, 0, 42), 'de_call': 'K5OT', 'de_exch': [...], 'dx_call': 'AA0AW', 'dx_exch': [...], 't': None, 'valid': False}]
+'year' =
+'2025'
+'exchange' =
+''
+'category' =
+'NON-LA'
+'dxcc_code' =
+0
+'dxcc_entity' =
+''
+'final_score' =
+0
+'qso_points' =
+0
+'total_qsos' =
+0
+'valid_qsos' =
+0
+'total_multipliers' =
+0
+'counties_worked' =
+{}
+'counties_worked_multiplier' =
+0
+'states_worked' =
+{}
+'states_worked_multiplier' =
+0
+'provinces_worked' =
+{}
+'provinces_worked_multiplier' =
+0
+'dx_worked' =
+{}
+'dx_worked_multiplier' =
+0
+'counties_activated' =
+{}
+'rover_bonus_points' =
+0
+'worked_n5lcc' =
+False
+'num_n5lcc_contacts' =
+0
+'qsos_by_band' =
+{'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}
+'qsos_by_mode' =
+{'Phone': 0, 'CW/Digital': 0}
+'qsos_by_hour' =
+{1400: 0, 1500: 0, 1600: 0, 1700: 0, 1800: 0, 1900: 0, 2000: 0, 2100: 0, 2200: 0, 2300: 0, 2400: 0, 2500: 0}
+'bands_worked' =
+{}
+'errors' =
+[]
+'warnings' =
+['busted qso found no match with AA0AW even though dx did submit a log']
+'is_valid' =
+True
+len() =
+33
+
+
+
+{'callsign': 'KA5D', 'cab': <cabrillo.cabrillo.Cabrillo object at 0x000002BA3BB35E50>, 'header_attribs': {'callsign': 'KA5D', 'operators': [...], 'contest': 'TXQP', 'claimed_score': 29484, 'certificate': None, 'category_operator': 'SINGLE-OP', 'category_assisted': 'NON-ASSISTED', 'category_band': 'ALL', 'category_power': 'LOW', 'category_mode': 'CW', 'category_station': 'FIXED', 'category_time': '6-HOURS', 'category_transmitter': 'ONE', 'category_overlay': None, 'offtime': None, 'club': 'Roadrunners Microwave Group', 'name': 'Kyle DeHaas', 'email': 'skillet256@gmail.com', 'location': 'STX', ...}, 'qso_data': [{...}], 'year': '2025', 'exchange': '', 'category': 'NON-LA', 'dxcc_code': 0, 'dxcc_entity': '', 'final_score': 0, 'qso_points': 0, 'total_qsos': 0, 'valid_qsos': 0, 'total_multipliers': 0, 'counties_worked': {}, 'counties_worked_multiplier': 0, 'states_worked': {}, 'states_worked_multiplier': 0, 'provinces_worked': {}, 'provinces_worked_multiplier': 0, 'dx_worked': {}, 'dx_worked_multiplier': 0, 'counties_activated': {}, 'rover_bonus_points': 0, 'worked_n5lcc': False, 'num_n5lcc_contacts': 0, 'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}, 'qsos_by_mode': {'Phone': 0, 'CW/Digital': 0}, 'qsos_by_hour': {1400: 0, 1500: 0, 1600: 0, 1700: 0, 1800: 0, 1900: 0, 2000: 0, 2100: 0, 2200: 0, 2300: 0, 2400: 0, 2500: 0}, 'bands_worked': {}, 'errors': [], 'warnings': ['busted qso found no match with AA0AW even though dx did submit a log'], 'is_valid': True}
+special variables
+function variables
+'callsign' =
+'KA5D'
+'cab' =
+<cabrillo.cabrillo.Cabrillo object at 0x000002BA3BB35E50>
+'header_attribs' =
+{'callsign': 'KA5D', 'operators': ['KA5D'], 'contest': 'TXQP', 'claimed_score': 29484, 'certificate': None, 'category_operator': 'SINGLE-OP', 'category_assisted': 'NON-ASSISTED', 'category_band': 'ALL', 'category_power': 'LOW', 'category_mode': 'CW', 'category_station': 'FIXED', 'category_time': '6-HOURS', 'category_transmitter': 'ONE', 'category_overlay': None, 'offtime': None, 'club': 'Roadrunners Microwave Group', 'name': 'Kyle DeHaas', 'email': 'skillet256@gmail.com', 'location': 'STX', 'grid_locator': None, 'address': ['1212 Richcreek Rd'], 'address_city': 'Austin', 'address_state_province': 'TX', 'address_postalcode': '78757', 'address_country': 'USA', 'created_by': "N3FJP's Texas QSO Party Contest Log 4.4.6", 'soapbox': None, 'x_anything': OrderedDict([]), 'version': '3.0', 'qso': [<cabrillo.qso.QSO object at 0x000002BA3BA666C0>], 'ignore_order': True}
+'qso_data' =
+[{'freq': '21030', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 21, 0), 'de_call': 'KA5D', 'de_exch': [...], 'dx_call': 'AA0AW', 'dx_exch': [...], 't': None, 'valid': False}]
+'year' =
+'2025'
+'exchange' =
+''
+'category' =
+'NON-LA'
+'dxcc_code' =
+0
+'dxcc_entity' =
+''
+'final_score' =
+0
+'qso_points' =
+0
+'total_qsos' =
+0
+'valid_qsos' =
+0
+'total_multipliers' =
+0
+'counties_worked' =
+{}
+'counties_worked_multiplier' =
+0
+'states_worked' =
+{}
+'states_worked_multiplier' =
+0
+'provinces_worked' =
+{}
+'provinces_worked_multiplier' =
+0
+'dx_worked' =
+{}
+'dx_worked_multiplier' =
+0
+'counties_activated' =
+{}
+'rover_bonus_points' =
+0
+'worked_n5lcc' =
+False
+'num_n5lcc_contacts' =
+0
+'qsos_by_band' =
+{'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}
+'qsos_by_mode' =
+{'Phone': 0, 'CW/Digital': 0}
+'qsos_by_hour' =
+{1400: 0, 1500: 0, 1600: 0, 1700: 0, 1800: 0, 1900: 0, 2000: 0, 2100: 0, 2200: 0, 2300: 0, 2400: 0, 2500: 0}
+'bands_worked' =
+{}
+'errors' =
+[]
+'warnings' =
+['busted qso found no match with AA0AW even though dx did submit a log']
+'is_valid' =
+True
+len() =
+33
+
+
+
+{'callsign': 'KK5TY', 'cab': <cabrillo.cabrillo.Cabrillo object at 0x000002BA3BB35BD0>, 'header_attribs': {'callsign': 'KK5TY', 'operators': [...], 'contest': 'TX-QSO-PARTY', 'claimed_score': 573158, 'certificate': None, 'category_operator': 'MULTI-OP', 'category_assisted': 'ASSISTED', 'category_band': 'ALL', 'category_power': 'HIGH', 'category_mode': 'SSB', 'category_station': 'FIXED', 'category_time': None, 'category_transmitter': 'UNLIMITED', 'category_overlay': None, 'offtime': None, 'club': 'DFW Contest Group', 'name': 'East Texas DX Club', 'email': 'easttexasdx@gmail.com', 'location': 'NTX', ...}, 'qso_data': [{...}], 'year': '2025', 'exchange': '', 'category': 'NON-LA', 'dxcc_code': 0, 'dxcc_entity': '', 'final_score': 0, 'qso_points': 0, 'total_qsos': 0, 'valid_qsos': 0, 'total_multipliers': 0, 'counties_worked': {}, 'counties_worked_multiplier': 0, 'states_worked': {}, 'states_worked_multiplier': 0, 'provinces_worked': {}, 'provinces_worked_multiplier': 0, 'dx_worked': {}, 'dx_worked_multiplier': 0, 'counties_activated': {}, 'rover_bonus_points': 0, 'worked_n5lcc': False, 'num_n5lcc_contacts': 0, 'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}, 'qsos_by_mode': {'Phone': 0, 'CW/Digital': 0}, 'qsos_by_hour': {1400: 0, 1500: 0, 1600: 0, 1700: 0, 1800: 0, 1900: 0, 2000: 0, 2100: 0, 2200: 0, 2300: 0, 2400: 0, 2500: 0}, 'bands_worked': {}, 'errors': [], 'warnings': [], 'is_valid': True}
+special variables
+function variables
+'callsign' =
+'KK5TY'
+'cab' =
+<cabrillo.cabrillo.Cabrillo object at 0x000002BA3BB35BD0>
+'header_attribs' =
+{'callsign': 'KK5TY', 'operators': ['WM5Q', 'W5MCT', 'WA5GM', 'KC5KCT', 'KC5IIS', 'ELLA', 'W5IPM'], 'contest': 'TX-QSO-PARTY', 'claimed_score': 573158, 'certificate': None, 'category_operator': 'MULTI-OP', 'category_assisted': 'ASSISTED', 'category_band': 'ALL', 'category_power': 'HIGH', 'category_mode': 'SSB', 'category_station': 'FIXED', 'category_time': None, 'category_transmitter': 'UNLIMITED', 'category_overlay': None, 'offtime': None, 'club': 'DFW Contest Group', 'name': 'East Texas DX Club', 'email': 'easttexasdx@gmail.com', 'location': 'NTX', 'grid_locator': 'EM22HG', 'address': ['15371 CR 196'], 'address_city': 'Tyler', 'address_state_province': 'TX', 'address_postalcode': '75703', 'address_country': 'USA', 'created_by': 'N1MM Logger+ 1.0.10919.0', 'soapbox': None, 'x_anything': OrderedDict([]), 'version': '3.0', 'qso': [<cabrillo.qso.QSO object at 0x000002BA3BA667B0>], 'ignore_order': True}
+'qso_data' =
+[{'freq': '7245', 'mo': 'PH', 'date': datetime.datetime(2025, 9, 20, 23, 52), 'de_call': 'KK5TY', 'de_exch': [...], 'dx_call': 'AA0AW', 'dx_exch': [...], 't': None, 'valid': True}]
+'year' =
+'2025'
+'exchange' =
+''
+'category' =
+'NON-LA'
+'dxcc_code' =
+0
+'dxcc_entity' =
+''
+'final_score' =
+0
+'qso_points' =
+0
+'total_qsos' =
+0
+'valid_qsos' =
+0
+'total_multipliers' =
+0
+'counties_worked' =
+{}
+'counties_worked_multiplier' =
+0
+'states_worked' =
+{}
+'states_worked_multiplier' =
+0
+'provinces_worked' =
+{}
+'provinces_worked_multiplier' =
+0
+'dx_worked' =
+{}
+'dx_worked_multiplier' =
+0
+'counties_activated' =
+{}
+'rover_bonus_points' =
+0
+'worked_n5lcc' =
+False
+'num_n5lcc_contacts' =
+0
+'qsos_by_band' =
+{'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}
+'qsos_by_mode' =
+{'Phone': 0, 'CW/Digital': 0}
+'qsos_by_hour' =
+{1400: 0, 1500: 0, 1600: 0, 1700: 0, 1800: 0, 1900: 0, 2000: 0, 2100: 0, 2200: 0, 2300: 0, 2400: 0, 2500: 0}
+'bands_worked' =
+{}
+'errors' =
+[]
+'warnings' =
+[]
+'is_valid' =
+True
+len() =
+33
+
+
+
+{'callsign': 'N5NA', 'cab': <cabrillo.cabrillo.Cabrillo object at 0x000002BA3BB35F90>, 'header_attribs': {'callsign': 'N5NA', 'operators': [...], 'contest': 'TX-QSO-PARTY', 'claimed_score': 440488, 'certificate': None, 'category_operator': '6. TXM SO - Texas Mobile Single Operator - may be assisted', 'category_assisted': 'ASSISTED', 'category_band': 'ALL', 'category_power': 'LOW', 'category_mode': None, 'category_station': None, 'category_time': None, 'category_transmitter': None, 'category_overlay': None, 'offtime': None, 'club': 'MIDLAND ARC', 'name': 'Alan Sewell', 'email': None, 'location': None, ...}, 'qso_data': [{...}, {...}, {...}, {...}, {...}, {...}, {...}, {...}, {...}, {...}], 'year': '2025', 'exchange': '', 'category': 'NON-LA', 'dxcc_code': 0, 'dxcc_entity': '', 'final_score': 0, 'qso_points': 0, 'total_qsos': 0, 'valid_qsos': 0, 'total_multipliers': 0, 'counties_worked': {}, 'counties_worked_multiplier': 0, 'states_worked': {}, 'states_worked_multiplier': 0, 'provinces_worked': {}, 'provinces_worked_multiplier': 0, 'dx_worked': {}, 'dx_worked_multiplier': 0, 'counties_activated': {}, 'rover_bonus_points': 0, 'worked_n5lcc': False, 'num_n5lcc_contacts': 0, 'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}, 'qsos_by_mode': {'Phone': 0, 'CW/Digital': 0}, 'qsos_by_hour': {1400: 0, 1500: 0, 1600: 0, 1700: 0, 1800: 0, 1900: 0, 2000: 0, 2100: 0, 2200: 0, 2300: 0, 2400: 0, 2500: 0}, 'bands_worked': {}, 'errors': [], 'warnings': ['busted qso found no match with K5OT even though dx did submit a log'], 'is_valid': True}
+special variables
+function variables
+'callsign' =
+'N5NA'
+'cab' =
+<cabrillo.cabrillo.Cabrillo object at 0x000002BA3BB35F90>
+'header_attribs' =
+{'callsign': 'N5NA', 'operators': ['N5NA'], 'contest': 'TX-QSO-PARTY', 'claimed_score': 440488, 'certificate': None, 'category_operator': '6. TXM SO - Texas Mobile Single Operator - may be assisted', 'category_assisted': 'ASSISTED', 'category_band': 'ALL', 'category_power': 'LOW', 'category_mode': None, 'category_station': None, 'category_time': None, 'category_transmitter': None, 'category_overlay': None, 'offtime': None, 'club': 'MIDLAND ARC', 'name': 'Alan Sewell', 'email': None, 'location': None, 'grid_locator': None, 'address': ['5720 E County Road 96'], 'address_city': 'Midland', 'address_state_province': 'TX', 'address_postalcode': '79706', 'address_country': None, 'created_by': 'CQ/X de NO5W Version 1.8.1.4', 'soapbox': None, 'x_anything': OrderedDict([]), 'version': '3.0', 'qso': [<cabrillo.qso.QSO object at 0x000002BA3BB3A7B0>, <cabrillo.qso.QSO object at 0x000002BA3BB3A890>, <cabrillo.qso.QSO object at 0x000002BA3F7668F0>, <cabrillo.qso.QSO object at 0x000002BA3B958E90>, <cabrillo.qso.QSO object at...
+'qso_data' =
+[{'freq': '7032', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 14, 0), 'de_call': 'N5NA', 'de_exch': [...], 'dx_call': 'W5LXS', 'dx_exch': [...], 't': None, 'valid': True}, {'freq': '7032', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 14, 1), 'de_call': 'N5NA', 'de_exch': [...], 'dx_call': 'NF5T', 'dx_exch': [...], 't': None, 'valid': True}, {'freq': '7032', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 14, 1), 'de_call': 'N5NA', 'de_exch': [...], 'dx_call': 'NE5A', 'dx_exch': [...], 't': None, 'valid': True}, {'freq': '7032', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 14, 1), 'de_call': 'N5NA', 'de_exch': [...], 'dx_call': 'N5RZ', 'dx_exch': [...], 't': None, 'valid': True}, {'freq': '7032', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 14, 1), 'de_call': 'N5NA', 'de_exch': [...], 'dx_call': 'K5YX', 'dx_exch': [...], 't': None, 'valid': True}, {'freq': '7032', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 14, 2), 'de_call': 'N5NA', 'de_exch': [...], 'dx_call': 'WA6KHK', 'dx...
+'year' =
+'2025'
+'exchange' =
+''
+'category' =
+'NON-LA'
+'dxcc_code' =
+0
+'dxcc_entity' =
+''
+'final_score' =
+0
+'qso_points' =
+0
+'total_qsos' =
+0
+'valid_qsos' =
+0
+'total_multipliers' =
+0
+'counties_worked' =
+{}
+'counties_worked_multiplier' =
+0
+'states_worked' =
+{}
+'states_worked_multiplier' =
+0
+'provinces_worked' =
+{}
+'provinces_worked_multiplier' =
+0
+'dx_worked' =
+{}
+'dx_worked_multiplier' =
+0
+'counties_activated' =
+{}
+'rover_bonus_points' =
+0
+'worked_n5lcc' =
+False
+'num_n5lcc_contacts' =
+0
+'qsos_by_band' =
+{'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}
+'qsos_by_mode' =
+{'Phone': 0, 'CW/Digital': 0}
+'qsos_by_hour' =
+{1400: 0, 1500: 0, 1600: 0, 1700: 0, 1800: 0, 1900: 0, 2000: 0, 2100: 0, 2200: 0, 2300: 0, 2400: 0, 2500: 0}
+'bands_worked' =
+{}
+'errors' =
+[]
+'warnings' =
+['busted qso found no match with K5OT even though dx did submit a log']
+'is_valid' =
+True
+len() =
+33
+
+
+
+{'callsign': 'W5LO', 'cab': <cabrillo.cabrillo.Cabrillo object at 0x000002BA3BB360D0>, 'header_attribs': {'callsign': 'W5LO', 'operators': [...], 'contest': 'TX-QSO-PARTY', 'claimed_score': 197100, 'certificate': None, 'category_operator': 'SINGLE-OP', 'category_assisted': 'ASSISTED', 'category_band': 'ALL', 'category_power': 'HIGH', 'category_mode': 'SSB', 'category_station': 'FIXED', 'category_time': None, 'category_transmitter': 'ONE', 'category_overlay': None, 'offtime': None, 'club': None, 'name': 'Robert Wilson', 'email': 'windsorkennel@bellsouth.net', 'location': 'WTX', ...}, 'qso_data': [{...}], 'year': '2025', 'exchange': '', 'category': 'NON-LA', 'dxcc_code': 0, 'dxcc_entity': '', 'final_score': 0, 'qso_points': 0, 'total_qsos': 0, 'valid_qsos': 0, 'total_multipliers': 0, 'counties_worked': {}, 'counties_worked_multiplier': 0, 'states_worked': {}, 'states_worked_multiplier': 0, 'provinces_worked': {}, 'provinces_worked_multiplier': 0, 'dx_worked': {}, 'dx_worked_multiplier': 0, 'counties_activated': {}, 'rover_bonus_points': 0, 'worked_n5lcc': False, 'num_n5lcc_contacts': 0, 'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}, 'qsos_by_mode': {'Phone': 0, 'CW/Digital': 0}, 'qsos_by_hour': {1400: 0, 1500: 0, 1600: 0, 1700: 0, 1800: 0, 1900: 0, 2000: 0, 2100: 0, 2200: 0, 2300: 0, 2400: 0, 2500: 0}, 'bands_worked': {}, 'errors': [], 'warnings': ['busted qso found no match with AA0AW even though dx did submit a log'], 'is_valid': True}
+special variables
+function variables
+'callsign' =
+'W5LO'
+'cab' =
+<cabrillo.cabrillo.Cabrillo object at 0x000002BA3BB360D0>
+'header_attribs' =
+{'callsign': 'W5LO', 'operators': ['W5LO'], 'contest': 'TX-QSO-PARTY', 'claimed_score': 197100, 'certificate': None, 'category_operator': 'SINGLE-OP', 'category_assisted': 'ASSISTED', 'category_band': 'ALL', 'category_power': 'HIGH', 'category_mode': 'SSB', 'category_station': 'FIXED', 'category_time': None, 'category_transmitter': 'ONE', 'category_overlay': None, 'offtime': None, 'club': None, 'name': 'Robert Wilson', 'email': 'windsorkennel@bellsouth.net', 'location': 'WTX', 'grid_locator': 'EM03CS', 'address': ['3709 Lenox Dr'], 'address_city': 'Fort Worth', 'address_state_province': 'TX', 'address_postalcode': '76107', 'address_country': 'USA', 'created_by': 'N1MM Logger+ 1.0.10923.0', 'soapbox': None, 'x_anything': OrderedDict([]), 'version': '3.0', 'qso': [<cabrillo.qso.QSO object at 0x000002BA3F798D70>], 'ignore_order': True}
+'qso_data' =
+[{'freq': '7219', 'mo': 'PH', 'date': datetime.datetime(2025, 9, 20, 23, 49), 'de_call': 'W5LO', 'de_exch': [...], 'dx_call': 'AA0AW', 'dx_exch': [...], 't': None, 'valid': False}]
+'year' =
+'2025'
+'exchange' =
+''
+'category' =
+'NON-LA'
+'dxcc_code' =
+0
+'dxcc_entity' =
+''
+'final_score' =
+0
+'qso_points' =
+0
+'total_qsos' =
+0
+'valid_qsos' =
+0
+'total_multipliers' =
+0
+'counties_worked' =
+{}
+'counties_worked_multiplier' =
+0
+'states_worked' =
+{}
+'states_worked_multiplier' =
+0
+'provinces_worked' =
+{}
+'provinces_worked_multiplier' =
+0
+'dx_worked' =
+{}
+'dx_worked_multiplier' =
+0
+'counties_activated' =
+{}
+'rover_bonus_points' =
+0
+'worked_n5lcc' =
+False
+'num_n5lcc_contacts' =
+0
+'qsos_by_band' =
+{'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}
+'qsos_by_mode' =
+{'Phone': 0, 'CW/Digital': 0}
+'qsos_by_hour' =
+{1400: 0, 1500: 0, 1600: 0, 1700: 0, 1800: 0, 1900: 0, 2000: 0, 2100: 0, 2200: 0, 2300: 0, 2400: 0, 2500: 0}
+'bands_worked' =
+{}
+'errors' =
+[]
+'warnings' =
+['busted qso found no match with AA0AW even though dx did submit a log']
+'is_valid' =
+True
+len() =
+33
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+vars(qso)
+{'freq': '21040', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 19, 32), 'de_call': 'K5OT', 'de_exch': ['599', 'BLAN'], 'dx_call': 'AA0AW', 'dx_exch': ['599', 'MN'], 't': None, 'valid': True}
+vars(p)
+{'freq': '21030', 'mo': 'CW', 'date': datetime.datetime(2025, 9, 20, 19, 44), 'de_call': 'AA0AW', 'de_exch': ['599', 'MN'], 'dx_call': 'KA5D', 'dx_exch': ['599', 'TRAV'], 't': None, 'valid': False}
+
+
+AA0AWMNCW15  X5   AND all_callsigns
+AA0AWMNPH40  X2
+K5OTBLANCW15 X1
+K5OTBLANCW40 X2
+KA5DTRAVCW15 X1
+KK5TYSMITPH40 X1
+N5NAMIDLCW40 X11
+W5LOKNOXPH40 X1
+W5LXS           NOT in all_callsigns
+
+s.qso_index_dict['AA0AWMNCW15']
+s.qso_index_dict['AA0AWMNPH40']
+s.qso_index_dict['K5OTBLANCW15']
+s.qso_index_dict['K5OTBLANCW40']
+s.qso_index_dict['KA5DTRAVCW15']
+s.qso_index_dict['KK5TYSMITPH40']
+s.qso_index_dict['N5NAMIDLCW40']
+s.qso_index_dict['W5LOKNOXPH40']
+
+len(s.qso_index_dict['AA0AWMN15'])  5
+len(s.qso_index_dict['AA0AWMN40'])  2
+len(s.qso_index_dict['K5OTBLAN15']) 1
+len(s.qso_index_dict['KA5DTRAV15']) 2
+len(s.qso_index_dict['KK5TYSMIT40']) 1
+len(s.qso_index_dict['N5NAMIDL40'])  11
+
+len(s.qso_index_dict) == 23
+
+'AA0AW' in s.all_callsigns('AA0AW')
+'K5OT' in s.all_callsigns
+'KA5D' in s.all_callsigns
+'KK5TY' in s.all_callsigns
+'N5NA' in s.all_callsigns
+'W5LO' in s.all_callsigns
+'W5LXS' in s.all_callsigns()  NOT IN all_callsigns
+
+len(s.all_callsigns) == 5
+
+
 web log upload flow:
 process_single_log (temp_file_path, form_data)
         ONLY called by Web upload

@@ -68,6 +68,8 @@ def read_prepare(s):
 
     filenames = [p.name for p in input_path.iterdir() if p.is_file()]
     for file in filenames:
+        if file in ['AA0AW.log', 'K5OT.log', 'KA5D.log', 'KK5TY.log', 'N5NA.log', 'W5LO.log']:
+            print('BREAK')
         s.stats["total_logs"] += 1
         try:
             cab = parse_log_file(input_dir + "/" + file, ignore_unknown_key=True, check_categories=False,
@@ -89,6 +91,7 @@ def read_prepare(s):
         update_qso_index_dict(s, new_result, cab.qso)
         extract_qso_info(new_result)
         s.results.append(new_result)
+        print('BREAK')
    
 def update_qso_index_dict(s, new_result, qsos):
     """
@@ -104,8 +107,7 @@ def update_qso_index_dict(s, new_result, qsos):
             continue
         s.stats['qso_valids'] += 1
         k = s._generate_index_key(qso, False) # FALSE = key for myself
-        if len(s.qso_index_dict[k]) == 0:
-            s.qso_index_dict[k].append(qso)
+        s.qso_index_dict[k].append(qso)
         
 def extract_qso_info(new_result):
     qso_list = new_result['cab'].qso

@@ -76,6 +76,7 @@ class SHARED:
             'qso_parser_not_valid': 0,
             'calls_w_not_valid_qsos': set(),
             'nils': 0,
+            'nil_calls': [],
             'busteds': 0,
             'busted_calls': [],
             'uniques': 0,

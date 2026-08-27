@@ -37,6 +37,7 @@
             "python": "${workspaceFolder}/venv/bin/python"
         },
         {
+            
             "name": "WIN Batch app",
             "type": "debugpy",
             "request": "launch",
