@@ -138,6 +138,22 @@ def extract_qso_info(new_result):
     qso_list = new_result['cab'].qso
     for qso in qso_list:
         new_result['qso_data'].append(vars(qso))
+
+def check_callsign_is_DX(s, new_result):
+        ## check if this log is from a DX station. If so, replace his de_exch with his DXCC entity 
+        try:
+            dx_callsign  = s.my_callinfo.get_all(new_result['callsign'])
+        except Exception as e:
+            return
+        try:            
+            if dx_callsign and ((dx_callsign['country'] not in ['United States', 'Canada'])): # log of DX station
+                dxcc_entity = s.dxcc_entities[int(dx_rcvd_qth['adif'])]
+                new_result['dxcc_entity'] = dxcc_entity
+        except Exception as e:
+            rcvd_qth = qso['rcvd_qth']
+            dx_rcvd_qth = None
+            result['warnings'].append(f"ERROR QSO: cannot determine if rcvd_qth is DX for callsign on line {qso['line_num']} WORKED: band {band} mode {mode_cat} remote op {rcvd_call}")
+            print(f"Exception {e} sender {result['callsign']} cannot determine if rcvd_qth is DX for callsign on line {qso['line_num']} WORKED: band {band} mode {mode_cat} remote op {rcvd_call}")
      
 
     

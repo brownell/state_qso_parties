@@ -1,3 +1,32 @@
+if key == 'callsign':
+        result['callsign'] = value.upper()
+        callsign_info = self.my_callinfo.get_all(result['callsign'])
+        # if result['callsign'] == 'OM2VL':
+        #     print('halt')
+        if callsign_info and callsign_info['country'] not in ['United States', 'Canada']:  ## It's DX
+        result['dxcc_code'] = int(callsign_info['adif'])
+        result['dxcc_entity'] = self.dxcc_entities[result['dxcc_code']]
+
+
+CWQs = 0
+PHQs = 0
+DGQs = 0
+QsoPts = 0
+Mults = 0
+ScoreWOBonus = 0
+MobileTrackingBonus = 0
+CountyActivationBonus = 0
+TotalBonus = 0
+                TotalScore = 0        
+CWQs = 0
+PHQs = 0
+DGQs = 0
+ctysSent = []
+uniqueCtysSent = []
+ctysRcvd = []
+uniqueCallsRcvd = []
+
+
 from:Bruce
 HQ-location???: DX, state, provinces_worked
 catergory_mode: mix, cw, ph 

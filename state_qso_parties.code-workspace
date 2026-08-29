@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../tqp_data"
+		},
+		{
+			"path": "../laqp"
 		}
 	],
 	"settings": {}

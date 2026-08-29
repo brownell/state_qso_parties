@@ -115,6 +115,9 @@ class SHARED:
             'dxcc_code': 0,
             'dxcc_entity': '',
             'final_score': 0,
+            'cw_qsos': 0,
+            'ph_qsos': 0,
+            'dg_qsos': 0,
             'qso_points': 0,
             'total_qsos': 0, # total number validated, whether dups or not
             'valid_qsos': 0, #number of qsos that are not dups and contribute to the score
@@ -128,8 +131,12 @@ class SHARED:
             'dx_worked': set(),
             'dx_worked_multiplier': 0,
             'counties_activated': set(),
+            'de_exch_rcvd': set(),
+            'dx_exch_sent': set(),
+            'score_wo_bonus': 0,
             'rover_bonus_points': 0,
-            'worked_n5lcc': False,
+            'county_bonus_points': 0,
+            'worked_special_station': False,
             'num_n5lcc_contacts': 0,
             'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
             'qsos_by_mode': {'Phone': 0, 'CW/Digital': 0},

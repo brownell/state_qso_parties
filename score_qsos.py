@@ -1,6 +1,7 @@
 
 import os, math
 from datetime import datetime
+from cabrillo.qso import frequency_to_band_m
 #-----------------------------------------------------------------------------------------------------
 #  now do the scoring by reading each "prepared" log file from the PreparedLogs directory
 #  dupes are removed by constructing a dupeline from each QSO line and
@@ -11,12 +12,9 @@ from datetime import datetime
 def score_qsos(s):
 
     for result in s.results:
-        cab = result['cab']
-        if not getattr(cab, 'valid',  False):
-            continue   
+        cab = result['cab'] 
 
         dupeList = []
-        removedDupesList = []
         multList = []
 
         CWQs = 0
@@ -37,10 +35,10 @@ def score_qsos(s):
         ctysRcvd = []
         uniqueCallsRcvd = []
 
-        for qso in result.qso:
+        for qso in result['cab'].qso:
             if not qso.valid:
                 continue
-            dupeLine = qso.dx_call.upper().split("/") + "_" + qso.category_band + "_" + qso.category_mode.upper() + "_" + qso.de_call.upper() + "_" + qso.de_exch[1] + "_" + qso.dx_exch[1]
+            dupeLine = "_".join([qso.dx_call.upper().split("/")[0], frequency_to_band_m(qso.freq), qso.mo.upper(), qso.de_call.upper(), qso.de_exch[1].upper(), qso.dx_exch[1].upper()])
             if dupeLine in dupeList:
                 qso.valid = False
                 s.stats['duplicate_qsos'] += 1
@@ -98,8 +96,7 @@ def score_qsos(s):
         if(ScoreReduction < 0):
             ScoreReduction = 0
 
-        print(f"{cab.callsign}, {cab.email}, {cab.category}")
-        print(result['callsign'] + "," + result[caemail.lower() + "," + TQPCat + "," + Club + "," + Operators + "," + ClaimedScore + "," + str(CWQs) + "," + str(PHQs) + "," + str(DGQs) + "," + str(QsoPts) + "," + str(Mults) + "," + str(ScoreWOBonus) + "," + str(MobileTrackingBonus) + "," + str(CountyActivationBonus) + "," + str(TotalBonus) + "," + str(TotalScore) + "," + str(ScoreReduction))
+        print(f"{cab.callsign}, {cab.email}, {cab.category}, {cab.club}, {cab.operators}, {cab.claimed_score}, CWQ:{CWQs}, PHQ:{PHQs}, DGQ:{DGQs}, qSOpTS:{QsoPts}, MULTS:{Mults}, ScoreBonus:{ScoreWOBonus}, MobileBonus:{MobileTrackingBonus}, CountyBonus{CountyActivationBonus}, TotalBonus{TotalBonus}, TotalScore{TotalScore}, ScoreReduction:{ScoreReduction} ")
         
 
 
