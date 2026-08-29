@@ -94,6 +94,7 @@ def read_prepare(s):
                 print(f"ERROR: log file {file} had invalid HQ-QUESTIONS field - REJECTED")
             cab.club = cab.hq_anything['HQ-CLUB']
         else:
+            cab.category = "_".join([cab.category_station.upper(), cab.category_mode.upper(), cab.category_power.upper()])
             s.stats["rejected_logs"] += 1
             print(f"ERROR: log file {file} had no HQ- keys - REJECTED")
             continue

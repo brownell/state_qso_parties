@@ -1,4 +1,6 @@
 
+import os, math
+from datetime import datetime
 #-----------------------------------------------------------------------------------------------------
 #  now do the scoring by reading each "prepared" log file from the PreparedLogs directory
 #  dupes are removed by constructing a dupeline from each QSO line and
@@ -17,12 +19,6 @@ def score_qsos(s):
         removedDupesList = []
         multList = []
 
-        CallSign = ""
-        TQPCat = ""
-        Club = ""
-        Operators = ""
-        ClaimedScore = "0"
-        email = ""
         CWQs = 0
         PHQs = 0
         DGQs = 0
@@ -98,12 +94,12 @@ def score_qsos(s):
 
         TotalScore = ScoreWOBonus + TotalBonus
 
-        ScoreReduction = int(ClaimedScore) - TotalScore
+        ScoreReduction = int(cab.claimed_score) - TotalScore
         if(ScoreReduction < 0):
             ScoreReduction = 0
 
-
-    print(result['callsign'] + "," + email.lower() + "," + TQPCat + "," + Club + "," + Operators + "," + ClaimedScore + "," + str(CWQs) + "," + str(PHQs) + "," + str(DGQs) + "," + str(QsoPts) + "," + str(Mults) + "," + str(ScoreWOBonus) + "," + str(MobileTrackingBonus) + "," + str(CountyActivationBonus) + "," + str(TotalBonus) + "," + str(TotalScore) + "," + str(ScoreReduction))
+        print(f"{cab.callsign}, {cab.email}, {cab.category}")
+        print(result['callsign'] + "," + result[caemail.lower() + "," + TQPCat + "," + Club + "," + Operators + "," + ClaimedScore + "," + str(CWQs) + "," + str(PHQs) + "," + str(DGQs) + "," + str(QsoPts) + "," + str(Mults) + "," + str(ScoreWOBonus) + "," + str(MobileTrackingBonus) + "," + str(CountyActivationBonus) + "," + str(TotalBonus) + "," + str(TotalScore) + "," + str(ScoreReduction))
         
 
 
