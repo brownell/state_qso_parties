@@ -1,3 +1,24 @@
+from:Bruce
+HQ-location???: DX, state, provinces_worked
+catergory_mode: mix, cw, ph 
+category_operator: so, mo, chk
+category_power: qrp, lp, hp
+category_station: fix, mob
+club: none or a name
+email
+
+
+from cabrillo.parser import parse_log_file
+cab = parse_log_file('../tqp_data/batch_input/2025/AA0AW.log', ignore_unknown_key=True, check_categories=False, ignore_order=True, check_mode=False)
+cab = parse_log_file('../laqp_data/batch_input/2026/AA0AW.log', ignore_unknown_key=True, check_categories=False, ignore_order=True, check_mode=False)
+cab.callsign
+'AA1ZZZ'
+>>> cab.qso
+[<cabrillo.qso.QSO object at 0x10cb09f28>, <cabrillo.qso.QSO object at 0x10cbc8860>]
+>>> cab.text()
+'START-OF-LOG: 3.0\nCREATED-BY: WriteLog V10.72C\nCALLSIGN: AA1ZZZ\n[...snip...]END-OF-LOG:\n'
+
+
 {'callsign': 'AA0AW', 'cab': <cabrillo.cabrillo.Cabrillo object at 0x000002BA3BA6BA10>, 'header_attribs': {'callsign': 'AA0AW', 'operators': [...], 'contest': 'TX-QSO-PARTY', 'claimed_score': 6156, 'certificate': None, 'category_operator': 'SINGLE-OP', 'category_assisted': 'ASSISTED', 'category_band': 'ALL', 'category_power': 'LOW', 'category_mode': 'MIXED', 'category_station': 'FIXED', 'category_time': None, 'category_transmitter': 'ONE', 'category_overlay': None, 'offtime': None, 'club': None, 'name': 'Douglas Nelson', 'email': 'aa0aw@arrl.net', 'location': 'MN', ...}, 'qso_data': [{...}, {...}, {...}, {...}, {...}, {...}, {...}], 'year': '2025', 'exchange': '', 'category': 'NON-LA', 'dxcc_code': 0, 'dxcc_entity': '', 'final_score': 0, 'qso_points': 0, 'total_qsos': 0, 'valid_qsos': 0, 'total_multipliers': 0, 'counties_worked': {}, 'counties_worked_multiplier': 0, 'states_worked': {}, 'states_worked_multiplier': 0, 'provinces_worked': {}, 'provinces_worked_multiplier': 0, 'dx_worked': {}, 'dx_worked_multiplier': 0, 'counties_activated': {}, 'rover_bonus_points': 0, 'worked_n5lcc': False, 'num_n5lcc_contacts': 0, 'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}, 'qsos_by_mode': {'Phone': 0, 'CW/Digital': 0}, 'qsos_by_hour': {1400: 0, 1500: 0, 1600: 0, 1700: 0, 1800: 0, 1900: 0, 2000: 0, 2100: 0, 2200: 0, 2300: 0, 2400: 0, 2500: 0}, 'bands_worked': {}, 'errors': [], 'warnings': ['busted qso found no match with KA5D even though dx did submit a log'], 'is_valid': True}
 special variables
 function variables

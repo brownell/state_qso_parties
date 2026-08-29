@@ -81,6 +81,7 @@ class SHARED:
             'busted_calls': [],
             'uniques': 0,
             'dx_log_de_missing': 0,
+            'duplicate_qsos': 0,
             'total_multipliers': 0,
             'counties_worked_names': set(),
             'states_worked_names': set(),
@@ -88,6 +89,7 @@ class SHARED:
             'dx_worked_names': set()
         }
         self.all_callsigns = set()  # To track all callsigns that submitted logs for UNIQUE detection
+        self.mobile_callsigns = set() # Track callsigns that have location "mobile"
         self.qso_index_dict = defaultdict(list)
 
     def _generate_index_key(self, qso, mirror):

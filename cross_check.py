@@ -64,7 +64,7 @@ def cross_check(s):
                 if len(potential_matches) == 0:
                     s.stats['dx_log_de_missing'] += 1
                     s.stats['nils'] += 1
-                    s.stats['nill_calls'].append([qso.de_call, qso.dx_call])
+                    s.stats['nil_calls'].append([qso.de_call, qso.dx_call])
                     qso.valid = False
                     result['qso_data'][qso_i]['valid'] = False
                     # print(f"qso for {result['callsign']}: dx_call {qso.dx_call} has log but no QSO for de_call with same exchange, mode, and band")

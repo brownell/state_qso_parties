@@ -49,7 +49,7 @@ from config.config import (
     US_PREFIXES, CANADIAN_PREFIXES, QRZ_CALLSIGN, QRZ_PASSWORD,
     PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE,
     CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS, CONTEST_YEAR,
-    PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES, BATCH_INPUT_DIR
+    PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES, BATCH_INPUT_DIR, HQ_FIELDS
 )
 
 
@@ -79,14 +79,38 @@ def read_prepare(s):
                 s.stats["rejected_logs"] += 1
                 s.stats["rejected_logs_files"].append(file)
             continue
+        if cab.hq_anything and cab.hq_anything.get('HQ-CATEGORY', False) and cab.hq_anything.get('HQ-QUESTIONS', False) and cab.hq_anything.get('HQ-CLUB', False):
+            cab.category = "_".join(cab.hq_anything['HQ-CATEGORY'].upper().split())
+            temp = {
+                key.strip(): value.strip()
+                for item in cab.hq_anything['HQ-QUESTIONS'].upper().split(",")
+                for key, value in [item.split(":", 1)]
+            }
+            if type(temp) == dict:
+                for key in temp:
+                    setattr(cab, HQ_FIELDS['HQ-QUESTIONS'][key], temp[key])
+            else:
+                s.stats["rejected_logs"] += 1
+                print(f"ERROR: log file {file} had invalid HQ-QUESTIONS field - REJECTED")
+            cab.club = cab.hq_anything['HQ-CLUB']
+        else:
+            s.stats["rejected_logs"] += 1
+            print(f"ERROR: log file {file} had no HQ- keys - REJECTED")
+            continue
         s.stats["valid_logs"] += 1
+        print(vars(cab))
         new_result = s._init_result()
+
         new_result['cab'] = cab
         new_result['callsign'] = cab.callsign.upper()
         new_result['header_attribs'] = vars(cab)
 
         # Add the callsign to the set of all callsigns for UNIQUE detection
         s.all_callsigns.add(new_result['callsign'])
+
+        # Add MOBILE stations to that set
+        if cab.category_station.upper() == 'MOBILE':
+            s.mobile_callsigns.add(new_result['callsign'])
 
         update_qso_index_dict(s, new_result, cab.qso)
         extract_qso_info(new_result)

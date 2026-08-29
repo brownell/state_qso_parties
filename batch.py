@@ -27,6 +27,7 @@ from generate_rankings import generate_rankings
 from generate_final_report import generate_final_report_html
 from read_prepare import read_prepare
 from cross_check import cross_check
+from score_qsos import score_qsos
 from share import SHARED
 
 def main(contest_year):
@@ -35,6 +36,7 @@ def main(contest_year):
         save values that will be needed later
     '''
     read_prepare(context)
+    print(f"after read_prepare")
 
     '''
     Do the cross-checking, marking qsos that fail the match test.
@@ -43,7 +45,11 @@ def main(contest_year):
     '''
     cross_check(context)
 
-print(f"after cross-check results - len(context._results)")
+    print(f"after cross-check results")
+
+    score_qsos(context)
+    print('BREAK')
+
 
     #  Save results to database (valid and invalid)
     # valid_count = 0
