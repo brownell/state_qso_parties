@@ -8,6 +8,7 @@ def score_a_qso(s, result, qso, dup):
     qso_dup = "_".join([qso.dx_call.upper().split("/")[0], frequency_to_band_m(qso.freq), qso.mo.upper(), qso.de_call.upper(), qso.de_exch[1].upper(), qso.dx_exch[1].upper()])
     mult_dup = qso.dx_exch
     if qso_dup in dup['qsos']:
+        qso.valid = False
         return
     dup['qsos'].append(qso_dup)
 
@@ -24,10 +25,8 @@ def score_a_qso(s, result, qso, dup):
         result['states_worked'].append(qso.dx_exch)
 
     elif qso.dx_exch in s.provinces:
-        result['states_worked'].append(qso.dx_exch)
+        result['provinces_worked'].append(qso.dx_exch)
 
-    else:
-        # should be a DX station - get its DXCC ID
         
 
 

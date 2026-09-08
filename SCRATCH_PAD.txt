@@ -1,3 +1,5 @@
+have to do this for de_excc AND dx_exch - important for duplicates qsos and multipliers
+
 if key == 'callsign':
         result['callsign'] = value.upper()
         callsign_info = self.my_callinfo.get_all(result['callsign'])
@@ -18,7 +20,7 @@ MobileTrackingBonus = 0
 CountyActivationBonus = 0
 TotalBonus = 0
                 TotalScore = 0        
-CWQs = 0
+CWQs = 0        
 PHQs = 0
 DGQs = 0
 ctysSent = []

@@ -48,10 +48,10 @@ from config.config import (
     STATES_FILE, PROVINCES_FILE, EXTRA_BONUS_YEAR, EXTRA_BONUS_CALLS, EXTRA_BONUS_POINTS,
     US_PREFIXES, CANADIAN_PREFIXES, QRZ_CALLSIGN, QRZ_PASSWORD,
     PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE,
-    CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS, CONTEST_YEAR,
+    CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS, CONTEST_YEAR, 
     PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES, BATCH_INPUT_DIR, HQ_FIELDS
 )
-
+SCRIPT_DIR = Path(__file__).resolve().parent
 
 def read_prepare(s):
     """
@@ -62,49 +62,38 @@ def read_prepare(s):
     - parse file
     - save cab Cabrillo object both as object and dict of vars
     """
-    input_dir =  BATCH_INPUT_DIR + "/" + CONTEST_YEAR
-    SCRIPT_DIR = Path(__file__).resolve().parent
-    input_path = SCRIPT_DIR.parent / "tqp_data" / "batch_input" / CONTEST_YEAR
-
-    filenames = [p.name for p in input_path.iterdir() if p.is_file()]
+    TEST_LOGS = ['AA0AW.log', 'K5OT.log', 'KA5D.log', 'KK5TY.log', 'N5NA.log', 'W5LO.log']
+    dir_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR).resolve()
+    filenames = [p.name for p in dir_path.iterdir() if p.is_file()]
     for file in filenames:
-        if file in ['AA0AW.log', 'K5OT.log', 'KA5D.log', 'KK5TY.log', 'N5NA.log', 'W5LO.log']:
-            print('BREAK')
+        # for testing purposes
+        if file not in TEST_LOGS:
+            continue
         s.stats["total_logs"] += 1
         try:
-            cab = parse_log_file(input_dir + "/" + file, ignore_unknown_key=True, check_categories=False,
+            file_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR / file).resolve()
+            cab = parse_log_file(file_path, ignore_unknown_key=True, check_categories=False,
                    ignore_order=True, check_mode=False)
         except Exception as e:
             if file:
                 s.stats["rejected_logs"] += 1
-                s.stats["rejected_logs_files"].append(file)
+                s.stats["rejected_logs_filenames"].append(file)
+            print(f"ERROR: log file {file} was rejected by the parser - REJECTED")
             continue
-        if cab.hq_anything and cab.hq_anything.get('HQ-CATEGORY', False) and cab.hq_anything.get('HQ-QUESTIONS', False) and cab.hq_anything.get('HQ-CLUB', False):
-            cab.category = "_".join(cab.hq_anything['HQ-CATEGORY'].upper().split())
-            temp = {
-                key.strip(): value.strip()
-                for item in cab.hq_anything['HQ-QUESTIONS'].upper().split(",")
-                for key, value in [item.split(":", 1)]
-            }
-            if type(temp) == dict:
-                for key in temp:
-                    setattr(cab, HQ_FIELDS['HQ-QUESTIONS'][key], temp[key])
-            else:
-                s.stats["rejected_logs"] += 1
-                print(f"ERROR: log file {file} had invalid HQ-QUESTIONS field - REJECTED")
-            cab.club = cab.hq_anything['HQ-CLUB']
-        else:
-            cab.category = "_".join([cab.category_station.upper(), cab.category_mode.upper(), cab.category_power.upper()])
+        # print out test logs cab object
+        # Process Bruce Horn's HQ keys and adding and replacing values in the cab object
+        if not process_hq_keys(cab):
             s.stats["rejected_logs"] += 1
+            s.stats["rejected_logs_filenames"].append(file)
             print(f"ERROR: log file {file} had no HQ- keys - REJECTED")
             continue
+        
         s.stats["valid_logs"] += 1
-        print(vars(cab))
+        # print(vars(cab))
         new_result = s._init_result()
 
         new_result['cab'] = cab
         new_result['callsign'] = cab.callsign.upper()
-        new_result['header_attribs'] = vars(cab)
 
         # Add the callsign to the set of all callsigns for UNIQUE detection
         s.all_callsigns.add(new_result['callsign'])
@@ -115,7 +104,11 @@ def read_prepare(s):
 
         update_qso_index_dict(s, new_result, cab.qso)
         extract_qso_info(new_result)
+        
+        if file in TEST_LOGS:
+            print(f"vars(cab)")
         s.results.append(new_result)
+        new_result['header_attribs'] = vars(cab)
         print('BREAK')
    
 def update_qso_index_dict(s, new_result, qsos):
@@ -155,6 +148,25 @@ def check_callsign_is_DX(s, new_result):
             result['warnings'].append(f"ERROR QSO: cannot determine if rcvd_qth is DX for callsign on line {qso['line_num']} WORKED: band {band} mode {mode_cat} remote op {rcvd_call}")
             print(f"Exception {e} sender {result['callsign']} cannot determine if rcvd_qth is DX for callsign on line {qso['line_num']} WORKED: band {band} mode {mode_cat} remote op {rcvd_call}")
      
+def process_hq_keys(cab):
+    if cab.hq_anything and cab.hq_anything.get('HQ-CATEGORY', False) and cab.hq_anything.get('HQ-QUESTIONS', False) and cab.hq_anything.get('HQ-CLUB', 'None') and cab.hq_anything.get('HQ-CAT', False):
+        cab.category = cab.hq_anything['HQ-CATEGORY'].upper()
+        cab.cat = cab.hq_anything['HQ-CAT'].upper()
+        cab.club = cab.hq_anything.get('HQ-CLUB', False)
+        temp = {
+            key.strip(): value.strip()
+            for item in cab.hq_anything['HQ-QUESTIONS'].upper().split(",")
+            for key, value in [item.split(":", 1)]
+        }
+        if type(temp) == dict:
+            for key in temp:
+                setattr(cab, HQ_FIELDS['HQ-QUESTIONS'][key], temp[key])
+        else:
+            return False
+    else:
+        cab.category = "_".join([cab.category_station.upper(), cab.category_mode.upper(), cab.category_power.upper()])
+        return False
+
 
     
 ### UTILITY FUNCTIONS ###

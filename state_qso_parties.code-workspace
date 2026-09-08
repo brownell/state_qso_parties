@@ -7,10 +7,10 @@
 			"path": "../cabrillo"
 		},
 		{
-			"path": "../tqp_data"
+			"path": "../laqp"
 		},
 		{
-			"path": "../laqp"
+			"path": "../tqp_data"
 		}
 	],
 	"settings": {}

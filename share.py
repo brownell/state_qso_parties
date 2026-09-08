@@ -70,7 +70,7 @@ class SHARED:
             'total_logs': 0,
             'valid_logs': 0,
             'rejected_logs': 0,
-            'rejected_logs_files': [], # callsigns of PARSER not_valids
+            'rejected_logs_filenames': [], # logs of PARSER not_valids
             'total_qsos': 0,
             'qso_valids': 0,
             'qso_parser_not_valid': 0,

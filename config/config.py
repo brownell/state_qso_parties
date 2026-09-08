@@ -81,6 +81,7 @@ ROVER_COUNTY_BONUS = 50  # Bonus per county activated (rovers only)
 EXTRA_BONUS_CALLS = os.environ.get('EXTRA_BONUS_CALLS', ['KI5ZAW', 'N5SCJ', 'K5TD'])
 EXTRA_BONUS_POINTS = os.environ.get('EXTRA_BONUS_POINTS', 25)
 EXTRA_BONUS_YEAR = os.environ.get('EXTRA_BONUS_YEAR', '2026')
+HQ_FIELDS = os.environ.get('HQ_FIELDS', {})
 
 # ============================================================
 # for fuzzy matching of callsigns during cross-checking, we can use the Levenshtein distance to allow for minor typos. For example, if two callsigns differ by only one character (e.g., K5TD vs K5T0), we can consider them a match for cross-checking purposes. This helps catch common errors while still allowing for some flexibility in the logs.
@@ -92,19 +93,7 @@ MAX_EDIT_DISTANCE = 2  # Maximum character differences for fuzzy matching (e.g.,
 # MAPPING of HQ fields added to log by Bruce Horn's uploader
 # ============================================================
 
-HQ_FIELDS = {
-    'HQ-CATEGORY': 
-    ['category_station', 'category_mode', 'category_power'],
-    'HQ-QUESTIONS':
-    {
-        'PWR': 'category_power',
-        'MODE': 'category_mode',
-        'OVERLAY': 'category_overlay',
-        'STATION': 'category_station'
 
-    },
-    'HQ-CLUB': 'club'
-}
 
 # ============================================================
 # BAND AND MODE DEFINITIONS
