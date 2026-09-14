@@ -1,3 +1,30 @@
+this was in read_prepare.py but never called???????
+
+def check_callsign_is_DX(s, new_result):
+        ## check if this log is from a DX station. If so, replace his de_exch with his DXCC entity 
+        try:
+            dx_callsign  = s.my_callinfo.get_all(new_result['callsign'])
+        except Exception as e:
+            return
+        try:            
+            if dx_callsign and ((dx_callsign['country'] not in ['United States', 'Canada'])): # log of DX station
+                dxcc_entity = s.dxcc_entities[int(dx_rcvd_qth['adif'])]
+                new_result['dxcc_entity'] = dxcc_entity
+        except Exception as e:
+            rcvd_qth = qso['rcvd_qth']
+            dx_rcvd_qth = None
+            result['warnings'].append(f"ERROR QSO: cannot determine if rcvd_qth is DX for callsign on line {qso['line_num']} WORKED: band {band} mode {mode_cat} remote op {rcvd_call}")
+            print(f"Exception {e} sender {result['callsign']} cannot determine if rcvd_qth is DX for callsign on line {qso['line_num']} WORKED: band {band} mode {mode_cat} remote op {rcvd_call}")
+     =====================================================================
+
+
+cab = parse_log_file(, ignore_unknown_key=True, check_cat\
+ignore_order=True, check_mode=False)
+
+filename = "AA_failed_parse\K5EC.log"
+
+parse_log_file("K5EC.log", ignore_unknown_key=False, check_categories=True, ignore_order=False, check_mode=True)
+
 have to do this for de_excc AND dx_exch - important for duplicates qsos and multipliers
 
 if key == 'callsign':

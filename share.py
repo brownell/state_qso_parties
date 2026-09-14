@@ -55,6 +55,7 @@ class SHARED:
             reader = csv.reader(f)
             for row in reader:
                 self.dxcc_entities[int(row[0])] = row[1].split('  ')[0]
+        self.error_file = open("ERROR_FILE.txt", "w")
         
         self.first_call_qth = None  # To track the sent QTH in a log for checking other QSOs against it
 
@@ -91,6 +92,12 @@ class SHARED:
         self.all_callsigns = set()  # To track all callsigns that submitted logs for UNIQUE detection
         self.mobile_callsigns = set() # Track callsigns that have location "mobile"
         self.qso_index_dict = defaultdict(list)
+        self.contest_clubs = ["Austin QRP Club", "Baytown Area ARC", "Central Texas DX and Contest Club", "Dallas ARC", "DCT ARC", 
+                              "Denton County ARC", "DFW Contest Group", "Ellis County ARC", "Irving ARC", "Lake Area Amateur Radio Club", 
+                              "Las Moras ARC", "Longview/East Texas ARC", "McKinney ARC", "Medina County ARC", "Midland ARC", 
+                              "Naturist ARC", "North Texas ARS", "Panhandle ARC", "Red River Valley ARC", "Road Runners Microwave Group", 
+                              "Saginaw Haslet ARC", "South Texas DX and Contest Club", "Texas DX Society", "University of Texas ARC", 
+                              "West Texas ARC", "West Texas Pemian Network", "Williamson County ARC"]
 
     def _generate_index_key(self, qso, mirror):
         # to generate the index key for the qso_index_dict

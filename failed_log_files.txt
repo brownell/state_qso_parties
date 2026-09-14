@@ -1,0 +1,326 @@
+*****
+ERROR: cabrillo parser failed to process K5EC.log
+*****
+Sending POST request for file K5ECT.log
+*****
+ERROR: cabrillo parser failed to process K5ENS.log
+*****
+*****
+ERROR: cabrillo parser failed to process K5OT.log
+*****
+Sending POST request for file K5PTB.log
+ERROR: result field for K5PTB.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td>[none]</td><td class="byellow">Contest not specified (no CONTEST: line)</td></tr><tr><td>Call Sign:</td><td><strong>K5PTB</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Phone Only Single Op Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>PHONE</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>K5PTB@PTB.ORG</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p><hr/><p><strong>ERROR!</strong> We're unable to accept your September 2026 Texas QSO Party log. Please correct the problems listed below and resubmit your log. If there are exchange errors, please consult the contest rules for requirements. Thanks.</p><hr/><p>Analysis of your uploaded log:<table><tr><td>Contest:</td><td>[none]</td><td class="byellow">Contest not specified (no CONTEST: line)</td></tr><tr><td>Call Sign:</td><td><strong>K5PTB</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Phone Only Single Op Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>PHONE</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>K5PTB@PTB.ORG</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: K5PTB@PTB.ORG
+location: TX
+catop: SO
+catmode: PH
+catpower: LP
+catstation: FIX
+clubname1: LAKE AREA AMATEUR RADIO KLUB
+clubname2: 
+*****
+*****
+ERROR: cabrillo parser failed to process K5VOP.log
+*****
+ERROR: result field for KA5RBZ.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TXQP</strong></td><td>&nbsp;</td></tr><tr><td>Call Sign:</td><td><strong>KA5RBZ</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Single Op Mixed Mode Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>MIXED</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>rodger@zeisler.net</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr><tr><td>QSOs in Log:</td><td colspan="2"><strong>179</strong> (178 during contest period)</td></tr></table></p><p>The following QSO lines in your log have errors (<span class="byellow">highlighted</span>).<table><tr><td class="tgray">[QSO:]</td><td class="tgray">[freq]</td><td class="tgray">[mode]</td><td class="tgray">[yyyy-mm-dd]</td><td class="tgray">[hhmm]</td><td class="tgray">[call-sent]</td><td class="tgray">[rst-sent]</td><td class="tgray">[qth-sent]</td><td class="tgray">[call-copied]</td><td class="tgray">[rst-copied]</td><td class="tgray">[qth-copied]</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14074</td><td class="tgray">RY</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2001</strong></td><td class="tgray">KA5RBZ</td><td class="tgray">+01</td><td class="tgray">COLN</td><td class="tgray">N1LCE</td><td class="tgray">-07</td><td class="tgray">SC</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: rodger@zeisler.net
+location: TX
+catop: SO
+catmode: MIX
+catpower: LP
+catstation: FIX
+clubname1: McKinney Amateur Radio Club
+clubname2: 
+*****
+*****
+ERROR: cabrillo parser failed to process KC6UCN.log
+*****
+Sending POST request for file KD2EFR.log
+Sending POST request for file KD2HE.log
+ERROR: result field for KD2HE.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>QSO-PARTY</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>KD2HE</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>DX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>DX Single Op Mixed</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>MIXED</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>kd2he@hotmail.com</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p><hr/><p><strong>ERROR!</strong> We're unable to accept your September 2026 Texas QSO Party log. Please correct the problems listed below and resubmit your log. If there are exchange errors, please consult the contest rules for requirements. Thanks.</p><hr/><p>Analysis of your uploaded log:<table><tr><td>Contest:</td><td><strong>QSO-PARTY</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>KD2HE</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>DX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>DX Single Op Mixed</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>MIXED</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>kd2he@hotmail.com</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: kd2he@hotmail.com
+location: DX
+catop: SO
+catmode: MIX
+catpower: LP
+catstation: FIX
+clubname1: None
+clubname2: 
+*****
+Sending POST request for file KD2KW-R.log
+ERROR: result field for KD2KW-R.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TXQP</strong></td><td>Contest changed to standard contest ID</td></tr><tr><td>Call Sign:</td><td><strong>KD2KW</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Single Op Mixed Mode Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>MIXED</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>kd2kw@yahoo.com</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr><tr><td>QSOs in Log:</td><td colspan="2"><strong>123</strong> (123 during contest period)</td></tr></table></p><p>The following QSO lines in your log have errors (<span class="byellow">highlighted</span>).<table><tr><td class="tgray">[QSO:]</td><td class="tgray">[freq]</td><td class="tgray">[mode]</td><td class="tgray">[yyyy-mm-dd]</td><td class="tgray">[hhmm]</td><td class="tgray">[call-sent]</td><td class="tgray">[rst-sent]</td><td class="tgray">[qth-sent]</td><td class="tgray">[call-copied]</td><td class="tgray">[rst-copied]</td><td class="tgray">[qth-copied]</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">7041</td><td class="tgray">CW</td><td class="tgray">2026-09-19</td><td class="tgray">1545</td><td class="tgray">KD2KW</td><td class="tgray">599</td><td class="byellow"><strong>COOK.</strong></td><td class="tgray">N4RZ</td><td class="tgray">599</td><td class="tgray">GILL</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: kd2kw@yahoo.com
+location: TX
+catop: SO
+catmode: MIX
+catpower: LP
+catstation: FIX
+clubname1: LAKE AREA AMATEUR RADIO KLUB
+clubname2: 
+*****
+*****
+ERROR: cabrillo parser failed to process KD9ADR.log
+*****
+*****
+ERROR: cabrillo parser failed to process KF5KWO.log
+*****
+*****
+ERROR: cabrillo parser failed to process KF5KWO.log
+*****
+Sending POST request for file KF5OMH.log
+Sending POST request for file KF5VDX.log
+Sending POST request for file KG5BBF.log
+ERROR: result field for KG5BBF.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TXQP</strong></td><td>&nbsp;</td></tr><tr><td>Call Sign:</td><td><strong>KG5BBF</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Single Op Mixed Mode Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>MIXED</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>jcluppens@ussailing.net</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr><tr><td>QSOs in Log:</td><td colspan="2"><strong>61</strong> (54 during contest period)</td></tr></table></p><p>The following QSO lines in your log have errors (<span class="byellow">highlighted</span>).<table><tr><td class="tgray">[QSO:]</td><td class="tgray">[freq]</td><td class="tgray">[mode]</td><td class="tgray">[yyyy-mm-dd]</td><td class="tgray">[hhmm]</td><td class="tgray">[call-sent]</td><td class="tgray">[rst-sent]</td><td class="tgray">[qth-sent]</td><td class="tgray">[call-copied]</td><td class="tgray">[rst-copied]</td><td class="tgray">[qth-copied]</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14000</td><td class="tgray">RY</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2009</strong></td><td class="tgray">KG5BBF</td><td class="tgray">12</td><td class="tgray">HARR</td><td class="tgray">KC5RIL</td><td class="tgray">07</td><td class="tgray">HARR</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">21000</td><td class="tgray">RY</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2018</strong></td><td class="tgray">KG5BBF</td><td class="tgray">2</td><td class="tgray">HARR</td><td class="tgray">WY0V</td><td class="tgray">14</td><td class="tgray">IA</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">28000</td><td class="tgray">RY</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2032</strong></td><td class="tgray">KG5BBF</td><td class="tgray">3</td><td class="tgray">HARR</td><td class="tgray">KA3UJE</td><td class="tgray">9</td><td class="tgray">OH</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">28000</td><td class="tgray">RY</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2039</strong></td><td class="tgray">KG5BBF</td><td class="tgray">2</td><td class="tgray">HARR</td><td class="tgray">HA3MQ</td><td class="tgray">9</td><td class="tgray">HA</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">28000</td><td class="tgray">RY</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2043</strong></td><td class="tgray">KG5BBF</td><td class="tgray">06</td><td class="tgray">HARR</td><td class="tgray">DL6BCL</td><td class="tgray">20</td><td class="tgray">DL</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">28000</td><td class="tgray">RY</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2046</strong></td><td class="tgray">KG5BBF</td><td class="tgray">10</td><td class="tgray">HARR</td><td class="tgray">OH3JF</td><td class="tgray">17</td><td class="tgray">OH</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">28000</td><td class="tgray">RY</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2058</strong></td><td class="tgray">KG5BBF</td><td class="tgray">18</td><td class="tgray">HARR</td><td class="tgray">VA3KGB</td><td class="tgray">22</td><td class="tgray">ON</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: jcluppens@ussailing.net
+location: TX
+catop: SO
+catmode: MIX
+catpower: LP
+catstation: FIX
+clubname1: Texas DX Society
+clubname2: 
+*****
+*****
+ERROR: cabrillo parser failed to process KJ5DLO.log
+*****
+Sending POST request for file KJ5KYP.log
+ERROR: result field for KJ5KYP.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TXQP</strong></td><td>Contest changed to standard contest ID</td></tr><tr><td>Call Sign:</td><td><strong>KJ5KYP</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Phone Only Single Op Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>PHONE</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>crr@mac.com</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr><tr><td>QSOs in Log:</td><td colspan="2"><strong>31</strong> (17 during contest period)</td></tr></table></p><p>The following QSO lines in your log have errors (<span class="byellow">highlighted</span>).<table><tr><td class="tgray">[QSO:]</td><td class="tgray">[freq]</td><td class="tgray">[mode]</td><td class="tgray">[yyyy-mm-dd]</td><td class="tgray">[hhmm]</td><td class="tgray">[call-sent]</td><td class="tgray">[rst-sent]</td><td class="tgray">[qth-sent]</td><td class="tgray">[call-copied]</td><td class="tgray">[rst-copied]</td><td class="tgray">[qth-copied]</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2001</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">59</td><td class="tgray">BELL</td><td class="tgray">W0JLC</td><td class="tgray">57</td><td class="tgray">KS</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2002</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">58</td><td class="tgray">BELL</td><td class="tgray">AE5ES</td><td class="tgray">59</td><td class="tgray">KY</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2002</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">59</td><td class="tgray">BELL</td><td class="tgray">K6AER</td><td class="tgray">59</td><td class="tgray">NM</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2003</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">59</td><td class="tgray">BELL</td><td class="tgray">W2EO</td><td class="tgray">58</td><td class="tgray">FL</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2004</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">59</td><td class="tgray">BELL</td><td class="tgray">WX7MB</td><td class="tgray">59</td><td class="tgray">SC</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2004</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">59</td><td class="tgray">BELL</td><td class="tgray">K3GWK</td><td class="tgray">59</td><td class="tgray">GA</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2005</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">57</td><td class="tgray">BELL</td><td class="tgray">KD9TYE</td><td class="tgray">57</td><td class="tgray">IL</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2007</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">55</td><td class="tgray">BELL</td><td class="tgray">KC0BXO</td><td class="tgray">56</td><td class="tgray">KS</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2008</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">59</td><td class="tgray">BELL</td><td class="tgray">W5PFR</td><td class="tgray">59</td><td class="tgray">MS</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2010</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">59</td><td class="tgray">BELL</td><td class="tgray">N5WFY</td><td class="tgray">59</td><td class="tgray">LA</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2011</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">55</td><td class="tgray">BELL</td><td class="tgray">WD5FCA</td><td class="tgray">55</td><td class="tgray">AL</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2012</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">57</td><td class="tgray">BELL</td><td class="tgray">KW4L</td><td class="tgray">57</td><td class="tgray">FL</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2014</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">56</td><td class="tgray">BELL</td><td class="tgray">W5WPS</td><td class="tgray">57</td><td class="tgray">AR</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14240</td><td class="tgray">PH</td><td class="byellow"><strong>2026-09-20</td><td class="byellow"><strong>2015</strong></td><td class="tgray">KJ5KYP</td><td class="tgray">59</td><td class="tgray">BELL</td><td class="tgray">KD0TMD</td><td class="tgray">57</td><td class="tgray">CO</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: crr@mac.com
+location: TX
+catop: SO
+catmode: PH
+catpower: LP
+catstation: FIX
+clubname1: None
+clubname2: 
+*****
+Sending POST request for file KJ5MA.log
+ERROR: result field for KJ5MA.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TXQP 2025</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>KJ5MA</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Phone Only Single Op High Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>HIGH</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>PHONE</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>grandpamack@proton.me</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p><hr/><p><strong>ERROR!</strong> We're unable to accept your September 2026 Texas QSO Party log. Please correct the problems listed below and resubmit your log. If there are exchange errors, please consult the contest rules for requirements. Thanks.</p><hr/><p>Analysis of your uploaded log:<table><tr><td>Contest:</td><td><strong>TXQP 2025</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>KJ5MA</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Phone Only Single Op High Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>HIGH</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>PHONE</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>grandpamack@proton.me</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: grandpamack@proton.me
+location: TX
+catop: SO
+catmode: PH
+catpower: HP
+catstation: FIX
+clubname1: None
+clubname2: 
+*****
+ERROR: KK5MR.log failed because  Looks like you neither selected a log file to upload nor pasted your log into the text area below.
+form_data *****
+appaction: step2
+emailadr: kk5mr@yahoo.com
+location: TX
+catop: SO
+catmode: MIX
+catpower: LP
+catstation: FIX
+clubname1: DFW Contest Group
+clubname2: 
+*****
+ERROR: result field for KK7HPM.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TQP</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>KK7HPM</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Single Op Mixed Mode Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>MIXED</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>MTHATCHER280@GMAIL.COM</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p><hr/><p><strong>ERROR!</strong> We're unable to accept your September 2026 Texas QSO Party log. Please correct the problems listed below and resubmit your log. If there are exchange errors, please consult the contest rules for requirements. Thanks.</p><hr/><p>Analysis of your uploaded log:<table><tr><td>Contest:</td><td><strong>TQP</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>KK7HPM</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Single Op Mixed Mode Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>MIXED</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>MTHATCHER280@GMAIL.COM</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: MTHATCHER280@GMAIL.COM
+location: TX
+catop: SO
+catmode: MIX
+catpower: LP
+catstation: FIX
+clubname1: None
+clubname2: 
+*****
+*****
+ERROR: cabrillo parser failed to process KM7BUE.log
+*****
+ERROR: result field for N1ADX.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TX-QP</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>N1ADX</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Phone Only Single Op Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>PHONE</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>n1adx73@gmail.com</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p><hr/><p><strong>ERROR!</strong> We're unable to accept your September 2026 Texas QSO Party log. Please correct the problems listed below and resubmit your log. If there are exchange errors, please consult the contest rules for requirements. Thanks.</p><hr/><p>Analysis of your uploaded log:<table><tr><td>Contest:</td><td><strong>TX-QP</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>N1ADX</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Phone Only Single Op Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>PHONE</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>n1adx73@gmail.com</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: n1adx73@gmail.com
+location: TX
+catop: SO
+catmode: PH
+catpower: LP
+catstation: FIX
+clubname1: None
+clubname2: 
+*****
+ERROR: result field for N4CD.LOG not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>KS-QSO-PARTY</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>N4CD</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Single Op Mixed Mode Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>MIXED</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>k5dx@tdxs.net</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p><hr/><p><strong>ERROR!</strong> We're unable to accept your September 2026 Texas QSO Party log. Please correct the problems listed below and resubmit your log. If there are exchange errors, please consult the contest rules for requirements. Thanks.</p><hr/><p>Analysis of your uploaded log:<table><tr><td>Contest:</td><td><strong>KS-QSO-PARTY</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>N4CD</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Single Op Mixed Mode Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>MIXED</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>k5dx@tdxs.net</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: k5dx@tdxs.net
+location: TX
+catop: SO
+catmode: MIX
+catpower: LP
+catstation: FIX
+clubname1: None
+clubname2: 
+*****
+ERROR: result field for N5DN.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TXQP</strong></td><td>Contest changed to standard contest ID</td></tr><tr><td>Call Sign:</td><td><strong>N5DN</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Phone Only Single Op High Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>HIGH</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>PHONE</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>n5dnjeff@gmail.com</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr><tr><td>QSOs in Log:</td><td colspan="2"><strong>167</strong> (167 during contest period)</td></tr></table></p><p>The following QSO lines in your log have errors (<span class="byellow">highlighted</span>).<table><tr><td class="tgray">[QSO:]</td><td class="tgray">[freq]</td><td class="tgray">[mode]</td><td class="tgray">[yyyy-mm-dd]</td><td class="tgray">[hhmm]</td><td class="tgray">[call-sent]</td><td class="tgray">[rst-sent]</td><td class="tgray">[qth-sent]</td><td class="tgray">[call-copied]</td><td class="tgray">[rst-copied]</td><td class="tgray">[qth-copied]</td></tr><tr><td class="tgray">QSO:</td><td class="byellow"><strong>50130</strong></td><td class="tgray">PH</td><td class="tgray">2026-09-19</td><td class="tgray">1812</td><td class="tgray">N5DN</td><td class="tgray">59</td><td class="tgray">SOME</td><td class="tgray">KI5MM/M</td><td class="tgray">59</td><td class="tgray">SOME</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: n5dnjeff@gmail.com
+location: TX
+catop: SO
+catmode: PH
+catpower: HP
+catstation: FIX
+clubname1: None
+clubname2: 
+*****
+ERROR: result field for n5kw.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TXQP</strong></td><td>Contest changed to standard contest ID</td></tr><tr><td>Call Sign:</td><td><strong>N5KW</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Mobile Single Op Mixed Mode</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>MIXED</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>MOBILE</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>n5kw@suddenlink.net</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr><tr><td>QSOs in Log:</td><td colspan="2"><strong>805</strong> (805 during contest period)</td></tr></table></p><p>The following QSO lines in your log have errors (<span class="byellow">highlighted</span>).<table><tr><td class="tgray">[QSO:]</td><td class="tgray">[freq]</td><td class="tgray">[mode]</td><td class="tgray">[yyyy-mm-dd]</td><td class="tgray">[hhmm]</td><td class="tgray">[call-sent]</td><td class="tgray">[rst-sent]</td><td class="tgray">[qth-sent]</td><td class="tgray">[call-copied]</td><td class="tgray">[rst-copied]</td><td class="tgray">[qth-copied]</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14039</td><td class="tgray">CW</td><td class="tgray">2026-09-19</td><td class="tgray">1502</td><td class="tgray">N5KW</td><td class="tgray">599</td><td class="tgray">COOK</td><td class="tgray">KN4JN</td><td class="tgray">599</td><td class="byellow"><strong>599</strong></td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: n5kw@suddenlink.net
+location: TX
+catop: SO
+catmode: MIX
+catpower: LP
+catstation: MOB
+clubname1: None
+clubname2: 
+*****
+*****
+ERROR: cabrillo parser failed to process N5NK.log
+*****
+ERROR: result field for N5TOO.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>IN7QPNE-QSO-PARTY</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>N5TOO</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>GA</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Non-Texas Single Op Mixed Mode</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>HIGH</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>MIXED</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>N5TOO@yahoo.com</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p><hr/><p><strong>ERROR!</strong> We're unable to accept your September 2026 Texas QSO Party log. Please correct the problems listed below and resubmit your log. If there are exchange errors, please consult the contest rules for requirements. Thanks.</p><hr/><p>Analysis of your uploaded log:<table><tr><td>Contest:</td><td><strong>IN7QPNE-QSO-PARTY</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>N5TOO</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>GA</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Non-Texas Single Op Mixed Mode</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>HIGH</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>MIXED</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>N5TOO@yahoo.com</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: N5TOO@yahoo.com
+location: GA
+catop: SO
+catmode: MIX
+catpower: HP
+catstation: FIX
+clubname1: None
+clubname2: 
+*****
+*****
+Sending POST request for file N5WCT.log
+ERROR: result field for N5WCT.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TXQP</strong></td><td>&nbsp;</td></tr><tr><td>Call Sign:</td><td><strong>N5WCT</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas Phone Only Single Op Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>PHONE</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>ka5bkg@sbcglobal.net</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr><tr><td>QSOs in Log:</td><td colspan="2"><strong>155</strong> (155 during contest period)</td></tr></table></p><p>The following QSO lines in your log have errors (<span class="byellow">highlighted</span>).<table><tr><td class="tgray">[QSO:]</td><td class="tgray">[freq]</td><td class="tgray">[mode]</td><td class="tgray">[yyyy-mm-dd]</td><td class="tgray">[hhmm]</td><td class="tgray">[call-sent]</td><td class="tgray">[rst-sent]</td><td class="tgray">[qth-sent]</td><td class="tgray">[call-copied]</td><td class="tgray">[rst-copied]</td><td class="tgray">[qth-copied]</td></tr><tr><td class="tgray">QSO:</td><td class="byellow"><strong>432</strong></td><td class="tgray">PH</td><td class="tgray">2026-09-20</td><td class="tgray">0001</td><td class="tgray">N5WCT</td><td class="tgray">59</td><td class="tgray">WASH</td><td class="tgray">W5TRL</td><td class="tgray">59</td><td class="tgray">LEE</td></tr><tr><td class="tgray">QSO:</td><td class="byellow"><strong>432</strong></td><td class="tgray">PH</td><td class="tgray">2026-09-20</td><td class="tgray">1416</td><td class="tgray">N5WCT</td><td class="tgray">59</td><td class="tgray">WASH</td><td class="tgray">K5DMA</td><td class="tgray">59</td><td class="tgray">WASH</td></tr><tr><td class="tgray">QSO:</td><td class="byellow"><strong>432</strong></td><td class="tgray">PH</td><td class="tgray">2026-09-20</td><td class="tgray">1431</td><td class="tgray">N5WCT</td><td class="tgray">59</td><td class="tgray">WASH</td><td class="tgray">KC5KBS</td><td class="tgray">59</td><td class="tgray">WASH</td></tr><tr><td class="tgray">QSO:</td><td class="byellow"><strong>432</strong></td><td class="tgray">PH</td><td class="tgray">2026-09-20</td><td class="tgray">1435</td><td class="tgray">N5WCT</td><td class="tgray">59</td><td class="tgray">WASH</td><td class="tgray">KJ5EPW</td><td class="tgray">59</td><td class="tgray">WASH</td></tr><tr><td class="tgray">QSO:</td><td class="byellow"><strong>432</strong></td><td class="tgray">PH</td><td class="tgray">2026-09-20</td><td class="tgray">1514</td><td class="tgray">N5WCT</td><td class="tgray">59</td><td class="tgray">WASH</td><td class="tgray">WB5MEX</td><td class="tgray">59</td><td class="tgray">WASH</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: ka5bkg@sbcglobal.net
+location: TX
+catop: SO
+catmode: PH
+catpower: LP
+catstation: FIX
+clubname1: None
+clubname2: 
+*****
+*****
+ERROR: cabrillo parser failed to process N5XU.log
+*****
+*****
+ERROR: cabrillo parser failed to process N5XZ.log
+*****
+ERROR: result field for N7AME.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TXQP</strong></td><td>&nbsp;</td></tr><tr><td>Call Sign:</td><td><strong>N7AME</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>DX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>DX Single Op Mixed</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>PHONE</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>johnv@frontier.com</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr><tr><td>QSOs in Log:</td><td colspan="2"><strong>16</strong> (15 during contest period)</td></tr></table></p><p>The following QSO lines in your log have errors (<span class="byellow">highlighted</span>).<table><tr><td class="tgray">[QSO:]</td><td class="tgray">[freq]</td><td class="tgray">[mode]</td><td class="tgray">[yyyy-mm-dd]</td><td class="tgray">[hhmm]</td><td class="tgray">[call-sent]</td><td class="tgray">[rst-sent]</td><td class="tgray">[qth-sent]</td><td class="tgray">[call-copied]</td><td class="tgray">[rst-copied]</td><td class="tgray">[qth-copied]</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">28000</td><td class="tgray">PH</td><td class="byellow"><strong>2025-09-22</td><td class="byellow"><strong>0052</strong></td><td class="tgray">N7AME</td><td class="tgray">59</td><td class="tgray">WA</td><td class="tgray">AI5OS</td><td class="tgray">59</td><td class="tgray">TRAV</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: johnv@frontier.com
+location: DX
+catop: SO
+catmode: PH
+catpower: LP
+catstation: FIX
+clubname1: Snohomish County Hams Club
+clubname2: 
+*****
+ERROR: result field for N8DNA.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TEXAS-QSO-PARTY</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>N8DNA</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas CW Only Single Op Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>CW</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>whomike@yahoo.com</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p><hr/><p><strong>ERROR!</strong> We're unable to accept your September 2026 Texas QSO Party log. Please correct the problems listed below and resubmit your log. If there are exchange errors, please consult the contest rules for requirements. Thanks.</p><hr/><p>Analysis of your uploaded log:<table><tr><td>Contest:</td><td><strong>TEXAS-QSO-PARTY</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>N8DNA</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>TX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>Texas CW Only Single Op Low Power</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>CW</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>whomike@yahoo.com</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: whomike@yahoo.com
+location: TX
+catop: SO
+catmode: CW
+catpower: LP
+catstation: FIX
+clubname1: None
+clubname2: 
+*****
+*****
+ERROR: cabrillo parser failed to process NF5T.log
+*****
+*****
+ERROR: cabrillo parser failed to process NU5DE.log
+*****
+*****
+ERROR: cabrillo parser failed to process NY9P.log
+*****
+ERROR: result field for SM1TDE.LOG not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TX-QP</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>SM1TDE</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>DX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>DX Single Op Mixed</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>CW</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>k5dx@tdxs.net</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p><hr/><p><strong>ERROR!</strong> We're unable to accept your September 2026 Texas QSO Party log. Please correct the problems listed below and resubmit your log. If there are exchange errors, please consult the contest rules for requirements. Thanks.</p><hr/><p>Analysis of your uploaded log:<table><tr><td>Contest:</td><td><strong>TX-QP</strong></td><td class="byellow">Contest not recognized, must be one of the following: TXQP,TX-QSO-PARTY</td></tr><tr><td>Call Sign:</td><td><strong>SM1TDE</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>DX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>DX Single Op Mixed</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>LOW</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>CW</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>k5dx@tdxs.net</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: k5dx@tdxs.net
+location: DX
+catop: SO
+catmode: CW
+catpower: LP
+catstation: FIX
+clubname1: None
+clubname2: 
+*****
+*****
+Sending POST request for file SP5SA.log
+ERROR: result field for SP5SA.log not found in response. Status: 200
+*****
+<tr><td>Contest:</td><td><strong>TXQP</strong></td><td>Contest changed to standard contest ID</td></tr><tr><td>Call Sign:</td><td><strong>SP5SA</strong></td><td>&nbsp;</td></tr><tr><td>Location:</td><td><strong>DX</strong></td></tr><tr><td>Category:</td><td colspan="2"><strong>DX Single Op Mixed</strong></td></tr><tr><td>Operator:</td><td><strong>SINGLE-OP</strong></td><td class="blightgreen">Created from Operator question</td></tr><tr><td>Power:</td><td><strong>HIGH</strong></td><td class="blightgreen">Created from Power question</td></tr><tr><td>Mode:</td><td><strong>CW</strong></td><td class="blightgreen">Created from Mode question</td></tr><tr><td>Band:</td><td><strong>ALL</strong></td></tr><tr><td>Station:</td><td><strong>FIXED</strong></td><td class="blightgreen">Created from Station question</td></tr><tr><td>E-mail:</td><td><strong>sp5sa@wp.pl</strong></td><td class="blightgreen">Created from e-mail address provided on form</td></tr><tr><td>QSOs in Log:</td><td colspan="2"><strong>40</strong> (40 during contest period)</td></tr></table></p><p>The following QSO lines in your log have errors (<span class="byellow">highlighted</span>).<table><tr><td class="tgray">[QSO:]</td><td class="tgray">[freq]</td><td class="tgray">[mode]</td><td class="tgray">[yyyy-mm-dd]</td><td class="tgray">[hhmm]</td><td class="tgray">[call-sent]</td><td class="tgray">[rst-sent]</td><td class="tgray">[qth-sent]</td><td class="tgray">[call-copied]</td><td class="tgray">[rst-copied]</td><td class="tgray">[qth-copied]</td></tr><tr><td class="tgray">QSO:</td><td class="tgray">14040</td><td class="tgray">CW</td><td class="tgray">2026-09-19</td><td class="tgray">1452</td><td class="tgray">SP5SA</td><td class="tgray">599</td><td class="tgray">SP</td><td class="tgray">N5XZ</td><td class="tgray">599</td><td class="byellow"><strong>599</strong></td></tr></table></p>
+form_data *****
+appaction: step2
+emailadr: sp5sa@wp.pl
+location: DX
+catop: SO
+catmode: CW
+catpower: HP
+catstation: FIX
+clubname1: None
+clubname2: 
+*****
