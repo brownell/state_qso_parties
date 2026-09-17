@@ -1,0 +1,58 @@
+https://www.rsgbcc.org/hf/information/Adjudication-Principles.shtml
+
+These are the ADJUDICATION TEST OF EACH QSO LOG ENTRY and ACTION from the 
+Royal Radio Society of Great Britain
+
+3(a) If all these conditions are met:
+(i) Received Call matches another entrant;
+(ii) Received Call there = this Sent Call;
+(iii) Band/Mode are correct;
+(iv) Time is correct +/- 15 mins;
+(v) Exchange Received matches Exchange Sent in other log (but Serial no. can be +/- 1).	QSO is good in this log.
+For OB1s (Received Exchange when serial is "Out by One" from that shown as Sent Exchange in other entrant's log), keep a tally for each entrant for TX and flag if > 5 occurrences in contest.
+For report TX errors, keep a tally for each entrant for TX and flag if > 5 occurrences in contest.
+
+3(b) If the Received Call matches another entrant
+and all these conditions are met:
+(i) Received Call there is similar to this Sent Call
+(no more than two characters incorrect or missing);
+(ii) Band/Mode correct;
+(iii) Time correct +/- 15 mins;
+(iv) Exchange Received matches Exchange Sent in other log (but Serial no. can be +/- 1).	QSO is good in this log.
+For OB1s (Received Exchange when serial is "Out by One" from that shown as Sent Exchange in other entrant's log), keep a tally for each entrant for TX and flag if > 5 occurrences in contest.
+For report TX errors, keep a tally for each entrant for TX and flag if > 5 occurrences in contest.
+
+3(c) If the Sent Call appears in another log without a matching Received Call in this log, and the QSO can be identified in this log, and this QSO has not already been declared good.	QSO is bad in this log -- busted call identified.
+Penalty applied -- loss of this QSO plus the loss of an additional penalty as defined in the contest rules.
+
+3(d) If the Received Call matches that of another entrant and no matching QSO can be identified in the other log.	QSO is bad in this log -- not in log.
+Penalty applied -- loss of this QSO only.
+
+3(e) If a matching QSO can be identified in another log but the Received Exchange is incorrect (but Serial no. can be +/- 1).	QSO is bad in this log -- incorrect exchange.
+Penalty applied -- loss of this QSO plus the loss of an additional penalty as defined in the contest rules.
+
+3(f) If a matching QSO can be identified in another log but either Time, Band or Mode do not match.	QSO is bad in this log -- incorrect logging.
+Penalty applied -- loss of this QSO only.
+
+3(g) If the Received Call appears in other entrants' logs and is consistent with fabricated serial numbers, or is 001 or 000.	QSO is good in this log.
+
+3(h) If the Received Call does not appear in other entrants' logs and serial number is 001 or 000.	QSO is good in this log -- unique.
+Further analysis will be carried out if the proportion of uniques in this log exceeds the average of the proportion of uniques in all logs for this contest by a configurable factor.
+
+3(i) If the Received Call does not appear in other entrants' logs, has serial number > 1 (or other exchange) and callsign appears in 2nd party verification.	QSO is good in this log -- unique.
+Further analysis will be carried out if the proportion of uniques in this log exceeds the average of the proportion of uniques in all logs for this contest by a configurable factor.
+
+3(j) If the Received Call does not appear in other entrants' logs, has serial number > 1 (or other exchange) and callsign does not appear in 2nd party verification.	QSO is bad in this log -- busted call unique.
+Penalty applied -- loss of this QSO only.
+
+3(k) If the QSO has not met any of the tests above.	QSO is bad in this log -- no matching QSO found.
+Penalty applied -- loss of this QSO only.
+
+3(l) If the QSO is good or bad in this log and is with the same station on the same band and mode as a previous good QSO.	This and subsequent QSOs with the same station on the same band and mode are marked as duplicate.
+Penalty applied -- loss of this QSO only.
+
+3(m) If the QSO is good and is with the same station on the same band and mode as a previous bad QSO.	QSO is good in this log.
+Any additional penalty (defined in the contest rules) applied to the previous bad QSO, is removed.
+
+       NOTES	(a) Where penalties are applied in addition to the loss of a bad QSO, this will be indicated in the contest rules.
+(b) Loss of a QSO will include the loss of any new multiplier associated with the QSO.
