@@ -55,7 +55,12 @@ class SHARED:
             reader = csv.reader(f)
             for row in reader:
                 self.dxcc_entities[int(row[0])] = row[1].split('  ')[0]
-        self.error_file = open("ERROR_FILE.txt", "w")
+        self.out_files = {
+            'error_file': open("ERROR_FILE.txt", "w"),
+            'uniques_file': open("UNIQUES_FILE.txt", "w"),
+            'busteds_file': open("BUSTEDS_FILE.txt", "w"),
+            'nils_file': open("NILS_FILE.txt", "w"),
+        }
         
         self.first_call_qth = None  # To track the sent QTH in a log for checking other QSOs against it
 
@@ -99,13 +104,13 @@ class SHARED:
                               "Saginaw Haslet ARC", "South Texas DX and Contest Club", "Texas DX Society", "University of Texas ARC", 
                               "West Texas ARC", "West Texas Pemian Network", "Williamson County ARC"]
 
-    def _generate_index_key(self, qso, mirror):
+    def _generate_index_key(self, qso, call_to_use, mirror):
         # to generate the index key for the qso_index_dict
         # this is used to search for matches in cross_check
         if mirror == False:
-            return qso.de_call.upper() + qso.de_exch[1].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
+            return call_to_use + qso.de_exch[1].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
         else:
-            return qso.dx_call.upper() + qso.dx_exch[1].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
+            return call_to_use + qso.dx_exch[1].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
 
     # One of these is created for each log file
     # Each of the objects in self.results is a python with the following structure:      
@@ -119,8 +124,8 @@ class SHARED:
             'year': CONTEST_YEAR,
             'exchange': '',     # from first QSO in this operator's log
             'category': 'NON-LA',  # 'DX', 'NON-LA', 'LA-FIXED', 'LA-ROVER'
-            'dxcc_code': 0,
-            'dxcc_entity': '',
+            'dxcc_code': 0, # code is 0 if not a DX station, else DXCC code
+            'dxcc_entity': '', # if same as callsign if not DX 
             'final_score': 0,
             'cw_qsos': 0,
             'ph_qsos': 0,
@@ -146,9 +151,13 @@ class SHARED:
             'worked_special_station': False,
             'num_n5lcc_contacts': 0,
             'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
-            'qsos_by_mode': {'Phone': 0, 'CW/Digital': 0},
-            'qsos_by_hour': {i: 0 for i in range(1400,2600, 100)},  # Hour of day (1400 - 2500)
+            'qsos_by_mode': {'PH': 0, 'CW': 0, 'RY': 0, 'DG': 0},
+            'qsos_by_hour': [0] * 24,
             'bands_worked': set(),
+            'uniques': 0,
+            'nils': 0,
+            'busteds': 0,
+            'dup_qsos': 0,
             'errors': [],
             'warnings': [],
             'is_valid': True

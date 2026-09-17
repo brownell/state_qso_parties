@@ -1,21 +1,127 @@
-this was in read_prepare.py but never called???????
+NOTES on cross-check:
+- had case where exch should have been HUNT, but was SUNT - all else matched
+- aa0aw:
+        valid qso 55, total 58, mults 51, counties 34, qsos_by_* all add to 51
 
-def check_callsign_is_DX(s, new_result):
-        ## check if this log is from a DX station. If so, replace his de_exch with his DXCC entity 
-        try:
-            dx_callsign  = s.my_callinfo.get_all(new_result['callsign'])
-        except Exception as e:
-            return
-        try:            
-            if dx_callsign and ((dx_callsign['country'] not in ['United States', 'Canada'])): # log of DX station
-                dxcc_entity = s.dxcc_entities[int(dx_rcvd_qth['adif'])]
-                new_result['dxcc_entity'] = dxcc_entity
-        except Exception as e:
-            rcvd_qth = qso['rcvd_qth']
-            dx_rcvd_qth = None
-            result['warnings'].append(f"ERROR QSO: cannot determine if rcvd_qth is DX for callsign on line {qso['line_num']} WORKED: band {band} mode {mode_cat} remote op {rcvd_call}")
-            print(f"Exception {e} sender {result['callsign']} cannot determine if rcvd_qth is DX for callsign on line {qso['line_num']} WORKED: band {band} mode {mode_cat} remote op {rcvd_call}")
-     =====================================================================
+'dxcc_entity' =
+'AA0AW'
+'final_score' =
+0
+'cw_qsos' =
+39
+'ph_qsos' =
+12
+'dg_qsos' =
+0
+'qso_points' =
+0
+'total_qsos' =
+58
+'valid_qsos' =
+55
+'total_multipliers' =
+51
+'counties_worked' =
+{'DALS', 'DENT', 'KNOX', 'SMIT', 'TARR', 'BEXA', 'AUST', 'BZIA', 'HRSN', 'MIDL', 'RBSN', 'GALV', 'ECTO', 'DELT', 'PARK', 'FALL', 'COLN', 'GILL', 'TRAV', 'FANN', 'HUNT', 'CROS', 'BREW', 'NEWT', 'WISE', 'CALL', 'HARR', 'GRSN', 'BLAN', 'HAYS', 'BURN', 'TYLE', 'BAST', 'BELL'}
+'counties_worked_multiplier' =
+0
+'states_worked' =
+{}
+'states_worked_multiplier' =
+0
+'provinces_worked' =
+{}
+'provinces_worked_multiplier' =
+0
+'dx_worked' =
+{}
+'dx_worked_multiplier' =
+0
+'counties_activated' =
+{}
+'de_exch_rcvd' =
+{}
+'dx_exch_sent' =
+{}
+'score_wo_bonus' =
+0
+'rover_bonus_points' =
+0
+'county_bonus_points' =
+0
+'worked_special_station' =
+False
+'num_n5lcc_contacts' =
+0
+'qsos_by_band' =
+{'160': 0, '80': 1, '40': 23, '20': 20, '15': 7, '10': 0, '6': 0, '2': 0}
+'qsos_by_mode' =
+{'PH': 12, 'CW': 39, 'RY': 0, 'DG': 0}
+'qsos_by_hour' =
+[0, 0, 0, 0, 0, 11, 8, 0, 0, 6, 18, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+'bands_worked' =
+{}
+'uniques' =
+0
+'nils' =
+0
+'busteds' =
+0
+'dup_qsos' =
+0
+'errors' =
+[]
+'warnings' =
+['qso from/to AA0AW/N5OT exchs:MN/JASP mode:CW band:20 Sept 19th 20Z\n', 'qso from/to AA0AW/N5OT exchs:MN/BLAN mode:CW band:40 Sept 19th 23Z\n', 'qso from/to AA0AW/K5CM exchs:MN/SUNT mode:CW band:40 Sept 20th 00Z\n']
+'is_valid' =
+True
+
+
+
+CAB:
+{'callsign': 'AA0AW', 'operators': ['AA0AW'], 'contest': 'TXQP', 'claimed_score': 6156, 'certificate': None, 'category_operator': 'SINGLE-OP', 'category_assisted': 'ASSISTED', 'category_band': 'ALL', 'category_power': 'LOW', 'category_mode': 'MIXED', 'category_station': 'FIXED', 'category_time': None, 'category_transmitter': 'ONE', 'category_overlay': None, 'offtime': None, 'club': None, 'name': 'Douglas Nelson', 'email': 'KJ5BYZ@gmail.com', 'location': 'MN', 'grid_locator': 'EN36VQ', 'address': ['1411 101st Avenue West'], 'address_city': 'Duluth', 'address_state_province': 'MN', 'address_postalcode': '55808-1618', 'address_country': 'UNITED STATES', 'created_by': 'N1MM Logger+ 1.0.10919.0', 'soapbox': None,
+
+QSO
+
+{'freq': '21040', 'mo': 'CW', 'date': datetime.datetime(2026, 9, 19, 19, 32), 'de_call': 'AA0AW', 'de_exch': ['599','MN'], 'dx_call': 'K5OT', 'dx_exch': ['599', 'BLAN'], 't': None, 'valid': True}
+
+
+
+{'address': ['Zitnoostrovska 33'],
+ 'address_city': 'Dunajska Streda',
+ 'address_country': 'SLOVAK REPUBLIC',
+ 'address_postalcode': '92901',
+ 'address_state_province': 'SK',
+ 'callsign': 'OM2VL',
+ 'category_assisted': 'ASSISTED',
+ 'category_band': 'ALL',
+ 'category_mode': 'MIXED',
+ 'category_operator': 'SINGLE-OP',
+ 'category_overlay': None,
+ 'category_power': 'HIGH',
+ 'category_station': 'FIXED',
+ 'category_time': None,
+ 'category_transmitter': 'ONE',
+ 'certificate': None,
+ 'claimed_score': 221888,
+ 'club': 'Slovak Contest Group',
+ 'contest': 'TXQP',
+ 'created_by': 'N1MM Logger+ 1.0.10923.0',
+ 'email': 'totya.om2vl@gmail.com',
+ 'grid_locator': 'JN87WV',
+ 'hq_anything': OrderedDict([('HQ-CATEGORY', 'DX Single Op Mixed'),
+                             ('HQ-CAT', 'DX SO'),
+                             ('HQ-DATE-RECEIVED', '2026-09-09 21:55:55 GMT'),
+                             ('HQ-DATE-SENT', '2026-09-09 21:55:55 GMT'),
+                             ('HQ-LOG-DEADLINE', '2026-10-04 20:00:00 GMT'),
+                             ('HQ-QUESTIONS',
+                              'Loc: DX, Pwr: HP, Ops: SO, Mode: MIX, Station: '
+                              'FIX')]),
+ 'ignore_order': True,
+ 'location': 'DX',
+ 'name': 'Vegh Laszlo',
+ 'offtime': None,
+ 'operators': ['OM2VL'],
 
 
 cab = parse_log_file(, ignore_unknown_key=True, check_cat\

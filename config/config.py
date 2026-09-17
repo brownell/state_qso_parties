@@ -42,7 +42,7 @@ CONTEST_YEAR = os.environ.get('CONTEST_YEAR', False)
 # 
 REFERENCE_DATA_DIR = os.environ.get('REFERENCE_DATA_DIR', '/app/reference_data')
 # Reference files
-COUNTIES_FILE = REFERENCE_DATA_DIR + '/tx_counties.txt'
+COUNTIES_FILE = REFERENCE_DATA_DIR + '/counties.txt'
 STATES_FILE = REFERENCE_DATA_DIR + '/states.txt'
 PROVINCES_FILE = REFERENCE_DATA_DIR + '/provinces.txt'
 COUNTRY_FILE = REFERENCE_DATA_DIR + '/cty.plist'
@@ -65,7 +65,7 @@ FINAL_REPORTS_DIR = os.environ.get('FINAL_REPORTS_DIR', '/data/final_reports')
 
 # Available years for results lookup
 CONTEST_YEARS = os.environ.get('CONTEST_YEARS', '2025').split(',')
-CONTEST_YEAR = os.environ.get('CONTEST_YEAR', '2025')
+CONTEST_YEAR = os.environ.get('CONTEST_YEAR', '2026')
 
 # Log file extensions allowed for upload
 ALLOWED_LOG_EXTENSIONS = {'log', 'txt', 'cbr'}
@@ -442,11 +442,10 @@ Jefferson Amateur Radio Club</p>
 # # ============================================================================
 # # Admin settings
 # # ============================================================================
-# {'callsign': 'AA0AW', 'operators': ['AA0AW'], 'contest': 'LA-QSO-PARTY', 'claimed_score': 1278, 'certificate': None, 'category_operator': 'SINGLE-OP', 'category_assisted': 'NON-ASSISTED', 'category_band': 'ALL', 'category_power': 'LOW', 'category_mode': 'MIXED', 'category_station': 'FIXED', 'category_time': None, 'category_transmitter': 'ONE', 'category_overlay': None, 'offtime': None, 'club': 'Minnesota Wireless Assn', 'name': 'Douglas Nelson', 'email': 'aa0aw@arrl.net', 'location': 'MN', 'grid_locator': 'EN36VQ', 'address': ['1411 101st Avenue West'], 'address_city': 'Duluth', 'address_state_province': 'MN', 'address_postalcode': '55808', 'address_country': 'USA', 'created_by': 'N1MM Logger+ 1.0.11154.0', 'soapbox': None, 
-
-#  'x_anything': OrderedDict({'X-CONTEST': 'LA-QSO-PARTY', 'X-CATEGORY-BAND': 'ALL', 'X-CATEGORY-MODE': 'MIXED', 'X-CATEGORY-POWER': 'LOW', 'X-CATEGORY-STATION': 'FIXED', 'X-EMAIL': 'aa0aw@arrl.net'}), 
-
-
-#  'hq_anything': OrderedDict({'HQ-CATEGORY': 'FIXED Mixed Low', 'HQ-DATE-RECEIVED': '2026-04-05 14:07:12 GMT', 'HQ-DATE-SENT': '2026-04-05 14:07:12 GMT', 'HQ-LOG-DEADLINE': '2026-04-15 02:00:00 GMT', 'HQ-QUESTIONS': 'Pwr: LOW, Mode: MIX, Overlay: None, Station: F'}), 'version': '3.0', 
-
-#  'qso': [<cabrillo.qso.QSO object at 0x000001EF7F85E900>, <cabrillo.qso.QSO object at 0x000001EF7FDDC050>, <cabrillo.qso.QSO object at 0x000001EF7FDDC190>, <cabrillo.qso.QSO object at 0x000001EF7F8448A0>, <cabrillo.qso.QSO object at 0x000001EF7F845940>, <cabrillo.qso.QSO object at 0x000001EF7F7FE8D0>, <cabrillo.qso.QSO object at 0x000001EF7F353790>, <cabrillo.qso.QSO object at 0x000001EF7F353350>, <cabrillo.qso.QSO object at 0x000001EF7F349B50>, <cabrillo.qso.QSO object at 0x000001EF7F349D50>, <cabrillo.qso.QSO object at 0x000001EF7F7F9310>, <cabrillo.qso.QSO object at 0x000001EF7F7F8B90>, <cabrillo.qso.QSO object at 0x000001EF7F7CAF90>, <cabrillo.qso.QSO object at 0x000001EF7F7CB310>, <cabrillo.qso.QSO object at 0x000001EF7FDB4460>, <cabrillo.qso.QSO object at 0x000001EF7F7E5E50>, <cabrillo.qso.QSO object at 0x000001EF7F7E5C10>, <cabrillo.qso.QSO object at 0x000001EF7F85B1D0>, <cabrillo.qso.QSO object at 0x000001EF7FDDA6D0>], 'ignore_order': True}
+HQ_FIELDS = {
+    'Loc': 'location',
+    'Pwr': "category_power",
+    "Ops": "category_operator",
+    "Mode": "category_mode",
+    "Station": 'category_station'
+}

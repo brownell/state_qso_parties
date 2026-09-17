@@ -32,7 +32,7 @@ from typing import Dict, List, Set, Optional
 from datetime import datetime
 from unittest import result
 from cabrillo.parser import parse_log_file
-from cabrillo.qso import frequency_to_band
+from cabrillo.qso import frequency_to_band_m
 
 # Import your existing modules
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -56,47 +56,45 @@ def read_prepare(s):
         s.stats["total_logs"] += 1
         try:
             file_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR / file).resolve()
-            cab = parse_log_file(file_path, ignore_unknown_key=True, check_categories=False,
-                   ignore_order=True, check_mode=False)
+            cab = parse_log_file(file_path, ignore_unknown_key=True, check_categories=False, ignore_order=True, check_mode=False)
         except Exception as e:
             if file:
                 s.stats["rejected_logs"] += 1
                 s.stats["rejected_logs_filenames"].append(file)
                 print(f"ERROR: log file {file} was rejected by the parser - REJECTED")
-                s.error_file.write(f"ERROR: log file {file} was rejected by the parser - REJECTED")
+                s.out_files['error_file'].write(f"ERROR: log file {file} was rejected by the parser - REJECTED")
                 continue
         # Process Bruce Horn's HQ keys and adding and replacing values in the cab object
         if not process_hq_keys(cab):
             s.stats["rejected_logs"] += 1
             s.stats["rejected_logs_filenames"].append(file)
             print(f"ERROR: log file {file} had no HQ- keys - REJECTED")
-            s.error_file.write(f"ERROR: log file {file} had no HQ- keys - REJECTED")
+            s.out_files['error_file'].write(f"ERROR: log file {file} had no HQ- keys - REJECTED")
             continue
         
         s.stats["valid_logs"] += 1
         # print(vars(cab))
-        new_result = s._init_result()
+        
+        result = s._init_result()
 
-        new_result['cab'] = cab
-        new_result['callsign'] = cab.callsign.upper()
+        # update result if a DX station
+        result['dxcc_code'], result['dxcc_entity'] = get_dxcc(s, cab.location, cab.callsign)
 
         # Add the callsign to the set of all callsigns for UNIQUE detection
-        s.all_callsigns.add(new_result['callsign'])
+        s.all_callsigns.add(cab.callsign)
 
         # Add MOBILE stations to that set
-        if cab.category_station.upper() == 'MOBILE':
-            s.mobile_callsigns.add(new_result['callsign'])
+        if cab.category_station.upper() == 'MOB':
+            s.mobile_callsigns.add(cab.callsign)
 
-        update_qso_index_dict(s, new_result, cab.qso)
-        extract_qso_info(new_result)
-        
-        s.results.append(new_result)
-        new_result['header_attribs'] = vars(cab)
-        print('BREAK')
-
-# UTILITY functions
-
-def update_qso_index_dict(s, new_result, qsos):
+        result['cab'] = cab
+        result['callsign'] = cab.callsign.upper().split('/')[0]
+        update_qso_index_dict(s, result, cab.qso, result['dxcc_entity'])
+        # result['header_attribs'] = vars(cab)
+        s.results.append(result)
+        # print('BREAK')
+   
+def update_qso_index_dict(s, result, qsos, dxcc):
     """
     Update the qso_index_dict for quick lookup of QSOs by 
     received call (dx_call in the cabrillo object) plus mode plus band
@@ -106,35 +104,46 @@ def update_qso_index_dict(s, new_result, qsos):
         s.stats['total_qsos'] += 1
         if not qso.valid:
             s.stats['qso_parser_not_valid'] += 1
-            s.stats['calls_w_not_valid_qsos'].add(new_result['callsign'])
+            s.stats['calls_w_not_valid_qsos'].add(result['callsign'])
             continue
         s.stats['qso_valids'] += 1
-        k = s._generate_index_key(qso, False) # FALSE = key for myself
+        k = s._generate_index_key(qso, dxcc, False) # FALSE = key from de POV
         s.qso_index_dict[k].append(qso)
         
-def extract_qso_info(new_result):
-    qso_list = new_result['cab'].qso
-    for qso in qso_list:
-        new_result['qso_data'].append(vars(qso))
+# def extract_qso_info(result):
+#     qso_list = result['cab'].qso
+#     for qso in qso_list:
+#         result['qso_data'].append(vars(qso))
 
 def process_hq_keys(cab):
-    if cab.hq_anything and cab.hq_anything.get('HQ-CATEGORY', False) and cab.hq_anything.get('HQ-QUESTIONS', False) and cab.hq_anything.get('HQ-CLUB', 'None') and cab.hq_anything.get('HQ-CAT', False):
-        cab.category = cab.hq_anything['HQ-CATEGORY'].upper()
-        cab.cat = cab.hq_anything['HQ-CAT'].upper()
-        cab.club = cab.hq_anything.get('HQ-CLUB', False)
-        temp = {
-            key.strip(): value.strip()
-            for item in cab.hq_anything['HQ-QUESTIONS'].upper().split(",")
-            for key, value in [item.split(":", 1)]
-        }
-        if type(temp) == dict:
-            for key in temp:
-                setattr(cab, HQ_FIELDS['HQ-QUESTIONS'][key], temp[key])
+    try:
+        if len(cab.hq_anything):
+            cab.category = cab.hq_anything['HQ-CATEGORY'].upper()
+            cab.cat = cab.hq_anything['HQ-CAT'].upper()
+            cab.club = cab.hq_anything.get('HQ-CLUB', False)
+            temp = {
+                key.strip(): value.strip()
+                for item in cab.hq_anything['HQ-QUESTIONS'].split(",")
+                for key, value in [item.split(":", 1)]
+            }
+            if type(temp) == dict:
+                for key in temp:
+                    setattr(cab, HQ_FIELDS[key], temp[key])
+                return True
+    except Exception as e:
+        print(f"ERROR: Exception {e} getting hq_keys")
+    return False
+
+def get_dxcc(s, location, callsign):
+        ## check if this log is from a DX station, and save the dxcc_entity which will be used for cross-checking
+        if location == "DX" or (location not in s.states and location not in s.provinces and location not in s.counties):
+            # it's not in US or Canada
+            callinfo = s.my_callinfo.get_all(callsign.split('/')[0])
+            if callinfo and callinfo['country'] in ['United States', 'Canada']:
+                return 0, callsign
+            else:
+                return callinfo['adif'], callinfo['country']
         else:
-            return False
-    else:
-        cab.category = "_".join([cab.category_station.upper(), cab.category_mode.upper(), cab.category_power.upper()])
-        return False
+            return 0, callsign
 
 ### UTILITY FUNCTIONS ###
-

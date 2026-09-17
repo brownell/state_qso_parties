@@ -38,6 +38,7 @@ def main(contest_year):
     read_prepare(context)
     print(f"after read_prepare")
 
+
     '''
     Do the cross-checking, marking qsos that fail the match test.
     Warning messages are generated when qso fails match
@@ -47,8 +48,14 @@ def main(contest_year):
 
     print(f"after cross-check results")
 
-    score_qsos(context)
-    print('BREAK')
+
+    # for debugging, print out all the scores
+    for s in context.results:
+        print(f"callsign: {s['callsign']} final score: {s['final_score']}")
+
+    # REMEMBER to close all the out_files
+    for f in list(context.out_files.keys()):
+        context.out_file[f].close()
 
 
     #  Save results to database (valid and invalid)
