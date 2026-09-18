@@ -104,7 +104,6 @@ if __name__ == "__main__":
     import os, sys
     from datetime import datetime
     from config.config import CONTEST_YEAR
-    
     # Get year from environment or command line
     if len(sys.argv) > 1:
         year = sys.argv[1]

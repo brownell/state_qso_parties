@@ -1,7 +1,6 @@
 
 from typing import Dict, List, Set, Optional
 import csv
-from pyhamtools import LookupLib, Callinfo
 from cabrillo.parser import parse_log_file
 from cabrillo.qso import frequency_to_band_m
 from collections import defaultdict
@@ -44,10 +43,6 @@ class SHARED:
 
         with open(PROVINCES_FILE, 'r') as f:
             self.provinces = set(line.strip().upper() for line in f if line.strip())
-        
-        # to get country name and ADIF number from callsign
-        my_lookup_lib = LookupLib(lookuptype='countryfile', filename='./reference_data/cty.plist', username=QRZ_CALLSIGN, pwd=QRZ_PASSWORD)
-        self.my_callinfo = Callinfo(my_lookup_lib)
 
         ## create DXCC code (same as ADIF number) to DXCC entity. Needed for DX mults
         self.dxcc_entities = [None] * 750
@@ -97,20 +92,14 @@ class SHARED:
         self.all_callsigns = set()  # To track all callsigns that submitted logs for UNIQUE detection
         self.mobile_callsigns = set() # Track callsigns that have location "mobile"
         self.qso_index_dict = defaultdict(list)
-        self.contest_clubs = ["Austin QRP Club", "Baytown Area ARC", "Central Texas DX and Contest Club", "Dallas ARC", "DCT ARC", 
-                              "Denton County ARC", "DFW Contest Group", "Ellis County ARC", "Irving ARC", "Lake Area Amateur Radio Club", 
-                              "Las Moras ARC", "Longview/East Texas ARC", "McKinney ARC", "Medina County ARC", "Midland ARC", 
-                              "Naturist ARC", "North Texas ARS", "Panhandle ARC", "Red River Valley ARC", "Road Runners Microwave Group", 
-                              "Saginaw Haslet ARC", "South Texas DX and Contest Club", "Texas DX Society", "University of Texas ARC", 
-                              "West Texas ARC", "West Texas Pemian Network", "Williamson County ARC"]
-
-    def _generate_index_key(self, qso, call_to_use, mirror):
-        # to generate the index key for the qso_index_dict
-        # this is used to search for matches in cross_check
-        if mirror == False:
-            return call_to_use + qso.de_exch[1].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
-        else:
-            return call_to_use + qso.dx_exch[1].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
+        self.contest_clubs = {"Austin QRP Club": 0, "Baytown Area ARC": 0, "Central Texas DX and Contest Club": 0, "Dallas ARC": 0, "DCT ARC": 0, 
+                              "Denton County ARC": 0, "DFW Contest Group": 0, "Ellis County ARC": 0, "Irving ARC": 0, "Lake Area Amateur Radio Club": 0, 
+                              "Las Moras ARC": 0, "Longview/East Texas ARC": 0, "McKinney ARC": 0, "Medina County ARC": 0, "Midland ARC": 0,
+                              "Naturist ARC": 0, "North Texas ARS": 0, "Panhandle ARC": 0, "Red River Valley ARC": 0, "Road Runners Microwave Group": 0,
+                              "Saginaw Haslet ARC": 0, "South Texas DX and Contest Club": 0, "Texas DX Society": 0, "University of Texas ARC": 0, 
+                              "West Texas ARC": 0, "West Texas Pemian Network": 0, "Williamson County ARC": 0}
+        # non-TX stations working TX mobile stations need to be tracked for bonus points
+        self.ntx_bonus = {}
 
     # One of these is created for each log file
     # Each of the objects in self.results is a python with the following structure:      
@@ -130,6 +119,7 @@ class SHARED:
             'cw_qsos': 0,
             'ph_qsos': 0,
             'dg_qsos': 0,
+            'ry_qsos': 0,
             'qso_points': 0,
             'total_qsos': 0, # total number validated, whether dups or not
             'valid_qsos': 0, #number of qsos that are not dups and contribute to the score

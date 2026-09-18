@@ -33,6 +33,7 @@ from datetime import datetime
 from unittest import result
 from cabrillo.parser import parse_log_file
 from cabrillo.qso import frequency_to_band_m
+from utilities import generate_index_key, get_dxcc
 
 # Import your existing modules
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -62,14 +63,14 @@ def read_prepare(s):
                 s.stats["rejected_logs"] += 1
                 s.stats["rejected_logs_filenames"].append(file)
                 print(f"ERROR: log file {file} was rejected by the parser - REJECTED")
-                s.out_files['error_file'].write(f"ERROR: log file {file} was rejected by the parser - REJECTED")
+                s.out_files['error_file'].write(f"ERROR: log file {file} was rejected by the parser - REJECTED\n")
                 continue
         # Process Bruce Horn's HQ keys and adding and replacing values in the cab object
-        if not process_hq_keys(cab):
+        if not process_hq_keys(s, cab):
             s.stats["rejected_logs"] += 1
             s.stats["rejected_logs_filenames"].append(file)
             print(f"ERROR: log file {file} had no HQ- keys - REJECTED")
-            s.out_files['error_file'].write(f"ERROR: log file {file} had no HQ- keys - REJECTED")
+            s.out_files['error_file'].write(f"ERROR: log file {file} had no HQ- keys - REJECTED\n")
             continue
         
         s.stats["valid_logs"] += 1
@@ -102,25 +103,30 @@ def update_qso_index_dict(s, result, qsos, dxcc):
     """
     for qso in qsos:
         s.stats['total_qsos'] += 1
+        # remove non-TX to non-TX
+        if qso.de_exch[1] not in s.counties and  qso.dx_exch[1] not in s.counties:
+            s.out_files['error_file'].write(f"QSO Invalid NTX to NTX from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z\n")
+            qso.valid.valid = False
+        # fix DC --> MD
+        if qso.de_exch[1] == 'DC': qso.de_exch[1] = 'MD'
+        if qso.dx_exch[1] == 'DC': qso.dx_exch[1] = 'MD'
         if not qso.valid:
             s.stats['qso_parser_not_valid'] += 1
             s.stats['calls_w_not_valid_qsos'].add(result['callsign'])
             continue
         s.stats['qso_valids'] += 1
-        k = s._generate_index_key(qso, dxcc, False) # FALSE = key from de POV
+        k = generate_index_key(qso, dxcc, False) # FALSE = key from de POV
         s.qso_index_dict[k].append(qso)
-        
-# def extract_qso_info(result):
-#     qso_list = result['cab'].qso
-#     for qso in qso_list:
-#         result['qso_data'].append(vars(qso))
 
-def process_hq_keys(cab):
+def process_hq_keys(s, cab):
     try:
         if len(cab.hq_anything):
             cab.category = cab.hq_anything['HQ-CATEGORY'].upper()
             cab.cat = cab.hq_anything['HQ-CAT'].upper()
-            cab.club = cab.hq_anything.get('HQ-CLUB', False)
+            cab.club = cab.hq_anything['HQ-CLUB']
+            # if the operator specified a club NOT in the dropdown
+            if cab.club not in list(s.contest_clubs.keys()):
+                s.contest_clubs.setdefault(cab.club, 0)
             temp = {
                 key.strip(): value.strip()
                 for item in cab.hq_anything['HQ-QUESTIONS'].split(",")
@@ -133,17 +139,3 @@ def process_hq_keys(cab):
     except Exception as e:
         print(f"ERROR: Exception {e} getting hq_keys")
     return False
-
-def get_dxcc(s, location, callsign):
-        ## check if this log is from a DX station, and save the dxcc_entity which will be used for cross-checking
-        if location == "DX" or (location not in s.states and location not in s.provinces and location not in s.counties):
-            # it's not in US or Canada
-            callinfo = s.my_callinfo.get_all(callsign.split('/')[0])
-            if callinfo and callinfo['country'] in ['United States', 'Canada']:
-                return 0, callsign
-            else:
-                return callinfo['adif'], callinfo['country']
-        else:
-            return 0, callsign
-
-### UTILITY FUNCTIONS ###

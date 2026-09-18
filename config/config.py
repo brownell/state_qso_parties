@@ -71,8 +71,23 @@ CONTEST_YEAR = os.environ.get('CONTEST_YEAR', '2026')
 ALLOWED_LOG_EXTENSIONS = {'log', 'txt', 'cbr'}
 
 # Scoring rules
-PHONE_QSO_POINTS = 2
-CW_DIGITAL_QSO_POINTS = 4
+POINTS = {
+    'TX': {
+        'CW': 3,
+        'PH': 2,
+        'DG': 3,
+        'RY': 3
+    },
+    'NTX': {
+        'CW': 3,
+        'PH': 2,
+        'DG': 3,
+        'RY': 3,
+        ""
+    }
+}
+
+
 
 # Bonus points
 BONUS_CALLSIGN = 'N5LCC'  # Bonus for working N5LCC (Louisiana Contest Club)

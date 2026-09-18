@@ -14,9 +14,7 @@ Cross-check classifications:
 - UNIQUE: Callsign not found in any submitted log (no penalty)
 """
 
-import math
 from typing import Dict, List, Optional
-import json
 from datetime import datetime, timedelta
 from collections import defaultdict
 from pathlib import Path
@@ -24,14 +22,14 @@ from datetime import datetime
 from cabrillo import QSO
 
 from cabrillo.qso import frequency_to_band_m
-from score_a_qso import score_a_qso
+from score_qsos import score_a_qso, score_an_operator
+from utilities import generate_index_key
 from config.config import CONTEST_YEAR, CW_DIGITAL_QSO_POINTS, EXTRA_BONUS_POINTS, COUNTIES_FILE, STATES_FILE, PROVINCES_FILE, DXCC_ENTITIES_FILE, DATABASE_FILE, TIME_WINDOW_MINUTES, ENABLE_FUZZY_MATCHING, MAX_EDIT_DISTANCE, BONUS_CALLSIGN, COUNTIES_FILE, OVERLAY_VALUE_OPTIONS, POWER_VALUE_OPTIONS, STATION_VALUE_OPTIONS, STATES_FILE, PROVINCES_FILE, EXTRA_BONUS_YEAR, EXTRA_BONUS_CALLS, EXTRA_BONUS_POINTS, US_PREFIXES, CANADIAN_PREFIXES,QRZ_CALLSIGN, QRZ_PASSWORD, PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE, CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS, PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES
 
 
 def cross_check(s):
-
     '''
-        We use the cabrillo python package to check for duplicate QSOs and to cross-check the QSOs in each log against the other logs.  The Cabrillo package has a QSO.match() function that checks for matching QSOs in two logs.  It returns True if the QSOs match, False if they do not match, and None if the QSO is not found in the other log.
+        We use the cabrillo python package "match_against" to check for duplicate QSOs and to cross-check the QSOs in each log against the other logs.  The Cabrillo package has a QSO.match() function that checks for matching QSOs in two logs.  It returns True if the QSOs match, False if they do not match, and None if the QSO is not found in the other log.
     '''
     if len(s.results) < 1:
         return False
@@ -43,21 +41,19 @@ def cross_check(s):
         }
         for qso_i, qso in enumerate(result['cab'].qso):
             print(f"result {result['cab'].callsign} qso {qso_i} de {qso.de_call} dx {qso.dx_call} ")
-            # if result['callsign'].upper() == 'AA0AW' and qso.dx_call.upper() == 'N5OT':
-            #     print('BREAK')
             result['total_qsos'] += 1
             # Skip invalid QSOs
             if qso.valid:
                 result['valid_qsos'] += 1
             else:
-                result["errors"].append(f"qso from {qso.de_call} to {qso.dx_call} was not valid")
                 print(f"qso from {qso.de_call} to {qso.dx_call} was not valid")
+                result["errors"].append(f"qso from {qso.de_call} to {qso.dx_call} was not valid")
                 continue  
             # receiving call did not submit a log - UNIQUE
             if qso.dx_call.upper() not in s.all_callsigns:
                 # this is a UNIQUE
                 c['uniques'] += 1
-                s.out_files['uniques_file'].write(f"call from {qso.de_call} to {qso.dx_call}: latter did not submit a log")
+                s.out_files['uniques_file'].write(f"call from {qso.de_call} to {qso.dx_call}: latter did not submit a log\n")
                 print(f"call from {qso.de_call} to {qso.dx_call}: latter did not submit a log")
                 continue
             else:
@@ -66,20 +62,24 @@ def cross_check(s):
                 else:
                     result['valid_qsos'] -= 1
                     continue
+
+        status, total_score = score_an_operator(s, result)
+
+        print(f"*** END of cross-check for {result['callsign']}")
                 
 def check_it(s, result, qso):
     # from the qso_index_dict, get all POTENTIAL matches, based
     # on callsign, exchange, mode, and band
     c = s.stats
-    k = s._generate_index_key(qso, qso.dx_call, True) # from the dx POV
+    k = generate_index_key(qso, qso.dx_call, True) # from the dx POV
     # print(f"k: {k}, his call {qso.dx_call}  my call {qso.de_call}")
     potential_matches = s.qso_index_dict[k]
     if len(potential_matches) == 0:
+        qso.valid = False
         s.stats['dx_log_de_missing'] += 1
         s.stats['nils'] += 1
         s.stats['nil_calls'].append([qso.de_call, qso.dx_call])
-        qso.valid = False
-        s.out_files['nils_file'].write(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z")
+        s.out_files['nils_file'].write(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z\n")
         result['warnings'].append(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z\n")
         print(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z")
         return False
@@ -103,14 +103,8 @@ def check_it(s, result, qso):
             c['busteds'] += 1
             c['busted_calls'].append([qso.de_call, qso.dx_call])
             qso.valid = False
-            s.out_files['busteds_file'].write(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z")
+            s.out_files['busteds_file'].write(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z\n")
             result["warnings"].append(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z\n")
             print(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z")
             return False
-    
-                
-    print(f"end of cross-check")
-    print(f"stats:\n{s.stats}")
-    print(f"STOP")
-    return True
 

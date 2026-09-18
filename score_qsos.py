@@ -1,102 +1,112 @@
+'''
+Scores just a single QSO and passes the score back to the caller
+This file will almost certainly be QSO-party-dependent.
+'''
 
-import os, math
+"""
+    ALL of these values in the "r" object get updated in this method
+    * 'cw_qsos': 0,
+    * 'ph_qsos': 0,
+    * 'dg_qsos': 0,
+    * 'ry_qsos': 0,
+    * 'total_qsos': 0, # total number validated, whether dups or not
+    * 'valid_qsos': 0, #number of qsos that are not dups and contribute to the score
+    * 'counties_worked': set(),
+    * 'states_worked': set(),
+    * 'provinces_worked': set(),
+    * 'dx_worked': set(),
+    * 'counties_activated': set(),
+    'de_exch_rcvd': set(),
+    'dx_exch_sent': set(),
+    'score_w-o_bonus': 0,
+    'rover_bonus_points': 0,
+    'county_bonus_points': 0,
+    'worked_special_station': False,
+    'num_special_station_contacts': 0,
+    * 'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
+    * 'qsos_by_mode': {'PH': 0, 'CW': 0, 'DG': 0, 'RY': 0},
+    * 'qsos_by_hour': {i: 0 for i in range(1400,2600, 100)},  # Hour of day (1400 - 2500)
+    'errors': [],
+    'warnings': [],
+    * 'is_valid': True
+"""
 from datetime import datetime
 from cabrillo.qso import frequency_to_band_m
-#-----------------------------------------------------------------------------------------------------
-#  now do the scoring by reading each "prepared" log file from the PreparedLogs directory
-#  dupes are removed by constructing a dupeline from each QSO line and
-#  collecting the unique dupelines in a dupeList list
-#  dupeLine = rcvdCall[0] + "_" + band + "_" + mode + "_" + sentCall + "_" + sentQth + "_" + rcvdQth
-#  any two lines that have the same dupeLine will be dupes and only one of the two will be kept in dupeList
-#------------------------------------------------------------------------------------------------------
-def score_qsos(s):
+from utilities import get_dxcc
 
-    for result in s.results:
-        cab = result['cab'] 
+qso_modes = ['CW', 'PH', 'DG', 'RY']
+qso_mode_names = ['cw_qsos', 'ph_qsos', 'dg_qsos', 'dg_qsos']
 
-        dupeList = []
-        multList = []
+def score_a_qso(s, r, q, dup):
+    if not q.valid:
+        return 0
+    
+    qso_dup = make_dup(s, r, q)
+    
+    if qso_dup in dup['qsos']:
+        q.valid = False
+        return 0
+    dup['qsos'].append(qso_dup)
 
-        CWQs = 0
-        PHQs = 0
-        DGQs = 0
-        QsoPts = 0
-        Mults = 0
-        ScoreWOBonus = 0
-        MobileTrackingBonus = 0
-        CountyActivationBonus = 0
-        TotalBonus = 0
-        TotalScore = 0        
-        CWQs = 0
-        PHQs = 0
-        DGQs = 0
-        ctysSent = []
-        uniqueCtysSent = []
-        ctysRcvd = []
-        uniqueCallsRcvd = []
+    gets_mult = False
+    if q.dx_exch not in dup['mults']:
+        dup['mults'].append(q.dx_exch[1])
+        r['total_multipliers'] += 1
 
-        for qso in result['cab'].qso:
-            if not qso.valid:
-                continue
-            dupeLine = "_".join([qso.dx_call.upper().split("/")[0], frequency_to_band_m(qso.freq), qso.mo.upper(), qso.de_call.upper(), qso.de_exch[1].upper(), qso.dx_exch[1].upper()])
-            if dupeLine in dupeList:
-                qso.valid = False
-                s.stats['duplicate_qsos'] += 1
-            else: 
-                dupeList.append(dupeLine)
+    # increment qsos count for each mode
+    r[f"{q.mo.lower()}_qsos"] += 1
+    # increment qsos count for dx_exch
+    # increment qsos SET for areas activated and worked
+    if q.de_exch[1] in s.counties:
+        r['counties_activated'].add(q.de_exch[1])
+    elif q.dx_exch[1] in s.counties:
+        r['counties_worked'].add(q.dx_exch[1])
+    elif q.dx_exch[1] in s.states:
+        r['states_worked'].add(q.dx_exch[1])
+    elif q.dx_exch[1] in s.provinces:
+        r['provinces_worked'].add(q.dx_exch[1])
+    elif r['cab'].location == "DX":
+        r['dx_worked'].add(get_dxcc(s, q.dx_exch[1], q.dx_call)[1])
+    else:
+        q.valid = False
+        r.valid_qsos -= 1
 
-            if cab.category_mode == "CW":
-               CWQs += 1
-            elif cab.category_mode == "PH":
-               PHQs += 1
-            if cab.category_mode in ["DG", "RY"]:
-                DGQs += 1
-            if qso.dx_exch not in multList:
-               multList.append(qso.dx_exch)
-            if(qso.de_exch in s.counties):
-                ctysSent.append(qso.de_exch)
-                if(qso.de_exch not in uniqueCtysSent):
-                    uniqueCtysSent.append(qso.de_exch)
-            if(qso.dx_exch in s.mobile_callsigns):
-                ctysRcvd.append(qso.de_call + "_" + qso.dx_exch) #the current station logged a QSO with mobile(qso.dx_exch) in cty qso.dx_exch
-                if(qso.dx_exch not in uniqueCallsRcvd):
-                    uniqueCallsRcvd.append(qso.dx_exch)  #uniqueCallsRcvd is a list of callsigns of mobiles worked 
-            
-        CountyActivationBonus = 0
-        for ctys in uniqueCtysSent:
-            numQ = ctysSent.count(ctys)
-            if numQ >= 5:
-                CountyActivationBonus = CountyActivationBonus + 1000
-                print("CountyActivation for, " + qso.de_call + "," + ctys)
-                
-        if(len(uniqueCtysSent) <= 2):
-            CountyActivationBonus = 0
+    r['qsos_by_band'][frequency_to_band_m(q.freq)] += 1
+    r['qsos_by_mode'][q.mo] += 1
 
-        MobileTrackingBonus = 0
-        for item in uniqueCallsRcvd:
-                numCtysWorkedThisMobile = 0
-                for aCallQth in ctysRcvd:
-                    aMobCallSplit = aCallQth.split("_")
-                    aMobCall = aMobCallSplit[0]
-                    if item == aMobCall:
-                        numCtysWorkedThisMobile += 1
-                numCtysWorkedMobile = numCtysWorkedMobile + math.floor(numCtysWorkedThisMobile/5)
-        MobileTrackingBonus = 500*numCtysWorkedMobile
+    # qsos by hour
+    hour = int(q.date.strftime("%H"))
+    if hour > 1:
+        hour -= 14
+    else:
+        hour -= 2
+    r["qsos_by_hour"][hour + ((int(q.date.strftime("%d")) - 19) * 12)] += 1
+
+    # non-TX stations working TX mobile stations need to be tracked for bonus points
+    if q.de_exch[1] != 'TX' and q.dx_exch[1] in s.mobile_callsigns:
+        if q.de_exch not in list(s.ntx_bonus.keys()):
+            # add this ntx station with the mobile is connected to
+            s.ntx_bonus.setdefault(q.de_call, {q.dx_exch[1]: 1})
+        elif q.de_call in list(s.ntx_bonus[q.de_call].keys()):
+            # this pair of NTX op and TX mobile user exch already here, just increment
+            s.ntx_bonus[q.de_call][q.dx_exch[1]] += 1
+        else: # dx_call here, but add new dx_exch
+            s.ntx_bonus[q.de_call].setdefault(q.dx_exch[1], 1)
+
+    print('BREAK')
+
+    
+
+def score_an_opertor():
+    # accumulate all the points from qsos and mults for this one operator
+    print("score an operator")
+    return True, 0
+
+def make_dup(s, r, qso):
+    de = get_dxcc(s, r['cab'].location, r['callsign'])[1]
+    dx = get_dxcc(s, qso.dx_exch[1].upper(), qso.dx_call.upper())[1]
+    return "_".join([de, dx, qso.de_exch[1].upper(), qso.dx_exch[1].upper(), frequency_to_band_m(qso.freq), qso.mo.upper()])
         
 
-        QsoPts = 3*CWQs + 2*PHQs + 3*DGQs
-        Mults = len(multList)
-        ScoreWOBonus = QsoPts*Mults
-
-        TotalBonus = MobileTrackingBonus + CountyActivationBonus
-
-        TotalScore = ScoreWOBonus + TotalBonus
-
-        ScoreReduction = int(cab.claimed_score) - TotalScore
-        if(ScoreReduction < 0):
-            ScoreReduction = 0
-
-        print(f"{cab.callsign}, {cab.email}, {cab.category}, {cab.club}, {cab.operators}, {cab.claimed_score}, CWQ:{CWQs}, PHQ:{PHQs}, DGQ:{DGQs}, qSOpTS:{QsoPts}, MULTS:{Mults}, ScoreBonus:{ScoreWOBonus}, MobileBonus:{MobileTrackingBonus}, CountyBonus{CountyActivationBonus}, TotalBonus{TotalBonus}, TotalScore{TotalScore}, ScoreReduction:{ScoreReduction} ")
-        
 
 
