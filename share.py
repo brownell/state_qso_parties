@@ -14,6 +14,7 @@ from pathlib import Path
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 input_dir = Path(f"{BATCH_INPUT_DIR}/{CONTEST_YEAR}")
+SCRIPT_DIR = Path(__file__).resolve().parent
 
 '''
 Much of the processing of log files is done with the log data in memory in a large
@@ -31,30 +32,34 @@ class SHARED:
     def __init__(self):
         """Initialize with reference data files"""
         # Load counties, states, and provinces
-        with open(COUNTIES_FILE, 'r') as f:
+        with open(SCRIPT_DIR / COUNTIES_FILE, 'r') as f:
             self.counties = set(line.strip().upper() for line in f if line.strip())
 
-        with open(STATES_FILE, 'r') as f:
+        with open(SCRIPT_DIR / STATES_FILE, 'r') as f:
             self.states = set(line.strip().upper() for line in f if line.strip())
 
-        with open(PROVINCES_FILE, 'r') as f:
+        with open(SCRIPT_DIR / PROVINCES_FILE, 'r') as f:
             self.provinces = set(line.strip().upper() for line in f if line.strip())
 
         ## create DXCC code (same as ADIF number) to DXCC entity. Needed for DX mults
         self.dxcc_entities = [None] * 750
-        with open(DXCC_ENTITIES_FILE, 'r') as f:
+        with open(SCRIPT_DIR / DXCC_ENTITIES_FILE, 'r') as f:
             reader = csv.reader(f)
             for row in reader:
                 self.dxcc_entities[int(row[0])] = row[1].split('  ')[0]
         self.out_files = {
-            'error_file': open("ERROR_FILE.txt", "w"),
-            'uniques_file': open("UNIQUES_FILE.txt", "w"),
-            'busteds_file': open("BUSTEDS_FILE.txt", "w"),
-            'nils_file': open("NILS_FILE.txt", "w"),
+            'error_file': open(SCRIPT_DIR / "ERROR_FILE.txt", "w"),
+            'uniques_file': open(SCRIPT_DIR / "UNIQUES_FILE.txt", "w"),
+            'busteds_file': open(SCRIPT_DIR / "BUSTEDS_FILE.txt", "w"),
+            'nils_file': open(SCRIPT_DIR / "NILS_FILE.txt", "w"),
         }
-        
+        self.out_files['error_file'].seek(0)
+        self.out_files['uniques_file'].seek(0)
+        self.out_files['busteds_file'].seek(0)
+        self.out_files['nils_file'].seek(0)
+        self.script_dir = Path(__file__).resolve().parent
         self.first_call_qth = None  # To track the sent QTH in a log for checking other QSOs against it
-
+        self.valid_modes = ['PH', 'CW', 'RY''DG']
         self.results = []  # List to hold results for all logs processed
         '''
             When cross checking, there are four results:
@@ -132,7 +137,8 @@ class SHARED:
             'de_exch_rcvd': set(),
             'dx_exch_sent': set(),
             'score_wo_bonus': 0,
-            'rover_bonus_points': 0,
+            'mobile_counties_worked': {}, # key is mobile callsign as dx, value is [] of dx_exch worked.
+            'mobile_bonus_points': 0,
             'county_bonus_points': 0,
             'worked_special_station': False,
             'num_n5lcc_contacts': 0,

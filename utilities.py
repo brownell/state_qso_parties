@@ -12,16 +12,22 @@ my_lookup_lib = LookupLib(lookuptype='countryfile', filename='./reference_data/c
 my_callinfo = Callinfo(my_lookup_lib)
 
 def get_dxcc(s, location, callsign):
-        ## check if this log is from a DX station, and save the dxcc_entity which will be used for cross-checking
-        if location == "DX" or (location not in s.states and location not in s.provinces and location not in s.counties):
-            # it's not in US or Canada
+    ## check if this log is from a DX station, and save the dxcc_entity which will be used for cross-checking
+    if location == "DX" or (location not in s.states and location not in s.provinces and location not in s.counties):
+        # it's not in US or Canada
+        try:
             callinfo = my_callinfo.get_all(callsign.split('/')[0])
-            if callinfo and callinfo['country'] in ['United States', 'Canada']:
+        except:
+            try:
+                callinfo = my_callinfo.get_all(callsign.split('/')[1])
+            except:
                 return 0, callsign
-            else:
-                return callinfo['adif'], callinfo['country']
-        else:
-            return 0, callsign
+
+        if not (callinfo and callinfo['country'] in ['United States', 'Canada']):
+            # print(f"FOREIGN CALLSIGN location: {location} Call: {callsign}")
+            return callinfo['adif'], callinfo['country']
+            
+    return 0, callsign
 
 def generate_index_key(s, qso, call_to_use, mirror):
     # to generate the index key for the qso_index_dict

@@ -3,6 +3,30 @@ NOTES on cross-check:
 - aa0aw:
         valid qso 55, total 58, mults 51, counties 34, qsos_by_* all add to 51
 
+if a is a lis
+ t of strings and r is a dict in python, is this valid syntax with the curly braces in a f"" string: {for x in a: r[x]}
+C:/Users/Ham/Documents/GitHub/state_qso_parties/.reference_data
+
+("SCORED AA0AW hours: 55 counts: {'cw_qsos': 43, 'ph_qsos': 12, 'dg_qsos': 0, "
+ "'ry_qsos': 0, 'qso_points': 0, 'total_qsos': 58, 'dx_worked_multiplier': 0, "
+ "'counties_activated': set(), 'valid_qsos': 55, 'total_multipliers': 55, "
+ "'counties_worked_multiplier': 0, 'states_worked_multiplier': 0, "
+ "'provinces_worked_multiplier': 0}  sets: {'counties_worked': {'TRAV', "
+ "'HUNT', 'WISE', 'BREW', 'HAYS', 'FALL', 'WALL', 'NEWT', 'TARR', 'FANN', "
+ "'DALS', 'COLN', 'ECTO', 'HOOD', 'KNOX', 'BAST', 'BELL', 'CALL', 'DELT', "
+ "'GALV', 'PARK', 'HRSN', 'BURN', 'BEXA', 'DENT', 'CROS', 'AUST', 'BZIA', "
+ "'BLAN', 'SMIT', 'MIDL', 'GRSN', 'TYLE', 'KING', 'HARR', 'RBSN', 'GILL'}, "
+ "'states_worked': set(), 'provinces_worked': set(), 'dx_worked': set()}")
+ 
+
+COUNTS = ['cw_qsos', 'ph_qsos', 'dg_qsos', 'ry_qsos', 'qso_points', 'total_qsos': 0, # total number validated, whether dups or not
+'valid_qsos': 0, #number of qsos that are not dups and contribute to the score
+'total_multipliers', 'counties_worked', 
+'counties_worked_multiplier', 'states_worked', 
+'states_worked_multiplier', 'provinces_worked', 
+'provinces_worked_multiplier', 'dx_worked', 
+'dx_worked_multiplier', 'counties_activated']
+
 print(f"total: {s.results[0]['total_qsos']} valid: {s.results[0]['valid_qsos']} by_mode: {s.results[0]["qsos_by_mode"]}")
 'dxcc_entity' =
 'AA0AW'

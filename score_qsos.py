@@ -52,16 +52,34 @@ def score_a_qso(s, r, q, dup):
     gets_mult = False
     if q.dx_exch not in dup['mults']:
         dup['mults'].append(q.dx_exch[1])
-        r['total_multipliers'] += 1
+    else:
+        return 0
 
     # increment qsos count for each mode
+    if q.mo.upper() not in s.valid_modes:
+        return 0
     r[f"{q.mo.lower()}_qsos"] += 1
+
     # increment qsos count for dx_exch
     # increment qsos SET for areas activated and worked
+    if q.de_call == 'AA5AH':
+        print('BREAK')
     if q.de_exch[1] in s.counties:
         r['counties_activated'].add(q.de_exch[1])
-    elif q.dx_exch[1] in s.counties:
+
+    if q.dx_exch[1] in s.counties:
         r['counties_worked'].add(q.dx_exch[1])
+        r['counties_worked'].add(q.dx_exch[1])
+
+        '''mobile designation is added to each qso where dx_call is a 
+          mobile station and dx_exch is a county '''
+        if q.dx_call in s.mobile_callsigns and q.dx_exch[1] in s.counties:
+            if q.dx_call in list(r['mobile_counties_worked'].keys()):
+                # callsign already here s   o add to set of dx_exch
+                r['mobile_counties_worked'][q.dx_call].add(q.dx_exch[1])
+            else: # adding new dx_call and creating new set
+                r['mobile_counties_worked'][q.dx_call] = set([q.dx_exch[1]])
+
     elif q.dx_exch[1] in s.states:
         r['states_worked'].add(q.dx_exch[1])
     elif q.dx_exch[1] in s.provinces:
@@ -70,10 +88,13 @@ def score_a_qso(s, r, q, dup):
         r['dx_worked'].add(get_dxcc(s, q.dx_exch[1], q.dx_call)[1])
     else:
         q.valid = False
-        r.valid_qsos -= 1
+        r['valid_qsos'] -= 1
 
-    r['qsos_by_band'][frequency_to_band_m(q.freq)] += 1
-    r['qsos_by_mode'][q.mo] += 1
+    try:
+        r['qsos_by_band'][frequency_to_band_m(q.freq[:2])] += 1
+        r['qsos_by_mode'][q.mo] += 1
+    except:
+        r['errors'].append(f"BAD frequency {q.freq} in call from {q.de_call} to {q.dx_call}\n")
 
     # qsos by hour
     hour = int(q.date.strftime("%H"))
@@ -82,7 +103,7 @@ def score_a_qso(s, r, q, dup):
     else:
         hour -= 2
     r["qsos_by_hour"][hour + ((int(q.date.strftime("%d")) - 19) * 12)] += 1
-    print(f"AFTER qsos_by_hour de {q.de_call}: total_qsos: {r['total_qsos']} valid: {r['valid_qsos']} hours {sum(r['qsos_by_hour'])}")
+    # print(f"AFTER qsos_by_hour de {q.de_call}: total_qsos: {r['total_qsos']} valid: {r['valid_qsos']} hours {sum(r['qsos_by_hour'])}")
 
     # non-TX stations working TX mobile stations need to be tracked for bonus points
     if q.de_exch[1] != 'TX' and q.dx_exch[1] in s.mobile_callsigns:
@@ -99,7 +120,7 @@ def score_a_qso(s, r, q, dup):
 
 def score_an_operator(s, result):
     # accumulate all the points from qsos and mults for this one operator and score
-    print("score an operator")
+    # print("score an operator")
     return True, 0
 
 def make_dup(s, r, qso):
