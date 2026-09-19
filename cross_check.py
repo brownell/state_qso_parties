@@ -24,7 +24,6 @@ from cabrillo import QSO
 from cabrillo.qso import frequency_to_band_m
 from score_qsos import score_a_qso, score_an_operator
 from utilities import generate_index_key
-from config.config import CONTEST_YEAR, CW_DIGITAL_QSO_POINTS, EXTRA_BONUS_POINTS, COUNTIES_FILE, STATES_FILE, PROVINCES_FILE, DXCC_ENTITIES_FILE, DATABASE_FILE, TIME_WINDOW_MINUTES, ENABLE_FUZZY_MATCHING, MAX_EDIT_DISTANCE, BONUS_CALLSIGN, COUNTIES_FILE, OVERLAY_VALUE_OPTIONS, POWER_VALUE_OPTIONS, STATION_VALUE_OPTIONS, STATES_FILE, PROVINCES_FILE, EXTRA_BONUS_YEAR, EXTRA_BONUS_CALLS, EXTRA_BONUS_POINTS, US_PREFIXES, CANADIAN_PREFIXES,QRZ_CALLSIGN, QRZ_PASSWORD, PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE, CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS, PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES
 
 
 def cross_check(s):
@@ -35,32 +34,39 @@ def cross_check(s):
         return False
     c = s.stats
     for result in s.results:
+        print(f"begin xchk: total_qsos: {result['total_qsos']} valid: {result['valid_qsos']} hours {sum(result['qsos_by_hour'])}")
         dup = {
             'qsos': [],
             'mults': []
         }
+        valid_qsos_processed = 0
+        calls_to_score_a_q = 0
         for qso_i, qso in enumerate(result['cab'].qso):
-            print(f"result {result['cab'].callsign} qso {qso_i} de {qso.de_call} dx {qso.dx_call} ")
-            result['total_qsos'] += 1
+            # print(f"result {result['cab'].callsign} qso {qso_i} de {qso.de_call} dx {qso.dx_call} ")
             # Skip invalid QSOs
-            if qso.valid:
-                result['valid_qsos'] += 1
-            else:
-                print(f"qso from {qso.de_call} to {qso.dx_call} was not valid")
+            if not qso.valid:
+                print(f"NOT VALID qso from {qso.de_call} to {qso.dx_call} was not valid")
                 result["errors"].append(f"qso from {qso.de_call} to {qso.dx_call} was not valid")
                 continue  
             # receiving call did not submit a log - UNIQUE
             if qso.dx_call.upper() not in s.all_callsigns:
-                # this is a UNIQUE
+                # this is a UNIQUE - BUT he still gets the points
+                score_a_qso(s, result, qso, dup)
+                valid_qsos_processed += 1
+                calls_to_score_a_q += 1
                 c['uniques'] += 1
                 s.out_files['uniques_file'].write(f"call from {qso.de_call} to {qso.dx_call}: latter did not submit a log\n")
-                print(f"call from {qso.de_call} to {qso.dx_call}: latter did not submit a log")
+                print(f"UNIQUE CALL from {qso.de_call} to {qso.dx_call}: latter did not submit a log")
                 continue
             else:
                 if check_it(s, result, qso):
                     score_a_qso(s, result, qso, dup)
+                    calls_to_score_a_q += 1
+                    valid_qsos_processed += 1
+                    # print(f"AFTER SCORE dx {qso.dx_call}: total_qsos: {result['total_qsos']} valid: {result['valid_qsos']} hours {sum(result['qsos_by_hour'])}")
                 else:
                     result['valid_qsos'] -= 1
+                    print(f"AFTER BAD dx {qso.dx_call} total_qsos: {result['total_qsos']} valid: {result['valid_qsos']} hours {sum(result['qsos_by_hour'])}")
                     continue
 
         status, total_score = score_an_operator(s, result)
@@ -71,7 +77,7 @@ def check_it(s, result, qso):
     # from the qso_index_dict, get all POTENTIAL matches, based
     # on callsign, exchange, mode, and band
     c = s.stats
-    k = generate_index_key(qso, qso.dx_call, True) # from the dx POV
+    k = generate_index_key(s, qso, qso.dx_call, True) # from the dx POV
     # print(f"k: {k}, his call {qso.dx_call}  my call {qso.de_call}")
     potential_matches = s.qso_index_dict[k]
     if len(potential_matches) == 0:
@@ -81,7 +87,7 @@ def check_it(s, result, qso):
         s.stats['nil_calls'].append([qso.de_call, qso.dx_call])
         s.out_files['nils_file'].write(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z\n")
         result['warnings'].append(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z\n")
-        print(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z")
+        print(f"NIL: from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z")
         return False
     else:    
         for p in potential_matches:
@@ -105,6 +111,6 @@ def check_it(s, result, qso):
             qso.valid = False
             s.out_files['busteds_file'].write(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z\n")
             result["warnings"].append(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z\n")
-            print(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z")
+            # print(f"qso from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z")
             return False
 

@@ -3,6 +3,7 @@ NOTES on cross-check:
 - aa0aw:
         valid qso 55, total 58, mults 51, counties 34, qsos_by_* all add to 51
 
+print(f"total: {s.results[0]['total_qsos']} valid: {s.results[0]['valid_qsos']} by_mode: {s.results[0]["qsos_by_mode"]}")
 'dxcc_entity' =
 'AA0AW'
 'final_score' =

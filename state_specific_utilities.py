@@ -11,7 +11,7 @@ def determine_location_type() -> str:
         """Determine location type from QSOs"""
         
         initial_qso = True
-
+        
         for qso in s.result['qsos']:
             sent_qth = qso['sent_qth'].replace('DX', '')
             sent_call = qso['sent_call']
@@ -22,7 +22,7 @@ def determine_location_type() -> str:
             
             
             # Check if DX
-            callinfo = s.my_callinfo.get_all(sent_call)
+            callinfo = my_callinfo.get_all(sent_call)
             if callinfo and callinfo['country'] not in ['United States', 'Canada']:
                 return 'DX'
             

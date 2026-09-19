@@ -15,19 +15,13 @@ from cabrillo.qso import frequency_to_band_m
 from collections import defaultdict
 
 from config.config import (
-    BONUS_CALLSIGN, COUNTIES_FILE, BATCH_INPUT_DIR, OVERLAY_VALUE_OPTIONS, POWER_VALUE_OPTIONS, STATION_VALUE_OPTIONS, 
-    STATES_FILE, PROVINCES_FILE, EXTRA_BONUS_YEAR, EXTRA_BONUS_CALLS, EXTRA_BONUS_POINTS,
-    US_PREFIXES, CANADIAN_PREFIXES, QRZ_CALLSIGN, QRZ_PASSWORD,
-    PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE,
-    CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS, CONTEST_YEAR,
-    PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES
+    CONTEST_YEAR
     )
 from database import save_result
 from generate_rankings import generate_rankings
 from generate_final_report import generate_final_report_html
 from read_prepare import read_prepare
 from cross_check import cross_check
-from score_qsos import score_qsos
 from share import SHARED
 
 def main(contest_year):

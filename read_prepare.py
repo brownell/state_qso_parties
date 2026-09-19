@@ -54,10 +54,12 @@ def read_prepare(s):
     dir_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR).resolve()
     filenames = [p.name for p in dir_path.iterdir() if p.is_file()]
     for file in filenames:
+        print(f"READING {file}")
         s.stats["total_logs"] += 1
         try:
             file_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR / file).resolve()
             cab = parse_log_file(file_path, ignore_unknown_key=True, check_categories=False, ignore_order=True, check_mode=False)
+            print(f"CAB {cab.callsign} # qsos {len(cab.qso)}")
         except Exception as e:
             if file:
                 s.stats["rejected_logs"] += 1
@@ -101,21 +103,32 @@ def update_qso_index_dict(s, result, qsos, dxcc):
     received call (dx_call in the cabrillo object) plus mode plus band
     This function is called after reading and preparing each log file.
     """
+    qso_count = 0
     for qso in qsos:
+        qso_count += 1
         s.stats['total_qsos'] += 1
+        result['total_qsos'] += 1
+        print(f"index_dict: qso_count: {qso_count} total: {result['total_qsos']} valid: {result['valid_qsos']}")
         # remove non-TX to non-TX
         if qso.de_exch[1] not in s.counties and  qso.dx_exch[1] not in s.counties:
-            s.out_files['error_file'].write(f"QSO Invalid NTX to NTX from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H")}Z\n")
-            qso.valid.valid = False
-        # fix DC --> MD
-        if qso.de_exch[1] == 'DC': qso.de_exch[1] = 'MD'
-        if qso.dx_exch[1] == 'DC': qso.dx_exch[1] = 'MD'
+            s.out_files['error_file'].write(f"QSO Invalid NTX or TX to NTX or TX from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
+            qso.valid = False
+            # print(f"no TX exch: valid qsos: total: {result['total_qsos']} valid: {result['valid_qsos']} de: {qso.de_exch[1]} dx: {qso.dx_exch[1]}")
+            continue
         if not qso.valid:
             s.stats['qso_parser_not_valid'] += 1
             s.stats['calls_w_not_valid_qsos'].add(result['callsign'])
+            # print(f"index_dict: qso not valid total: {result['total_qsos']} valid: {result['valid_qsos']} from parser for {result['callsign']}")
             continue
-        s.stats['qso_valids'] += 1
-        k = generate_index_key(qso, dxcc, False) # FALSE = key from de POV
+        # This is now a VALID  qso
+        s.stats['valid_qsos'] += 1
+        result['valid_qsos'] += 1
+        print(f"index_dict: qso IS valid total: {result['total_qsos']} valid: {result['valid_qsos']}  for {result['callsign']}")
+        # fix DC --> MD
+        if qso.de_exch[1] == 'DC': qso.de_exch[1] = 'MD'
+        if qso.dx_exch[1] == 'DC': qso.dx_exch[1] = 'MD'
+        k = generate_index_key(s, qso, dxcc, False) # FALSE = key from de POV
+        print(f"count: {qso_count} total:{result['total_qsos']} valid:{result['valid_qsos']} dx:{qso.dx_call}")
         s.qso_index_dict[k].append(qso)
 
 def process_hq_keys(s, cab):
@@ -123,10 +136,13 @@ def process_hq_keys(s, cab):
         if len(cab.hq_anything):
             cab.category = cab.hq_anything['HQ-CATEGORY'].upper()
             cab.cat = cab.hq_anything['HQ-CAT'].upper()
-            cab.club = cab.hq_anything['HQ-CLUB']
-            # if the operator specified a club NOT in the dropdown
-            if cab.club not in list(s.contest_clubs.keys()):
-                s.contest_clubs.setdefault(cab.club, 0)
+            if "HQ_CLUB" in list(cab.hq_anything.keys()):
+                cab.club = cab.hq_anything['HQ-CLUB']
+                # if the operator specified a club NOT in the dropdown
+                if cab.club not in list(s.contest_clubs.keys()):
+                    s.contest_clubs.setdefault(cab.club, 0)
+            else:
+                cab.club = "None"
             temp = {
                 key.strip(): value.strip()
                 for item in cab.hq_anything['HQ-QUESTIONS'].split(",")

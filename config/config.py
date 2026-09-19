@@ -83,7 +83,7 @@ POINTS = {
         'PH': 2,
         'DG': 3,
         'RY': 3,
-        ""
+        "mobile_bonus": 500
     }
 }
 

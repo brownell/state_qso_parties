@@ -216,3 +216,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# state qso parties
+BUSTEDS_FILE.txt
+NILS_FILE.txt
+UNIQUES_FILE.txt
+ERROR_FILE.txt

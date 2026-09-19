@@ -45,6 +45,7 @@ def score_a_qso(s, r, q, dup):
     
     if qso_dup in dup['qsos']:
         q.valid = False
+        r['valid_qsos'] -= 1
         return 0
     dup['qsos'].append(qso_dup)
 
@@ -81,6 +82,7 @@ def score_a_qso(s, r, q, dup):
     else:
         hour -= 2
     r["qsos_by_hour"][hour + ((int(q.date.strftime("%d")) - 19) * 12)] += 1
+    print(f"AFTER qsos_by_hour de {q.de_call}: total_qsos: {r['total_qsos']} valid: {r['valid_qsos']} hours {sum(r['qsos_by_hour'])}")
 
     # non-TX stations working TX mobile stations need to be tracked for bonus points
     if q.de_exch[1] != 'TX' and q.dx_exch[1] in s.mobile_callsigns:
@@ -93,12 +95,10 @@ def score_a_qso(s, r, q, dup):
         else: # dx_call here, but add new dx_exch
             s.ntx_bonus[q.de_call].setdefault(q.dx_exch[1], 1)
 
-    print('BREAK')
+    # print('BREAK')
 
-    
-
-def score_an_opertor():
-    # accumulate all the points from qsos and mults for this one operator
+def score_an_operator(s, result):
+    # accumulate all the points from qsos and mults for this one operator and score
     print("score an operator")
     return True, 0
 

@@ -6,12 +6,8 @@ from cabrillo.qso import frequency_to_band_m
 from collections import defaultdict
 from config.config import (
     CONTEST_YEAR,
-    BONUS_CALLSIGN, COUNTIES_FILE, BATCH_INPUT_DIR, OVERLAY_VALUE_OPTIONS, POWER_VALUE_OPTIONS, STATION_VALUE_OPTIONS, 
-    STATES_FILE, PROVINCES_FILE, EXTRA_BONUS_YEAR, EXTRA_BONUS_CALLS, EXTRA_BONUS_POINTS,
-    US_PREFIXES, CANADIAN_PREFIXES, QRZ_CALLSIGN, QRZ_PASSWORD,
-    PHONE_QSO_POINTS, CW_DIGITAL_QSO_POINTS, DXCC_ENTITIES_FILE,
-    CALLSIGN_BONUS_POINTS, ROVER_COUNTY_BONUS, CONTEST_YEAR,
-    PHONE_MODES, CW_DIGITAL_MODES, BAND_RANGES, COUNTIES_FILE, STATES_FILE, PROVINCES_FILE
+    COUNTIES_FILE, BATCH_INPUT_DIR, DXCC_ENTITIES_FILE, CONTEST_YEAR,
+    COUNTIES_FILE, STATES_FILE, PROVINCES_FILE
     )
 import sys
 from pathlib import Path
@@ -73,7 +69,7 @@ class SHARED:
             'rejected_logs': 0,
             'rejected_logs_filenames': [], # logs of PARSER not_valids
             'total_qsos': 0,
-            'qso_valids': 0,
+            'valid_qsos': 0,
             'qso_parser_not_valid': 0,
             'calls_w_not_valid_qsos': set(),
             'nils': 0,

@@ -15,7 +15,7 @@ def get_dxcc(s, location, callsign):
         ## check if this log is from a DX station, and save the dxcc_entity which will be used for cross-checking
         if location == "DX" or (location not in s.states and location not in s.provinces and location not in s.counties):
             # it's not in US or Canada
-            callinfo = s.my_callinfo.get_all(callsign.split('/')[0])
+            callinfo = my_callinfo.get_all(callsign.split('/')[0])
             if callinfo and callinfo['country'] in ['United States', 'Canada']:
                 return 0, callsign
             else:
