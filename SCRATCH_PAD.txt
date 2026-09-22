@@ -1,7 +1,68 @@
+NE8P BUSTEDS:  I have 11 fewer valid QSOS than 2025 results
+===
+1. BUSTED from/to NE8P/N5XU exchs:MI/TRAV mode:CW band:20 Sept 19th 1555Z
+        call from N5UX with TRAV at 1554 to K8PN --- DX wrong callsign
+2. BUSTED from/to NE8P/N5TM exchs:MI/HAMI mode:CW band:20 Sept 19th 1746Z
+        Call from N5TM with HAMI at 1746 to NE8W --- DX wrong callsign
+3. BUSTED from/to NE8P/N5TM exchs:MI/ERAT mode:CW band:20 Sept 19th 1822Z
+        Call from N5TM with ERAT at 1822 to NE9P --- DX wrong callsign
+4. BUSTED from/to NE8P/N5TM exchs:MI/BROW mode:CW band:20 Sept 19th 2031Z
+        Call from N5TM with BROW at 2031 to NE8W --- DX wrong callsign
+5. BUSTED from/to NE8P/N5TM exchs:MI/FBEN mode:CW band:20 Sept 20th 1549Z
+        Call from N5TM with FBEN at 1549 to NE8W --- DX wrong callsign
+6. BUSTED from/to NE8P/N5TM exchs:MI/WALL mode:CW band:20 Sept 20th 1550Z
+        Call from N5TM with WALL at 1549 to NE8W --- DX wrong callsign
+7. BUSTED from/to NE8P/WA5LXS exchs:MI/DENT mode:CW band:20 Sept 19th 2006Z
+        WA5LXS had no contacts before 19th at 1657, but was in DENT
+8. BUSTED from/to NE8P/KG5OWB exchs:MI/BEXA mode:CW band:20 Sept 20th 1430Z
+        Call from KG5OWB with BEXA at 1429 BUT has FL, not MI for exch
+                 --- DX wrong exch
+9. BUSTED from/to NE8P/N4CD exchs:MI/GRSN mode:CW band:20 Sept 20th 1508Z
+        Call from N4CD with ROCK at 1525  --- DE wrong exch
+10. BUSTED from/to NE8P/KG5OWB exchs:MI/BEXA mode:CW band:15 Sept 20th 1524Z
+        Call from KG5owb at 1524 BUT has FL not MI    
+                --- DX wrong exch
+11. BUSTED from/to NE8P/N5NA exchs:MI/WINK mode:CW band:15 Sept 20th 1951Z
+        Call from KG5OWB at 1424 BUT has FL not MI 
+                --- DX wrong exch
+
+QSO: 14036 CW 2026-09-19 1531 NE8P 599 MI N5TM 599 FALL
+QSO: 14036 CW 2026-09-19 1551 NE8P 599 MI N5TM 599 MLEN
+QSO: 14036 CW 2026-09-19 1917 NE8P 599 MI N5TM 599 COMA
+QSO: 14036 CW 2026-09-19 1939 NE8P 599 MI N5TM 599 EAST
+QSO: 14036 CW 2026-09-19 2004 NE8P 599 MI N5TM/M 599 CALL
+QSO: 14036 CW 2026-09-19 2019 NE8P 599 MI N5TM 599 COLE
+QSO: 14038 CW 2026-09-19 2141 NE8P 599 MI N5TM 599 MILL
+*** QSO: 14035 CW 2026-09-20 1550 NE8P 599 MI N5TM 599 WALL
+        Call from N5TM at 1549 to NE8W
+--- 
+QSO: 14036 CW 2026-09-19 1531 N5TM 599 FALL NE8P 599 MI
+QSO: 14036 CW 2026-09-19 1551 N5TM 599 MLEN NE8P 599 MI
+QSO: 14036 CW 2026-09-19 1917 N5TM 599 COMA NE8P 599 MI
+QSO: 14036 CW 2026-09-19 1939 N5TM 599 EAST NE8P 599 MI
+QSO: 14036 CW 2026-09-19 2004 N5TM 599 CALL NE8P 599 MI
+QSO: 14036 CW 2026-09-19 2019 N5TM 599 COLE NE8P 599 MI
+QSO: 14038 CW 2026-09-19 2141 N5TM 599 MILL NE8P 599 MI
+===
+
+===
+
+
 NOTES on cross-check:
-- had case where exch should have been HUNT, but was SUNT - all else matched
+- had case where exch should have been HUNT\nbut was SUNT - all else matched
 - aa0aw:
         valid qso 55, total 58, mults 51, counties 34, qsos_by_* all add to 51
+
+for a mobile operator, need to record:
+        - each county he activates
+        - each county he works WITH the number of contacts in that county
+for a TX operator who contacts a mobile station, need to record:
+
+Call Category CWQs QSOPts Mults Score* Bonus Final Score
+NI8W NTX SO CWO 29 87 20 1740 0 1740
+
+0 1740
+
 
 if a is a lis
  t of strings and r is a dict in python, is this valid syntax with the curly braces in a f"" string: {for x in a: r[x]}

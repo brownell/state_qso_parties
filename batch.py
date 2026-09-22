@@ -22,6 +22,7 @@ from generate_rankings import generate_rankings
 from generate_final_report import generate_final_report_html
 from read_prepare import read_prepare
 from cross_check import cross_check
+from utilities import debug_print
 from share import SHARED
 
 def main(contest_year):
@@ -40,16 +41,17 @@ def main(contest_year):
     '''
     cross_check(context)
 
-    print(f"after cross-check results")
-
-
     # for debugging, print out all the scores
-    for s in context.results:
-        print(f"callsign: {s['callsign']} final score: {s['final_score']}")
+    for r in context.results:
+        debug_print(context, r, "", False)
+        # print(f" {r['callsign']} CW {r['cw_qsos']} PH {r['ph_qsos']} points {r['qso_points']} mults {r['total_multipliers']} score {r['score_wo_bonus']} valid {r['valid_qsos']}\n{r['errors']}\n")
 
     # REMEMBER to close all the out_files
     for f in list(context.out_files.keys()):
-        context.out_file[f].close()
+        context.out_files[f].close()
+
+        
+    print(f"after cross-check results")
 
 
     #  Save results to database (valid and invalid)

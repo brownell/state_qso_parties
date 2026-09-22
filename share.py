@@ -48,18 +48,26 @@ class SHARED:
             for row in reader:
                 self.dxcc_entities[int(row[0])] = row[1].split('  ')[0]
         self.out_files = {
-            'error_file': open(SCRIPT_DIR / "ERROR_FILE.txt", "w"),
-            'uniques_file': open(SCRIPT_DIR / "UNIQUES_FILE.txt", "w"),
-            'busteds_file': open(SCRIPT_DIR / "BUSTEDS_FILE.txt", "w"),
-            'nils_file': open(SCRIPT_DIR / "NILS_FILE.txt", "w"),
+            'errors': open(SCRIPT_DIR / "ERROR_FILE.txt", "w"),
+            'uniques': open(SCRIPT_DIR / "UNIQUES_FILE.txt", "w"),
+            'busteds': open(SCRIPT_DIR / "BUSTEDS_FILE.txt", "w"),
+            'nils': open(SCRIPT_DIR / "NILS_FILE.txt", "w"),
+            'debug': open(SCRIPT_DIR / "DEBUG_FILE.txt", "w")
         }
-        self.out_files['error_file'].seek(0)
-        self.out_files['uniques_file'].seek(0)
-        self.out_files['busteds_file'].seek(0)
-        self.out_files['nils_file'].seek(0)
+        self.out_files['errors'].seek(0)
+        self.out_files['uniques'].seek(0)
+        self.out_files['busteds'].seek(0)
+        self.out_files['nils'].seek(0)
+        self.out_files['debug'].seek(0)
+
         self.script_dir = Path(__file__).resolve().parent
         self.first_call_qth = None  # To track the sent QTH in a log for checking other QSOs against it
-        self.valid_modes = ['PH', 'CW', 'RY''DG']
+        self.mode_points = {
+            'PH': 2, 
+            'CW': 3,
+            'RY': 3,
+            'DG': 3
+            }
         self.results = []  # List to hold results for all logs processed
         '''
             When cross checking, there are four results:
@@ -126,18 +134,15 @@ class SHARED:
             'valid_qsos': 0, #number of qsos that are not dups and contribute to the score
             'total_multipliers': 0,
             'counties_worked': set(),
-            'counties_worked_multiplier': 0,
             'states_worked': set(),
-            'states_worked_multiplier': 0,
             'provinces_worked': set(),
-            'provinces_worked_multiplier': 0,
             'dx_worked': set(),
-            'dx_worked_multiplier': 0,
             'counties_activated': set(),
             'de_exch_rcvd': set(),
             'dx_exch_sent': set(),
             'score_wo_bonus': 0,
-            'mobile_counties_worked': {}, # key is mobile callsign as dx, value is [] of dx_exch worked.
+            'bonus_points': 0,
+            'mobile_counties': {}, # key is mobile callsign as dx, value is [] of dx_exch worked.
             'mobile_bonus_points': 0,
             'county_bonus_points': 0,
             'worked_special_station': False,
