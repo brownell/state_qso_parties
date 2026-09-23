@@ -120,7 +120,7 @@ class ContestDatabase:
             'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
             'total_multipliers', 'counties_worked_multiplier',
             'states_worked_multiplier', 'provinces_worked_multiplier',
-            'dx_worked_multiplier', 'rover_bonus_points',
+            'dx_worked_multiplier', 'mobile_bonus_points',
             'num_n5lcc_contacts', 'claimed_score'
         ]
         

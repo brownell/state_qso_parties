@@ -42,8 +42,8 @@ def main(contest_year):
     cross_check(context)
 
     # for debugging, print out all the scores
-    for r in context.results:
-        debug_print(context, r, "", False)
+    # for r in context.results:
+    #     debug_print(context, r, "", False)
         # print(f" {r['callsign']} CW {r['cw_qsos']} PH {r['ph_qsos']} points {r['qso_points']} mults {r['total_multipliers']} score {r['score_wo_bonus']} valid {r['valid_qsos']}\n{r['errors']}\n")
 
     # REMEMBER to close all the out_files

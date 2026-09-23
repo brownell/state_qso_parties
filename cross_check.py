@@ -72,7 +72,7 @@ def cross_check(s):
 
         status, total_score = score_an_operator(s, result)
 
-        # debug_print(s, result, "XCHCK")
+        debug_print(s, result, "", False)
     
     # print(f"*** END of cross-check for {result['callsign']}")
                 
@@ -81,11 +81,11 @@ def check_it(s, result, qso):
     # from the qso_index_dict, get all POTENTIAL matches, based
     # on callsign, exchange, mode, and band
     c = s.stats
-    *******************
-    *******************
+    #=======================
+    #=======================
     # TODO check that the time is within the contest windows
-    *******************
-    *******************
+    #=======================
+    #=======================
     k = generate_index_key(s, qso, qso.dx_call, True) # from the dx POV
     # print(f"k: {k}, his call {qso.dx_call}  my call {qso.de_call}")
     potential_matches = s.qso_index_dict[k]

@@ -2963,7 +2963,6 @@ BUSTED from/to ND5DX/KC1YGG exchs:PARK/MA mode:PH band:10 Sept 19th 1804Z
 BUSTED from/to ND5DX/K5KMS exchs:PARK/PARK mode:PH band:40 Sept 19th 1801Z
 BUSTED from/to NE5B/K5KMS exchs:FAYE/PARK mode:PH band:40 Sept 19th 1717Z
 BUSTED from/to NE5B/WA6KHK exchs:FAYE/CA mode:PH band:20 Sept 20th 1843Z
-BUSTED from/to NE8P/N5XU exchs:MI/TRAV mode:CW band:20 Sept 19th 1555Z
 BUSTED from/to NE8P/N5TM exchs:MI/HAMI mode:CW band:20 Sept 19th 1746Z
 BUSTED from/to NE8P/N5TM exchs:MI/ERAT mode:CW band:20 Sept 19th 1822Z
 BUSTED from/to NE8P/WA5LXS exchs:MI/DENT mode:CW band:20 Sept 19th 2006Z

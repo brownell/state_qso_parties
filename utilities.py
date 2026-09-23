@@ -44,24 +44,31 @@ COUNTS = [
     'provinces_worked', 
     'dx_worked' 
     ]
-INTG = ['final_score', 'score_wo_bonus', 'bonus+points', 'total_multipliers', 'qso_points', 'total_qsos', 'valid_qsos', 'cw_qsos', 'ph_qsos', 'dg_qsos', 'ry_qsos'
+INTG = ['final_score', 'score_wo_bonus', 'mobile_bonus_points', 'total_multipliers', 'qso_points', 'total_qsos', 'valid_qsos', 'cw_qsos', 'ph_qsos', 'dg_qsos', 'ry_qsos'
     ]        
 
-def debug_print(s, result, title, p=True):
-    x = {}
-    y = {}
-    for z in COUNTS:
-        x[z] = result[z]
-    for w in  INTG:
-        y[w] = result[w]
-    s.out_files['debug'].write(f"{title.upper()} {result['callsign']}\ncounts: {y}  sets: {x} mobile {result['callsign'] in s.mobile_callsigns}\n")
-    if len(result['errors']) > 0:
-         s.out_files['debug'].write(f"{result['errors']}\n")
-    s.out_files['debug'].write(f"\n")
-    if p:
-        pprint(f"{title.upper()} {result['callsign']} hours: {sum(result['qsos_by_hour'])} counts: {y}  sets: {x} hours: {sum(result['qsos_by_hour'])}")
-        if len(result['errors']) > 0:
-            print(f"{result['errors']}")
+def debug_print(s, r, title, p=True):
+    # x = {}
+    # y = {}
+    # for z in COUNTS:
+    #     x[z] = r[z]
+    # for w in  INTG:
+    #     y[w] = r[w]
+    # s.out_files['debug'].write(f"{title.upper()} {r['callsign']}\n")
+    # for z in x:
+    #      s.out_files['debug'].write(f"{z}")
+    # s.out_files['debug'].write(f"\n")   
+    # for z in y:
+    #      s.out_files['debug'].write(f"{len(z)}")
+    s.out_files['debug'].write(f"{r['final_score']} {r['mobile_bonus_points']} {r['score_wo_bonus']} {r['total_multipliers']} {r['qso_points']} {r['ph_qsos']} {r['cw_qsos']} {r['callsign']}\n")   
+    # counts: {y}  sets: {x} mobile {r['callsign'] in s.mobile_callsigns}\n")
+    # if len(r['errors']) > 0:
+    #      s.out_files['debug'].write(f"{r['errors']}\n")
+    # s.out_files['debug'].write(f"\n")
+    # if p:
+    #     pprint(f"{title.upper()} {r['callsign']} hours: {sum(r['qsos_by_hour'])} counts: {y}  sets: {x} hours: {sum(r['qsos_by_hour'])}")
+    #     if len(r['errors']) > 0:
+    #         print(f"{r['errors']}")
 
 """
 Fuzzy call-sign matcher. We may add this in later but it is not 

@@ -3,33 +3,6 @@ Scores just a single QSO and passes the score back to the caller
 This file will almost certainly be QSO-party-dependent.
 '''
 
-"""
-    ALL of these values in the "r" object get updated in this method
-    * 'cw_qsos': 0,
-    * 'ph_qsos': 0,
-    * 'dg_qsos': 0,
-    * 'ry_qsos': 0,
-    * 'total_qsos': 0, # total number validated, whether dups or not
-    * 'valid_qsos': 0, #number of qsos that are not dups and contribute to the score
-    * 'counties_worked': set(),
-    * 'states_worked': set(),
-    * 'provinces_worked': set(),
-    * 'dx_worked': set(),
-    * 'counties_activated': set(),
-    'de_exch_rcvd': set(),
-    'dx_exch_sent': set(),
-    'score_w-o_bonus': 0,
-    'rover_bonus_points': 0,
-    'county_bonus_points': 0,
-    'worked_special_station': False,
-    'num_special_station_contacts': 0,
-    * 'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
-    * 'qsos_by_mode': {'PH': 0, 'CW': 0, 'DG': 0, 'RY': 0},
-    * 'qsos_by_hour': {i: 0 for i in range(1400,2600, 100)},  # Hour of day (1400 - 2500)
-    'errors': [],
-    'warnings': [],
-    * 'is_valid': True
-"""
 from datetime import datetime
 from cabrillo.qso import frequency_to_band_m
 from utilities import get_dxcc, debug_print
@@ -76,7 +49,7 @@ def score_a_qso(s, r, q, dup):
     if q.dx_exch[1] in s.counties:
         r['counties_worked'].add(q.dx_exch[1])
         if q.dx_call in s.mobile_callsigns and q.dx_exch[1] in s.counties:
-            r['mobile_counties_worked'].add(q.dx_exch[1])
+            r['mobile_worked_counties'].add(q.dx_exch[1])
 
     elif q.dx_exch[1] in s.states:
         r['states_worked'].add(q.dx_exch[1])
@@ -133,17 +106,18 @@ def score_an_operator(s, r):
         at least 5 qsos.'''
     if r['callsign'] in s.mobile_callsigns:
         counties = 0
-        for key in list(r['mobile_activation_counts'].key()):
+        for key in list(r['mobile_activation_counts'].keys()):
             if r['mobile_activation_counts'][key] >= 5:
                 counties += 1
-        r['mobile_bonus_points'] += ((counties * COUNTIES_ACTIVATED_POINTS)
+        r['mobile_bonus_points'] += (counties * COUNTIES_ACTIVATED_POINTS)
 
     ''' Bonus points for ALL operators for each county in which
         they worked a mobile operator'''
-    r['mobile_bonus_points'] += ((len(r['mobile_counties_worked']) / MOBILE_REQUIRED_QSOS).floor() * COUNTIES_WORKED_POINTS)
+    r['mobile_bonus_points'] += (int(len(r['mobile_worked_counties'])  / ( MOBILE_REQUIRED_QSOS)) * COUNTIES_WORKED_POINTS)
+    r['final_score'] = r['score_wo_bonus'] + r['mobile_bonus_points']
     
 
-    debug_print(s, r, "SCORED", False)
+    # debug_print(s, r, "SCORED", False)
     return True, 0
 
 def make_dup(s, r, qso):
