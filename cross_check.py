@@ -50,7 +50,7 @@ def cross_check(s):
                 continue  
             # receiving call did not submit a log - UNIQUE
             if qso.dx_call.upper() not in s.all_callsigns:
-                # this is a UNIQUE - BUT he still gets the points
+                # this is a UNIQUE - he gets the points
                 score_a_qso(s, result, qso, dup)
                 valid_qsos_processed += 1
                 calls_to_score_a_q += 1

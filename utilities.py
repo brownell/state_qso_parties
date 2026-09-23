@@ -44,8 +44,7 @@ COUNTS = [
     'provinces_worked', 
     'dx_worked' 
     ]
-INTG = ['final_score', 'score_wo_bonus', 'total_multipliers', 'total_qsos', 'valid_qsos', 'cw_qsos', 'ph_qsos',
-        'dg_qsos', 'ry_qsos', 'qso_points' 
+INTG = ['final_score', 'score_wo_bonus', 'bonus+points', 'total_multipliers', 'qso_points', 'total_qsos', 'valid_qsos', 'cw_qsos', 'ph_qsos', 'dg_qsos', 'ry_qsos'
     ]        
 
 def debug_print(s, result, title, p=True):
@@ -65,7 +64,8 @@ def debug_print(s, result, title, p=True):
             print(f"{result['errors']}")
 
 """
-Fuzzy call-sign matcher.
+Fuzzy call-sign matcher. We may add this in later but it is not 
+being used now 2026-09-22
 
 Finds the callsigns in a set that most closely match a given callsign,
 where "closely" means the two strings (ignoring anything after a "/")
@@ -173,20 +173,6 @@ def find_close_matches(target: str,
         pass
 
     return results
-
-
-if __name__ == "__main__":
-    call_set = {
-        "N8PI", "N5EP", "ENP8", "KJ4BYA", "N8EP", "KE7P", "K4BY",
-        "NE8P", "N8ZP", "NE8PX/QRP",
-    }
-
-    for target in ("NE8P", "KJ5BYZ"):
-        print(f"Closest matches to {target}:")
-        for cand in find_close_matches(target, call_set):
-            a, b = strip_slash(target), strip_slash(cand)
-            print(f"  {cand:12s} diff={diff_count(a, b)}")
-        print()
 
 
 """

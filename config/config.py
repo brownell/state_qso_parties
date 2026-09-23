@@ -68,6 +68,10 @@ FINAL_REPORTS_DIR = os.environ.get('FINAL_REPORTS_DIR', '/data/final_reports')
 CONTEST_YEARS = os.environ.get('CONTEST_YEARS', '2025').split(',')
 CONTEST_YEAR = os.environ.get('CONTEST_YEAR', '2026')
 
+COUNTIES_ACTIVATED_POINTS = 1000 # each county
+COUNTIES_WORKED_POINTS = 500 # per 5 QSOs
+MOBILE_REQUIRED_QSOS = 5
+
 # Log file extensions allowed for upload
 ALLOWED_LOG_EXTENSIONS = {'log', 'txt', 'cbr'}
 

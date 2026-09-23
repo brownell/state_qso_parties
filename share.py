@@ -141,10 +141,9 @@ class SHARED:
             'de_exch_rcvd': set(),
             'dx_exch_sent': set(),
             'score_wo_bonus': 0,
-            'bonus_points': 0,
-            'mobile_counties': {}, # key is mobile callsign as dx, value is [] of dx_exch worked.
+            'mobile_activation_counts': {}, # keys are counties activated, value is QSO count.
+            'mobile_worked_counties': set(), # counties where any op worked at least one mobile op
             'mobile_bonus_points': 0,
-            'county_bonus_points': 0,
             'worked_special_station': False,
             'num_n5lcc_contacts': 0,
             'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},

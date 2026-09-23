@@ -33,6 +33,7 @@ This file will almost certainly be QSO-party-dependent.
 from datetime import datetime
 from cabrillo.qso import frequency_to_band_m
 from utilities import get_dxcc, debug_print
+from config import COUNTIES_ACTIVATED_POINTS, COUNTIES_WORKED_POINTS, MOBILE_REQUIRED_QSOS
 
 qso_modes = ['CW', 'PH', 'DG', 'RY']
 qso_mode_names = ['cw_qsos', 'ph_qsos', 'dg_qsos', 'dg_qsos']
@@ -57,28 +58,25 @@ def score_a_qso(s, r, q, dup):
 
     # increment qsos count for each mode
     if q.mo.upper() not in list(s.mode_points.keys()):
-        r['errors'].append(f"BAD mode {q.mo} to {q.dx_call}")
+        r['errors'].append(f"BAD mode {q.mo} to {q.dx_call} Sept {q.date.strftime("%d")}th {q.date.strftime("%H:%M")}Z\n")
         return 0
     r[f"{q.mo.lower()}_qsos"] += 1
 
-    # increment qsos count for dx_exch
-    # increment qsos SET for areas activated and worked
-    if q.de_call == 'AA5AH':
-        print('BREAK')
+    # for ALL operators, record all counties they work
     if q.de_exch[1] in s.counties:
         r['counties_activated'].add(q.de_exch[1])
+        # mobile operators - record their activations separately
+        if q.de_call in s.mobile_callsigns:
+            if q.de_exch[1] in list(r['mobile_activation_counts'].keys()):
+                r['mobile_activation_counts'][q.de_exch[1]] += 1
+            else:
+                r['mobile_activation_counts'][q.de_exch[1]] = 1
 
+    # for ALL operators, record each county where mobile op worked
     if q.dx_exch[1] in s.counties:
         r['counties_worked'].add(q.dx_exch[1])
-
-        '''mobile designation is added to each qso where dx_call is a 
-          mobile station and dx_exch is a county '''
-        # if q.dx_call in s.mobile_callsigns and q.dx_exch[1] in s.counties:
-        #     if q.dx_call in list(r['mobile_counties_worked'].keys()):
-        #         # callsign already here s   o add to set of dx_exch
-        #         r['mobile_counties_worked'][q.dx_call].add(q.dx_exch[1])
-        #     else: # adding new dx_call and creating new set
-        #         r['mobile_counties_worked'][q.dx_call] = set([q.dx_exch[1]])
+        if q.dx_call in s.mobile_callsigns and q.dx_exch[1] in s.counties:
+            r['mobile_counties_worked'].add(q.dx_exch[1])
 
     elif q.dx_exch[1] in s.states:
         r['states_worked'].add(q.dx_exch[1])
@@ -100,7 +98,7 @@ def score_a_qso(s, r, q, dup):
         r['qsos_by_band'][band] += 1
         r['qsos_by_mode'][q.mo] += 1
     except:
-        r['errors'].append(f"BAD frequency {q.freq} in call from {q.de_call} to {q.dx_call}\n")
+        r['errors'].append(f"BAD frequency {q.freq} in call from {q.de_call} to {q.dx_call} Sept {q.date.strftime("%d")}th {q.date.strftime("%H:%M")}Z\n\n")
 
     # qsos by hour
     hour = int(q.date.strftime("%H"))
@@ -110,29 +108,6 @@ def score_a_qso(s, r, q, dup):
         hour -= 2
     r["qsos_by_hour"][hour + ((int(q.date.strftime("%d")) - 19) * 12)] += 1
     # print(f"AFTER qsos_by_hour de {q.de_call}: total_qsos: {r['total_qsos']} valid: {r['valid_qsos']} hours {sum(r['qsos_by_hour'])}")
-
-    '''Capturing calls to and from mobile operators is tricky. The structure serves three different purposes
-        depending on whether the operator is 1. TX mobile, 2. NTX, or 3. TX NON-mobile
-        Since all the bonus points depend on counts of QSOs related to exchange, both de and dx, we
-        store separate de_exch and dx_exch counts IFF one of the exchanges is a county.
-        1. mobile: every qso is stored here, with
-        mobile_qsos: {
-            'key is MOBILE callsign': {
-                'key is exchange of OTHER operator
-            }
-        }
-        '''
-
-    # non-TX stations working TX mobile stations need to be tracked for bonus points
-    if q.de_exch[1] != 'TX' and q.dx_exch[1] in s.mobile_callsigns:
-        if q.de_exch not in list(s.ntx_bonus.keys()):
-            # add this ntx station with the mobile is connected to
-            s.ntx_bonus.setdefault(q.de_call, {q.dx_exch[1]: 1})
-        elif q.de_call in list(s.ntx_bonus[q.de_call].keys()):
-            # this pair of NTX op and TX mobile user exch already here, just increment
-            s.ntx_bonus[q.de_call][q.dx_exch[1]] += 1
-        else: # dx_call here, but add new dx_exch
-            s.ntx_bonus[q.de_call].setdefault(q.dx_exch[1], 1)
 
     # print('BREAK')
 
@@ -152,23 +127,21 @@ def score_an_operator(s, r):
                               len(r['provinces_worked']) + 
                               len(r['dx_worked']))
     r['score_wo_bonus'] = r['qso_points'] * r['total_multipliers']
+
+    ''' bonus points for MOBILE OPERATORS for activations in counties
+        mobile operator gets 500 for each county activated with
+        at least 5 qsos.'''
+    if r['callsign'] in s.mobile_callsigns:
+        counties = 0
+        for key in list(r['mobile_activation_counts'].key()):
+            if r['mobile_activation_counts'][key] >= 5:
+                counties += 1
+        r['mobile_bonus_points'] += ((counties * COUNTIES_ACTIVATED_POINTS)
+
+    ''' Bonus points for ALL operators for each county in which
+        they worked a mobile operator'''
+    r['mobile_bonus_points'] += ((len(r['mobile_counties_worked']) / MOBILE_REQUIRED_QSOS).floor() * COUNTIES_WORKED_POINTS)
     
-    ''' MOBILE bonuses for TEXAS MOBILE operators
-        Texas Mobiles—Add one thousand (1000) points to your FINAL SCORE per every county covered with at least five non-duplicate. Add five hundred (500) bonus points to your FINAL SCORE for each Texas mobile worked in five (5) different counties regardless of band or mode. If you work the same Texas mobile in five (5) additional counties, you add an additional five hundred (500) bonus points to your FINAL SCORE, etc. However, for bonus points you can only count one (1) contact per county per mobile.'''
-    # if r['callsign'] in s['mobile_callsigns']:
-    #     for county_count in r['mobile_counties_worked'][r['callsign']]:
-    #         if county_count >= 5:
-
-
-
-
-
-    ''' MOBILE bonuses for NON-TEXAS operators
-        Non – Texas Stations—Add five hundred (500) bonus points to your FINAL SCORE for each Texas mobile worked in five (5) different counties regardless of band or mode. If you work the same Texas mobile in five (5) additional counties, you add an additional five hundred (500) bonus points to your FINAL SCORE, etc. However, for bonus points you can only count one (1) contact per county per mobile.'''
-    
-
-    ''' MOBILE bonuses for NON-MOBILE TEXAS operators
-        Texas Stations—Add five hundred (500) bonus points to your FINAL SCORE for each Texas mobile worked in five (5) different counties regardless of band or mode. If you work the same Texas mobile in five (5) additional counties, you add an additional five hundred (500) bonus points to your FINAL SCORE, etc. However, for bonus points you can only count one (1) contact per county per mobile.'''
 
     debug_print(s, r, "SCORED", False)
     return True, 0
