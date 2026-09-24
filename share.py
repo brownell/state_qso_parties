@@ -115,13 +115,13 @@ class SHARED:
     def _init_result(self) -> Dict:
         """Initialize result dictionary with standardized structure"""
         return {
+
             'callsign': '', #callsign for this log file
             'cab': None,    # the Cabrillo object from the cabrillo.parser
             'header_attribs': {},  # Parsed attributes from Cabrillo header
             'qso_data': [],     # list of dicts, one for each qso
             'year': CONTEST_YEAR,
             'exchange': '',     # from first QSO in this operator's log
-            'category': 'NON-LA',  # 'DX', 'NON-LA', 'LA-FIXED', 'LA-ROVER'
             'dxcc_code': 0, # code is 0 if not a DX station, else DXCC code
             'dxcc_entity': '', # if same as callsign if not DX 
             'final_score': 0,
@@ -144,7 +144,7 @@ class SHARED:
             'mobile_activation_counts': {}, # keys are counties activated, value is QSO count.
             'mobile_worked_counties': set(), # counties where any op worked at least one mobile op
             'mobile_bonus_points': 0,
-            'worked_special_station': False,
+            'special_station_contacts': 0,
             'num_n5lcc_contacts': 0,
             'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
             'qsos_by_mode': {'PH': 0, 'CW': 0, 'RY': 0, 'DG': 0},

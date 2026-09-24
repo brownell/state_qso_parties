@@ -18,9 +18,7 @@ from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 from collections import defaultdict
 from pathlib import Path
-from datetime import datetime
 from cabrillo import QSO
-
 from cabrillo.qso import frequency_to_band_m
 from score_qsos import score_a_qso, score_an_operator
 from utilities import generate_index_key, debug_print

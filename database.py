@@ -5,6 +5,16 @@ Louisiana QSO Party - Database Module
 Handles storing and retrieving contest results in SQLite database.
 Records are keyed by year and callsign (composite key).
 """
+'''
+Fields in CAB object
+['address', 'address_city', 'address_country', 'address_postalcode', 'address_state_province', 'callsign', 'category_assisted', 'category_band', 'category_mode', '****category_operator', 'category_overlay', 'category_power', 'category_station', 'category_time', 'category_transmitter', 'certificate', 'claimed_score', 'club', 'contest', 'created_by', 'email', 'grid_locator', 'hq_anything', 'ignore_order', 'location', 'name', 'offtime', 'operators', 'qso', 'soapbox', 'version', 'x_anything']
+PLUS fields added by us:
+    'cat', 'category'
+'''
+
+'''Fields in QSO object
+['date', 'de_call', 'de_exch', 'dx_call', 'dx_exch', 'freq', 'mo', 't', 'valid']
+'''
 
 import sqlite3
 import json
@@ -13,11 +23,10 @@ from typing import Dict, List, Optional
 from datetime import datetime
 from config.config import DATABASE_FILE
 
-
 class ContestDatabase:
     """Manages contest results in SQLite database"""
     
-    def __init__(self, db_path: str = 'laqp.db'):
+    def __init__(self, db_path: str = 'txqp.db'):
         """
         Initialize database connection.
         
@@ -45,11 +54,11 @@ class ContestDatabase:
                     club TEXT,
                     exchange TEXT,
                     overlay TEXT,
-                    location_type TEXT,
+                    location TEXT,
                     dxcc_code INTEGER,
                     dxcc_entity TEXT,
-                    mode_category TEXT,
-                    power_level TEXT,
+                    mode TEXT,
+                    power TEXT,
                     final_score INTEGER,
                     qso_points INTEGER,
                     total_qsos INTEGER,
@@ -64,18 +73,17 @@ class ContestDatabase:
                     dx_worked TEXT,
                     dx_worked_multiplier INTEGER,
                     counties_activated TEXT,
-                    rover_bonus_points INTEGER,
-                    worked_n5lcc INTEGER,
-                    num_n5lcc_contacts INTEGER,
+                    mobile_bonus_points INTEGER,
+                    worked_special_station INTEGER,
                     qsos_by_band TEXT,
                     qsos_by_mode TEXT,
                     qsos_by_hour TEXT,
                     bands_worked TEXT,
+                    grid_square TEXT,
                     claimed_score INTEGER,
                     errors TEXT,
                     warnings TEXT,
                     is_valid INTEGER,
-                    qsos TEXT,
                     rankings TEXT,
                     created_at TEXT,
                     updated_at TEXT,
@@ -91,67 +99,101 @@ class ContestDatabase:
             
             cursor.execute('''
                 CREATE INDEX IF NOT EXISTS idx_location_type 
-                ON contest_results(year, location_type)
+                ON contest_results(year, location)
             ''')
             
             cursor.execute('''
                 CREATE INDEX IF NOT EXISTS idx_mode_category 
-                ON contest_results(year, mode_category)
+                ON contest_results(year, mode)
             ''')
             
             cursor.execute('''
                 CREATE INDEX IF NOT EXISTS idx_score 
                 ON contest_results(year, final_score DESC)
             ''')
+
+        #  # QSO  results table - keyed by year and callsign
+        #     cursor.execute('''
+        #         CREATE TABLE IF NOT EXISTS qsos (
+        #         qso_date_time INTEGER,
+        #         de_call TEXT, 
+        #         de_exc TEXT,
+        #         dx_call TEXT,
+        #         dx_exch TEXT,
+        #         freq TEXT,
+        #         mo TEXT
+        #         valid BOOLEAN,
+        #         PRIMARY KEY (year, callsign)
+        #         )
+        #     ''')
+
+        # # Create indexes for common queries
+        #     cursor.execute('''
+        #         CREATE INDEX IF NOT EXISTS idx_year 
+        #         ON qsos(year)
+        #     ''')
+            
+        #     cursor.execute('''
+        #         CREATE INDEX IF NOT EXISTS idx_location_type 
+        #         ON qsos(year, location)
+        #     ''')
+            
+        #     cursor.execute('''
+        #         CREATE INDEX IF NOT EXISTS idx_mode_category 
+        #         ON qsos(year, mode)
+        #     ''')
+            
+        #     cursor.execute('''
+        #         CREATE INDEX IF NOT EXISTS idx_score 
+        #         ON qsos(year, final_score DESC)
+        #     ''')
             
             conn.commit()
     
     def _serialize_result(self, result: Dict, contest_year: str) -> Dict:
         """
+        Adds simple fields from the "result" object
+        Adds attributes of the "CAB" objext
         Convert result dict to database-storable format.
+        Convert lists to JSONF
         Converts sets to JSON lists, handles complex types.
         """
         db_result = {}
+        cab = result['cab']
         
-        # Simple fields
-        simple_fields = [
-            'year', 'callsign', 'name', 'club', 'exchange', 'overlay',
-            'location_type', 'dxcc_code', 'dxcc_entity', 'mode_category', 'power_level',
+        ##### RESULT SIMPLE FIELDS
+        simple_fields = [  # from the result object
+            'year', 'callsign', 'dxcc_code', 'dxcc_entity',
             'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
-            'total_multipliers', 'counties_worked_multiplier',
-            'states_worked_multiplier', 'provinces_worked_multiplier',
-            'dx_worked_multiplier', 'mobile_bonus_points',
-            'num_n5lcc_contacts', 'claimed_score'
+            'total_multipliers', 'mobile_bonus_points', 'cw_qsos',
+            'ph_qsos', 'dg_qsos', 'ry_qsos', 'score_wo_bonus'
+            'special_station_contacts', 'claimed_score', 'uniques', 'nils',
+            'busteds', 'dup_qsos'
         ]
-        
         for field in simple_fields:
             db_result[field] = result.get(field, None)
-        
-        # Boolean fields (convert to 0/1)
-        bool_fields = [
-            'worked_n5lcc',
-              'is_valid'
+
+        ##### CAB SIMPLE FIELDS
+        cab_attributes = [
+            'club', 'name', 'location', 'name', 'category_band', 'email',
+            'category_mode', 'category_power', 'category_station', 'cat', 'category'
         ]
+        for field in cab_attributes:
+             db_result[field] = getattr(field, None)
         
-        for field in bool_fields:
-            value = result.get(field, False)
-            db_result[field] = 1 if value else 0
-        
-        # Set fields (convert to JSON lists)
+        ##### SET FIELDS (convert to JSON lists)
         set_fields = [
             'counties_worked', 'states_worked', 'provinces_worked',
             'dx_worked', 'counties_activated', 'bands_worked'
         ]
-        
         for field in set_fields:
             value = result.get(field, set())
             db_result[field] = json.dumps(sorted(list(value)))
         
-        # Dict/list fields (convert to JSON)
+        ###### DICT FIELDS  (convert to JSON)
         json_fields = [
-            'qsos_by_band', 'qsos_by_mode', 'qsos_by_hour', 'qsos'
+            'qsos_by_band', 'qsos_by_mode', 'de_exch_rcvd'
         ]
-        
         for field in json_fields:
             value = result.get(field, {})
             # Convert sets in dict values to lists
@@ -160,9 +202,7 @@ class ContestDatabase:
         # List fields (convert to JSON)
         db_result['errors'] = json.dumps(result.get('errors', []))
         db_result['warnings'] = json.dumps(result.get('warnings', []))
-
-        # QSOs field (NEW - ADD THIS)
-        db_result['qsos'] = json.dumps(result.get('qsos', []))
+        db_result['qsos_by_hour'] = json.dumps(result.get('qsos_by_hour', []))
         
         # Rankings field (empty dict initially)
         db_result['rankings'] = json.dumps(result.get('rankings', {}))
@@ -400,7 +440,7 @@ def get_result(year: str, callsign: str, db_path: str = DATABASE_FILE) -> Option
 
 
 if __name__ == "__main__":
-    print("LAQP Database Module")
+    print("TXQP Database Module")
     print("This module should be imported, not run directly.")
     print()
     print("Usage:")

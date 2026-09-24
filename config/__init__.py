@@ -2,7 +2,7 @@
 # config/__init__.py
 # ============================================================
 """
-Louisiana QSO Party Configuration Package
+Texas QSO Party Configuration Package
 """
 from .config import *
 

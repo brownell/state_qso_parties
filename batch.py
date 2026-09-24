@@ -59,27 +59,20 @@ def main(contest_year):
     # invalid_count = 0
     # saved_count = 0
     
-    # for result in shared.results:
+    for result in context.results:
         
-    #     if result['is_valid']:
-    #         valid_count += 1
-    #     else:
-    #         invalid_count += 1
-    #         print(f"✗ {result['callsign']}: Invalid log")
-    #         for error in result.get('errors', [])[:10]:  # Show first 10 errors
-    #             print(f"    ERROR: {error}")
-        
-    #     # # Save to database (both valid and invalid for record-keeping)
-    #     try:
-    #         if save_result(result, contest_year):
-    #             saved_count += 1
-    #             status = "✓" if result['is_valid'] else "✗"
-    #             # print(f"{status} {result['callsign']}: Saved to database")
-    #         else:
-    #             print(f"✗ {result['callsign']}: Database save failed")
-    #     except Exception as e:
-    #         print(f"✗ {result['callsign']}: Database error - {e}")
+        # # Save to database (both valid and invalid for record-keeping)
+        try:
+            if save_result(result, contest_year):
+                saved_count += 1
+                status = "✓" if result['is_valid'] else "✗"
+                # print(f"{status} {result['callsign']}: Saved to database")
+            else:
+                print(f"✗ {result['callsign']}: Database save failed")
+        except Exception as e:
+            print(f"✗ {result['callsign']}: Database error - {e}")
 
+        print('BREAK')
     # # generate rankings from the database results
     # generate_rankings(contest_year)
 

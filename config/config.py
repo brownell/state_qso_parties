@@ -269,7 +269,7 @@ STATES_SUBSTRING = "SUBSTRING(callsign, 1, 2) IN ('AA','AB','AC','AD','AE','AF',
 
 LEADERBOARDS = [
 
-    # Section 1: Class (either LA or outside of LA)
+    # Section 1:
     [
         {
             'section_title': 'Two Competitive Classes: Inside Louisiana (Fixed or Rover) or Outside of Louisiana (US, Canada, DX)',

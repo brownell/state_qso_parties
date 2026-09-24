@@ -53,6 +53,7 @@ def read_prepare(s):
     """
     dir_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR).resolve()
     filenames = [p.name for p in dir_path.iterdir() if p.is_file()]
+    cats = set()
     for file in filenames:
         # print(f"READING {file}")
         s.stats["total_logs"] += 1
@@ -74,7 +75,10 @@ def read_prepare(s):
             print(f"ERROR: log file {file} had no HQ- keys - REJECTED")
             s.out_files['errors'].write(f"ERROR: log file {file} had no HQ- keys - REJECTED\n")
             continue
-        
+        try:
+            cats.add(cab.cat)
+        except Exception as e:
+            print(f"NO CAT for {cab.callsign}")
         s.stats["valid_logs"] += 1
         # print(vars(cab))
         
@@ -96,6 +100,8 @@ def read_prepare(s):
         # result['header_attribs'] = vars(cab)
         s.results.append(result)
         # print('BREAK')
+    print(f"ALL the cab.cat values:\n{cats}")
+    print("BREAK")
    
 def update_qso_index_dict(s, result, qsos, dxcc):
     """
@@ -135,7 +141,18 @@ def process_hq_keys(s, cab):
     try:
         if len(cab.hq_anything):
             cab.category = cab.hq_anything['HQ-CATEGORY'].upper()
-            cab.cat = cab.hq_anything['HQ-CAT'].upper()
+            temp = cab.hq_anything['HQ-CAT'].upper().split()
+            try:
+                t = len(cab.cat)
+            except Exception as e:
+                cab.cat = ''
+                for t in temp:
+                    if t == "TXM":
+                        cab.cat += 'TM'
+                    else:
+                        cab.cat += t[:1]
+            if cab.cat[:2] == 'TM':
+                print(f"Mobile: cat: {cab.cat} category: {cab.category}")
             if "HQ_CLUB" in list(cab.hq_anything.keys()):
                 cab.club = cab.hq_anything['HQ-CLUB']
                 # if the operator specified a club NOT in the dropdown
