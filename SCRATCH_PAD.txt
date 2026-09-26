@@ -1,5 +1,9 @@
 Must go in Database:
+from cab: name, overlay, location, mode, power
+rankings = {cab.cat: 0}
 
+CAB object:
+{'callsign': 'AA0AW', 'operators': ['AA0AW'], 'contest': 'TXQP', 'claimed_score': 6156, 'certificate': None, 'category_operator': 'SINGLE-OP', 'category_assisted': 'ASSISTED', 'category_band': 'ALL', 'category_power': 'LOW', 'category_mode': 'MIXED', 'category_station': 'FIXED', 'category_time': None, 'category_transmitter': 'ONE', 'category_overlay': None, 'offtime': None, 'club': None, 'name': 'Douglas Nelson', 'email': 'KJ5BYZ@gmail.com', 'location': 'MN', 'grid_locator': 'EN36VQ', 'address': ['1411 101st Avenue West'], 'address_city': 'Duluth', 'address_state_province': 'MN', 'address_postalcode': '55808-1618', 'address_country': 'UNITED STATES', 'created_by': 'N1MM Logger+ 1.0.10919.0', 'soapbox': None}
 
 NOTES on cross-check:
 - had case where exch should have been HUNT\nbut was SUNT - all else matched

@@ -57,7 +57,7 @@ def main(contest_year):
     #  Save results to database (valid and invalid)
     # valid_count = 0
     # invalid_count = 0
-    # saved_count = 0
+    saved_count = 0
     
     for result in context.results:
         
@@ -71,8 +71,9 @@ def main(contest_year):
                 print(f"✗ {result['callsign']}: Database save failed")
         except Exception as e:
             print(f"✗ {result['callsign']}: Database error - {e}")
-
-        print('BREAK')
+            # print('BREAK')
+        # print('BREAK')
+    
     # # generate rankings from the database results
     # generate_rankings(contest_year)
 

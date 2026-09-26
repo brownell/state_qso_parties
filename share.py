@@ -98,7 +98,9 @@ class SHARED:
             'provinces_worked_names': set(),
             'dx_worked_names': set()
         }
-        self.all_callsigns = set()  # To track all callsigns that submitted logs for UNIQUE detection
+        ''' We need direct access to a single operators log. We are
+            keeping record of each callsign's index in the self.results list'''
+        self.all_callsigns = {}  # To track the indices of all callsigns that submitted logs for 
         self.mobile_callsigns = set() # Track callsigns that have location "mobile"
         self.qso_index_dict = defaultdict(list)
         self.contest_clubs = {"Austin QRP Club": 0, "Baytown Area ARC": 0, "Central Texas DX and Contest Club": 0, "Dallas ARC": 0, "DCT ARC": 0, 
@@ -125,6 +127,7 @@ class SHARED:
             'dxcc_code': 0, # code is 0 if not a DX station, else DXCC code
             'dxcc_entity': '', # if same as callsign if not DX 
             'final_score': 0,
+            'rankings': {},
             'cw_qsos': 0,
             'ph_qsos': 0,
             'dg_qsos': 0,
@@ -145,7 +148,6 @@ class SHARED:
             'mobile_worked_counties': set(), # counties where any op worked at least one mobile op
             'mobile_bonus_points': 0,
             'special_station_contacts': 0,
-            'num_n5lcc_contacts': 0,
             'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
             'qsos_by_mode': {'PH': 0, 'CW': 0, 'RY': 0, 'DG': 0},
             'qsos_by_hour': [0] * 24,

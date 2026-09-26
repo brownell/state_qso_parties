@@ -47,7 +47,7 @@ def cross_check(s):
                 result["errors"].append(f"INVALID QSO: from {qso.de_call} to {qso.dx_call} ")
                 continue  
             # receiving call did not submit a log - UNIQUE
-            if qso.dx_call.upper() not in s.all_callsigns:
+            if qso.dx_call.upper() not in list(s.all_callsigns.keys()):
                 # this is a UNIQUE - he gets the points
                 score_a_qso(s, result, qso, dup)
                 valid_qsos_processed += 1
@@ -110,7 +110,8 @@ def check_it(s, result, qso):
             return True
         else:
             '''  NONE of the potential_matches matches, so this is a case where 
-                 the dx_call in the qso DID submit a log (because in s.all_callsigns)
+                 the dx_call in the qso DID submit a log (because 
+                 has callsign key and index in s.all_callsigns)
                  but no matching qso was found in the log of the dx_call'''
             # print('BREAK')
             c['busteds'] += 1

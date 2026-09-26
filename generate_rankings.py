@@ -12,10 +12,6 @@ from pathlib import Path
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from leaderboards import generate_leaderboards
-from config.config import LEADERBOARDS, RANKINGS
-
-
 def generate_rankings(year: str):
     """
     Generate all leaderboards and save rankings for a year.

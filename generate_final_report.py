@@ -14,7 +14,7 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from leaderboards import generate_leaderboards
-from config.config import FINAL_REPORTS_DIR, LEADERBOARDS, RANKINGS, FINAL_REPORT_TXT, FINAL_REPORTS_DIR
+from config.config import FINAL_REPORTS_DIR, FINAL_REPORT_TXT, FINAL_REPORTS_DIR
 
 
 def generate_final_report_html(year: str, output_dir: str = FINAL_REPORTS_DIR):

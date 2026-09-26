@@ -53,6 +53,7 @@ def read_prepare(s):
     """
     dir_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR).resolve()
     filenames = [p.name for p in dir_path.iterdir() if p.is_file()]
+    result_index = 0
     cats = set()
     for file in filenames:
         # print(f"READING {file}")
@@ -88,7 +89,13 @@ def read_prepare(s):
         result['dxcc_code'], result['dxcc_entity'] = get_dxcc(s, cab.location, cab.callsign)
 
         # Add the callsign to the set of all callsigns for UNIQUE detection
-        s.all_callsigns.add(cab.callsign)
+        if cab.callsign in list(s.all_callsigns.keys()):
+            # multiple logs with the same callsign
+            s.out_files['errors'].write(f"DUPLICATE CALLSIGN: logfile {file} has same callsign as a previous log had\n")
+            print(f"ERROR: DUPLICATE CALLSIGN: logfile {file} has same callsign as a previous log had")
+        else:
+            s.all_callsigns[cab.callsign] = result_index
+            result_index += 1
 
         # Add MOBILE stations to that set
         if 'MOBILE' in cab.category:
@@ -100,8 +107,8 @@ def read_prepare(s):
         # result['header_attribs'] = vars(cab)
         s.results.append(result)
         # print('BREAK')
-    print(f"ALL the cab.cat values:\n{cats}")
-    print("BREAK")
+    # print(f"ALL the cab.cat values:\n{cats}")
+    # print("BREAK")
    
 def update_qso_index_dict(s, result, qsos, dxcc):
     """
@@ -151,8 +158,8 @@ def process_hq_keys(s, cab):
                         cab.cat += 'TM'
                     else:
                         cab.cat += t[:1]
-            if cab.cat[:2] == 'TM':
-                print(f"Mobile: cat: {cab.cat} category: {cab.category}")
+            # if cab.cat[:2] == 'TM':
+            #     print(f"Mobile: cat: {cab.cat} category: {cab.category}")
             if "HQ_CLUB" in list(cab.hq_anything.keys()):
                 cab.club = cab.hq_anything['HQ-CLUB']
                 # if the operator specified a club NOT in the dropdown

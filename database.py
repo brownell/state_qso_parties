@@ -41,6 +41,9 @@ class ContestDatabase:
         self._create_tables()
     
     def _create_tables(self):
+        
+
+        
         """Create database tables if they don't exist"""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
@@ -48,31 +51,45 @@ class ContestDatabase:
             # Main results table - keyed by year and callsign
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS contest_results (
-                    year TEXT NOT NULL,
                     callsign TEXT NOT NULL,
+                    year TEXT NOT NULL,
                     name TEXT,
+                    email TEXT,
                     club TEXT,
                     exchange TEXT,
                     overlay TEXT,
                     location TEXT,
                     dxcc_code INTEGER,
                     dxcc_entity TEXT,
-                    mode TEXT,
-                    power TEXT,
+                    category_mode TEXT,
+                    category_power TEXT,
+                    category_band TEXT,
+                    category_station TEXT,
+                    category TEXT,
+                    cat TEXT,
                     final_score INTEGER,
+                    cw_qsos INTEGER,
+                    ph_qsos INTEGER,
+                    dg_qsos INTEGER,
+                    ry_qsos INTEGER,
                     qso_points INTEGER,
                     total_qsos INTEGER,
                     valid_qsos INTEGER,
                     total_multipliers INTEGER,
+                    uniques INTEGER,
+                    nils INTEGER,
+                    busteds INTEGER,
+                    dup_qsos INTEGER,
                     counties_worked TEXT,
-                    counties_worked_multiplier INTEGER,
                     states_worked TEXT,
-                    states_worked_multiplier INTEGER,
                     provinces_worked TEXT,
-                    provinces_worked_multiplier INTEGER,
                     dx_worked TEXT,
-                    dx_worked_multiplier INTEGER,
+                    de_exch_sent TEXT,
+                    dx_exch_rcvd TEXT,
                     counties_activated TEXT,
+                    special_station_contacts INTEGER,
+                    score_wo_bonus INTEGER,
+                    mobile_activation_counts TEXT,
                     mobile_bonus_points INTEGER,
                     worked_special_station INTEGER,
                     qsos_by_band TEXT,
@@ -104,7 +121,7 @@ class ContestDatabase:
             
             cursor.execute('''
                 CREATE INDEX IF NOT EXISTS idx_mode_category 
-                ON contest_results(year, mode)
+                ON contest_results(year, category_mode)
             ''')
             
             cursor.execute('''
@@ -139,8 +156,8 @@ class ContestDatabase:
         #     ''')
             
         #     cursor.execute('''
-        #         CREATE INDEX IF NOT EXISTS idx_mode_category 
-        #         ON qsos(year, mode)
+        #         CREATE INDEX IF NOT EXISTS idx_category_mode 
+        #         ON qsos(year, category_mode)
         #     ''')
             
         #     cursor.execute('''
@@ -160,57 +177,62 @@ class ContestDatabase:
         """
         db_result = {}
         cab = result['cab']
-        
-        ##### RESULT SIMPLE FIELDS
-        simple_fields = [  # from the result object
-            'year', 'callsign', 'dxcc_code', 'dxcc_entity',
-            'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
-            'total_multipliers', 'mobile_bonus_points', 'cw_qsos',
-            'ph_qsos', 'dg_qsos', 'ry_qsos', 'score_wo_bonus'
-            'special_station_contacts', 'claimed_score', 'uniques', 'nils',
-            'busteds', 'dup_qsos'
-        ]
-        for field in simple_fields:
-            db_result[field] = result.get(field, None)
+        try:
 
-        ##### CAB SIMPLE FIELDS
-        cab_attributes = [
-            'club', 'name', 'location', 'name', 'category_band', 'email',
-            'category_mode', 'category_power', 'category_station', 'cat', 'category'
-        ]
-        for field in cab_attributes:
-             db_result[field] = getattr(field, None)
-        
-        ##### SET FIELDS (convert to JSON lists)
-        set_fields = [
-            'counties_worked', 'states_worked', 'provinces_worked',
-            'dx_worked', 'counties_activated', 'bands_worked'
-        ]
-        for field in set_fields:
-            value = result.get(field, set())
-            db_result[field] = json.dumps(sorted(list(value)))
-        
-        ###### DICT FIELDS  (convert to JSON)
-        json_fields = [
-            'qsos_by_band', 'qsos_by_mode', 'de_exch_rcvd'
-        ]
-        for field in json_fields:
-            value = result.get(field, {})
-            # Convert sets in dict values to lists
-            db_result[field] = json.dumps(value)
-        
-        # List fields (convert to JSON)
-        db_result['errors'] = json.dumps(result.get('errors', []))
-        db_result['warnings'] = json.dumps(result.get('warnings', []))
-        db_result['qsos_by_hour'] = json.dumps(result.get('qsos_by_hour', []))
-        
-        # Rankings field (empty dict initially)
-        db_result['rankings'] = json.dumps(result.get('rankings', {}))
-        
-        # Timestamps
-        now = datetime.utcnow().isoformat()
-        db_result['created_at'] = now
-        db_result['updated_at'] = now
+            types_of_fields = {'integer': 0, 'string': '',
+                                'set': set(), 'list': []}
+            fields = {'integer': [
+                'dxcc_code',
+                'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
+                'total_multipliers', 'mobile_bonus_points', 'cw_qsos',
+                'ph_qsos', 'dg_qsos', 'ry_qsos', 'score_wo_bonus',
+                'special_station_contacts', 'claimed_score', 'uniques', 'nils',
+                'busteds', 'dup_qsos'
+            ],
+            'string': [  # from the result object
+                'year', 'callsign',  'dxcc_entity'
+            ],
+           'set': [
+                'counties_worked', 'states_worked', 'provinces_worked',
+                'dx_worked', 'counties_activated', 'bands_worked',
+                'de_exch_rcvd', 'dx_exch_sent', 'mobile_counties_worked',
+                'mobile_activation_counts'
+            ],
+            'list': ['errors', 'warnings', 'qsos_by_hour']
+            }
+
+            # put values from the above listed fields into db_result
+            for typ in list(['integer', 'string']):
+                for fld in fields[typ]:
+                    db_result[fld] = result.get(fld, types_of_fields[typ])
+
+            # dict fields require different aproach from above fields
+            json_fields = [
+                'qsos_by_band', 'qsos_by_mode',
+                'rankings', 'mobile_activation_counts'
+            ]
+            for field in json_fields:
+                value = result.get(field, {})
+                # Convert sets in dict values to lists
+                db_result[field] = json.dumps(value)
+                # print(f"field: {field} value: {value}")
+
+            # attributes of the Cabrillo object need different approach
+            cab_attributes = [
+                'club', 'name', 'location', 'name', 'category_band', 'email',
+                'category_mode', 'category_power', 'category_station', 'cat',
+                'category', 'claimed_score'
+            ]
+            for atr in cab_attributes:
+                db_result[atr] = getattr(cab, atr, '')
+            
+            # Timestamps
+            now = datetime.utcnow().isoformat()
+            db_result['created_at'] = now
+            db_result['updated_at'] = now
+        except Exception as e:
+            print(f"exception in creating db_result")
+            # print('BREAK')
         
         return db_result
     
