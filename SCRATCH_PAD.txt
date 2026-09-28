@@ -1,3 +1,28 @@
+SELECT callsign, category_rank FROM contest_results
+WHERE cat = 'TSL'  ORDER BY rank DESC;
+
+WITH ranked AS (
+    SELECT id, ROW_NUMBER() OVER (ORDER BY final_score DESC) AS calculated_rank
+    FROM contest_results
+    WHERE year = 2026 AND cat = 'TSL'
+)
+UPDATE contest_results
+SET category_rank = ranked.calculated_rank
+FROM ranked
+WHERE contest_results.id = ranked.id;
+
+WITH ranked AS (
+    SELECT year, callsign, ROW_NUMBER() OVER (ORDER BY final_score DESC) AS calculated_rank
+    FROM contest_results
+    WHERE year = 2026 AND cat = 'TSL'
+)
+UPDATE contest_results
+SET category_rank = ranked.calculated_rank
+FROM ranked
+WHERE contest_results.year = ranked.year
+  AND contest_results.callsign = ranked.callsign;
+
+
 Must go in Database:
 from cab: name, overlay, location, mode, power
 rankings = {cab.cat: 0}

@@ -152,7 +152,7 @@ class LeaderboardGenerator:
             
             # Save this user's ranking if requested
             if save_rankings:
-                self._save_user_ranking(year, callsign, ranking_code, rank)
+                self._save_one_user_ranking(year, callsign, ranking_code, rank)
             
             # Build display row: [rank] + [display values]
             ranked_row = [rank] + list(display_values)

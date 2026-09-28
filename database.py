@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime
 from config.config import DATABASE_FILE
+from config.config_txqp import RANKINGS
 
 class ContestDatabase:
     """Manages contest results in SQLite database"""
@@ -41,9 +42,7 @@ class ContestDatabase:
         self._create_tables()
     
     def _create_tables(self):
-        
 
-        
         """Create database tables if they don't exist"""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
@@ -65,7 +64,6 @@ class ContestDatabase:
                     category_power TEXT,
                     category_band TEXT,
                     category_station TEXT,
-                    category TEXT,
                     cat TEXT,
                     final_score INTEGER,
                     cw_qsos INTEGER,
@@ -101,7 +99,7 @@ class ContestDatabase:
                     errors TEXT,
                     warnings TEXT,
                     is_valid INTEGER,
-                    rankings TEXT,
+                    category_rank INTEGER,
                     created_at TEXT,
                     updated_at TEXT,
                     PRIMARY KEY (year, callsign)
@@ -187,7 +185,7 @@ class ContestDatabase:
                 'total_multipliers', 'mobile_bonus_points', 'cw_qsos',
                 'ph_qsos', 'dg_qsos', 'ry_qsos', 'score_wo_bonus',
                 'special_station_contacts', 'claimed_score', 'uniques', 'nils',
-                'busteds', 'dup_qsos'
+                'busteds', 'dup_qsos', 'category_rank'
             ],
             'string': [  # from the result object
                 'year', 'callsign',  'dxcc_entity'
@@ -208,8 +206,7 @@ class ContestDatabase:
 
             # dict fields require different aproach from above fields
             json_fields = [
-                'qsos_by_band', 'qsos_by_mode',
-                'rankings', 'mobile_activation_counts'
+                'qsos_by_band', 'qsos_by_mode','mobile_activation_counts'
             ]
             for field in json_fields:
                 value = result.get(field, {})
@@ -220,8 +217,8 @@ class ContestDatabase:
             # attributes of the Cabrillo object need different approach
             cab_attributes = [
                 'club', 'name', 'location', 'name', 'category_band', 'email',
-                'category_mode', 'category_power', 'category_station', 'cat',
-                'category', 'claimed_score'
+                'category_mode', 'category_power', 'category_station', 
+                'cat', 'claimed_score'
             ]
             for atr in cab_attributes:
                 db_result[atr] = getattr(cab, atr, '')
@@ -262,7 +259,7 @@ class ContestDatabase:
             'counties_worked', 'states_worked', 'provinces_worked',
             'dx_worked', 'counties_activated', 'bands_worked',
             'qsos_by_band', 'qsos_by_mode', 'qsos_by_hour',
-            'errors', 'warnings', 'rankings', 'qsos'
+            'errors', 'warnings',  'qsos'
         ]
         
         for field in json_fields:
@@ -350,29 +347,40 @@ class ContestDatabase:
                 return self._deserialize_result(row, columns)
             return None
     
-    def update_rankings(self, year: str, rankings_dict: Dict[str, Dict[str, int]]):
+    def store_rankings(self, year):
         """
-        Update rankings for all results in a year.
+        Store rankings for all results in a year.
         
         Args:
             year: Contest year
-            rankings_dict: Dict mapping callsign to their rankings
-                          e.g., {'K5ABC': {'overall': 1, 'cw': 3}, ...}
         """
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, timeout=20.0) as conn:
             cursor = conn.cursor()
-            
-            for callsign, rankings in rankings_dict.items():
-                rankings_json = json.dumps(rankings)
-                updated_at = datetime.utcnow().isoformat()
-                
-                cursor.execute('''
+            for cat in list(RANKINGS.keys()):
+                sql = f'''
+                    WITH ranked AS (
+                        SELECT year, callsign, ROW_NUMBER() OVER (ORDER BY final_score DESC) AS calculated_rank
+                        FROM contest_results
+                        WHERE year = 2026 AND cat = (?)
+                    )
                     UPDATE contest_results
-                    SET rankings = ?, updated_at = ?
-                    WHERE year = ? AND callsign = ?
-                ''', (rankings_json, updated_at, year, callsign.upper()))
-            
-            conn.commit()
+                    SET category_rank = ranked.calculated_rank
+                    FROM ranked
+                    WHERE contest_results.year = ranked.year
+                    AND contest_results.callsign = ranked.callsign;
+                '''
+                try:
+                    with sqlite3.connect(self.db_path) as conn:
+                        cursor = conn.cursor()
+                        cursor.execute(sql, [cat])
+                        print(f"SAVED cat: {cat}")
+                    continue
+                except Exception as e:
+                    print(f"***** ERROR could not set category for cat {cat}")
+                    print(f"***** EXCEPTION saving result: {e}")
+                    return False
+                
+                conn.commit()
     
     def get_statistics(self, year: str) -> Dict:
         """
@@ -459,6 +467,10 @@ def get_result(year: str, callsign: str, db_path: str = DATABASE_FILE) -> Option
     """
     db = ContestDatabase(db_path)
     return db.get_result(year, callsign)
+
+def store_rankings(year: str):
+    db = ContestDatabase(DATABASE_FILE)
+    return db.store_rankings(year)
 
 
 if __name__ == "__main__":

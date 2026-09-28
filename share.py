@@ -127,7 +127,7 @@ class SHARED:
             'dxcc_code': 0, # code is 0 if not a DX station, else DXCC code
             'dxcc_entity': '', # if same as callsign if not DX 
             'final_score': 0,
-            'rankings': {},
+            'category_rank': 0,
             'cw_qsos': 0,
             'ph_qsos': 0,
             'dg_qsos': 0,

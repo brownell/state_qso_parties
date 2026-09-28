@@ -23,33 +23,32 @@ except ImportError:
     pass
 
 ''' From the rules at https://www.txqp.net/?page_id=23
-        # Texas – Fixed Station
-        TX SO LP — 'TSL': 'Single Operator Mixed Mode (150 watts power limit)',
-        TX SO HP — 'TSH':  'Single Operator Mixed Mode High-Power (>150 watts power)',
-        TX MO LP — 'TML':  'Multi Operators (150 watts power limit)',
-        TX MO HP — 'TMH':  'Multi Operators High-Power (>150 watts power)',
-        TX QRP SO — 'TQS':  'QRP Single Operator (10 watts or less phone and 5 watts or less CW and other modes)',
-        TX CWO SO LP — 'TCAL':  'CW Only Single Operator (150 watts power limit)',
-        TX CWO SO HP — 'TCSH':  'CW Only Single Operator High-Power (>150 watts power)',
-        TX PHO SO LP — 'TPSL':  'Phone Only Single Operator (150 watts power limit)',
-        TX PHO SO HP — 'TPSH':  'Phone Only Single Operator High-Power (>150 watts power)',
-        
-        # Texas – Mobile Stations
-        TXM SO — 'TMS':  'Texas Mobile Single Operator Mixed Mode–may be assisted (no contest power limit)',
-        TXM MO — 'TMM':  'Texas Mobile Multi Operators (no contest power limit)',
-        TXM SO CWO — 'TSC':  'Texas Mobile CW Only Single Operator–may be assisted (no contest power limit)',
-        TXM SO PHO — 'TSP':  'Texas Mobile Phone Only Single Operator–may be assisted (no contest power limit)',
-        # Note: The spirit of the mobile category is for vehicle-based *or* non-permanent stations who work from multiple counties during the event.',
-
-       # Non-Texas Stations
-        NTX SO — 'NS':  'Single Operator Mixed Mode (no contest power limits)',
-        NTX SO QRP — 'NSQ':  'QRP Single Operator (10 watts or less phone and 5 watts or less CW and other modes)',
-        NTX SO CWO — 'NSC':  'CW Only Single Operator (no contest power limits)',
-        NTX SO PHO — 'NSP':  'Phone Only Single Operator (no contest power limits)',
-        DX Stations
-        DX SO — 'DS':  'Single Operator Mixed (no contest power limits)',
-    }
+    # Texas – Fixed Station
+    TX SO LP — 'TSL': 'Single Operator Mixed Mode (150 watts power limit)',
+    TX SO HP — 'TSH':  'Single Operator Mixed Mode High-Power (>150 watts power)',
+    TX MO LP — 'TML':  'Multi Operators (150 watts power limit)',
+    TX MO HP — 'TMH':  'Multi Operators High-Power (>150 watts power)',
+    TX QRP SO — 'TQS':  'QRP Single Operator (10 watts or less phone and 5 watts or less CW and other modes)',
+    TX CWO SO LP — 'TCAL':  'CW Only Single Operator (150 watts power limit)',
+    TX CWO SO HP — 'TCSH':  'CW Only Single Operator High-Power (>150 watts power)',
+    TX PHO SO LP — 'TPSL':  'Phone Only Single Operator (150 watts power limit)',
+    TX PHO SO HP — 'TPSH':  'Phone Only Single Operator High-Power (>150 watts power)',
     
+    # Texas – Mobile Stations
+    TXM SO — 'TMS':  'Texas Mobile Single Operator Mixed Mode–may be assisted (no contest power limit)',
+    TXM MO — 'TMM':  'Texas Mobile Multi Operators (no contest power limit)',
+    TXM SO CWO — 'TSC':  'Texas Mobile CW Only Single Operator–may be assisted (no contest power limit)',
+    TXM SO PHO — 'TSP':  'Texas Mobile Phone Only Single Operator–may be assisted (no contest power limit)',
+    # Note: The spirit of the mobile category is for vehicle-based *or* non-permanent stations who work from multiple counties during the event.',
+
+    # Non-Texas Stations
+    NTX SO — 'NS':  'Single Operator Mixed Mode (no contest power limits)',
+    NTX SO QRP — 'NSQ':  'QRP Single Operator (10 watts or less phone and 5 watts or less CW and other modes)',
+    NTX SO CWO — 'NSC':  'CW Only Single Operator (no contest power limits)',
+    NTX SO PHO — 'NSP':  'Phone Only Single Operator (no contest power limits)',
+    DX Stations
+    DX SO — 'DS':  'Single Operator Mixed (no contest power limits)',
+}
 '''
 '''
 ['C', 'DS', 'NS', 'NSC', 'NSP', 'NSQ', 'TCSH', 'TCSL', 'TMH', 'TML', 'TMS', 'TMSC', 'TMSP', 'TPSH', 'TPSL', 'TQS', 'TSH', 'TSL']
@@ -59,8 +58,6 @@ TX = ['TSL', 'TSH', 'TML', 'TMH', 'TQS', ]
 NTX = []
 TXM = []
 RANKINGS = {
-    # All Operators
-    'ALL': 'All Operators',
 
     # Texas – Fixed Station
     'TSL': 'Single Operator Mixed Mode (150 watts power limit)',

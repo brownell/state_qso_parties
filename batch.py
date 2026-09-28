@@ -8,30 +8,39 @@ Batch Control program to process ALL the logs in the incoming directory
 """
 
 from typing import Dict, List, Set, Optional
-import csv
+import sqlite3
 from pyhamtools import LookupLib, Callinfo
 from cabrillo.parser import parse_log_file
 from cabrillo.qso import frequency_to_band_m
 from collections import defaultdict
+from database import store_rankings
 
 from config.config import (
     CONTEST_YEAR
     )
 from database import save_result
-from generate_rankings import generate_rankings
+from pathlib import Path
 from generate_final_report import generate_final_report_html
 from read_prepare import read_prepare
 from cross_check import cross_check
 from utilities import debug_print
+from database import store_rankings
 from share import SHARED
+from config.config import DATABASE_FILE
 
 def main(contest_year):
+    db_path = Path(DATABASE_FILE)
+     # Ensure directory exists
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.commit()
     '''
         Read in all the log files, save the Cabrillo object and the data, 
         save values that will be needed later
     '''
-    read_prepare(context)
-    print(f"after read_prepare")
+    # read_prepare(context)
+    # print(f"after read_prepare")
 
 
     '''
@@ -39,7 +48,8 @@ def main(contest_year):
     Warning messages are generated when qso fails match
     Failed qsos marked invalid so not counted in score
     '''
-    cross_check(context)
+    # cross_check(context)
+
 
     # for debugging, print out all the scores
     # for r in context.results:
@@ -74,8 +84,11 @@ def main(contest_year):
             # print('BREAK')
         # print('BREAK')
     
-    # # generate rankings from the database results
-    # generate_rankings(contest_year)
+    # # calculate rankings from the database results
+    # calculate_rankings(contest_year)
+    
+    store_rankings(contest_year)
+    print('BREAK')
 
     # # generate_final_report_html(contest_year)
     # generate_final_report_html(contest_year)

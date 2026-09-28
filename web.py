@@ -164,7 +164,7 @@ def api_individual_results():
             }), 404
         
         rankings_display = {}
-        sorted_rankings = dict(sorted(result.get('rankings', {}).items(), key=lambda item: item[1]))
+        sorted_rankings = dict(sorted(result.get('category_rank', {}).items(), key=lambda item: item[1]))
         for code, rank in sorted_rankings.items():
             if code in RANKINGS:
                 # Format as "Louisiana - Fixed QRP Power #2"

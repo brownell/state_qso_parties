@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Louisiana QSO Party - Generate Rankings
+Texas QSO Party - Calculate Rankings
 
 Generates all leaderboards and saves individual rankings to database.
 Run this after all logs have been processed for a contest year.
@@ -11,20 +11,18 @@ from pathlib import Path
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
+from leaderboards import generate_leaderboards
 
-def generate_rankings(year: str):
+def calculate_rankings(year: str):
     """
     Generate all leaderboards and save rankings for a year.
     
     Args:
         year: Contest year
     """
-    print("=" * 60)
-    print(f"Louisiana QSO Party - Generate Rankings ({year})")
-    print("=" * 60)
-    print()
+   
     
-    print("Generating leaderboards and saving rankings...")
+    print("Calculating leaderboards and saving rankings...")
     print()
     
     # Generate leaderboards (automatically saves rankings)
