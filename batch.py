@@ -90,8 +90,8 @@ def main(contest_year):
     store_rankings(contest_year)
     print('BREAK')
 
-    # # generate_final_report_html(contest_year)
     # generate_final_report_html(contest_year)
+    # generate_final_report_html(db_path, contest_year)
     
     # print()
     # print("=" * 60)

@@ -21,6 +21,7 @@ import json
 from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime
+from share import SHARED as s
 from config.config import DATABASE_FILE
 from config.config_txqp import RANKINGS
 
@@ -40,6 +41,39 @@ class ContestDatabase:
         
         # Create tables if they don't exist
         self._create_tables()
+
+        # attributes of the Cabrillo object need different approach
+        self._cab_attributes = [
+            'club', 'name', 'location', 'name', 'category_band', 'email',
+            'category_mode', 'category_power', 'category_station', 
+            'cat', 'claimed_score'
+                    ]
+         # dict fields require different aproach from above fields
+        self. dict_fields = [
+            'qsos_by_band', 'qsos_by_mode','mobile_activation_counts'
+        ]
+        
+        self._types_of_fields = {'integer': 0, 'string': '',
+                            'set': set(), 'list': []}
+        self._fields = {'integer': [
+            'dxcc_code',
+            'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
+            'total_multipliers', 'mobile_bonus_points', 'cw_qsos',
+            'ph_qsos', 'dg_qsos', 'ry_qsos', 'score_wo_bonus',
+            'special_station_contacts', 'claimed_score', 'uniques', 'nils',
+            'busteds', 'dup_qsos', 'category_rank'
+        ],
+        'string': [  # from the result object
+            'year', 'callsign',  'dxcc_entity'
+        ],
+        'set': [
+            'counties_worked', 'states_worked', 'provinces_worked',
+            'dx_worked', 'counties_activated', 'bands_worked',
+            'de_exch_rcvd', 'dx_exch_sent', 'mobile_counties_worked',
+            'mobile_activation_counts'
+        ],
+        'list': ['errors', 'warnings', 'qsos_by_hour']
+        }
     
     def _create_tables(self):
 
@@ -176,51 +210,27 @@ class ContestDatabase:
         db_result = {}
         cab = result['cab']
         try:
-
-            types_of_fields = {'integer': 0, 'string': '',
-                                'set': set(), 'list': []}
-            fields = {'integer': [
-                'dxcc_code',
-                'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
-                'total_multipliers', 'mobile_bonus_points', 'cw_qsos',
-                'ph_qsos', 'dg_qsos', 'ry_qsos', 'score_wo_bonus',
-                'special_station_contacts', 'claimed_score', 'uniques', 'nils',
-                'busteds', 'dup_qsos', 'category_rank'
-            ],
-            'string': [  # from the result object
-                'year', 'callsign',  'dxcc_entity'
-            ],
-           'set': [
-                'counties_worked', 'states_worked', 'provinces_worked',
-                'dx_worked', 'counties_activated', 'bands_worked',
-                'de_exch_rcvd', 'dx_exch_sent', 'mobile_counties_worked',
-                'mobile_activation_counts'
-            ],
-            'list': ['errors', 'warnings', 'qsos_by_hour']
-            }
-
             # put values from the above listed fields into db_result
             for typ in list(['integer', 'string']):
-                for fld in fields[typ]:
-                    db_result[fld] = result.get(fld, types_of_fields[typ])
+                if typ == 'set':
+                    for fld in self.fields[typ]:
+                        value = result.get(fld, self.types_of_fields[typ])
+                        db_result[fld] = json.dumps(sorted(list(value)))
+                elif typ == 'list':
+                    value = result.get(fld, self.types_of_fields[typ])
+                    db_result[fld] = json.dumps(list(value))
 
-            # dict fields require different aproach from above fields
-            json_fields = [
-                'qsos_by_band', 'qsos_by_mode','mobile_activation_counts'
-            ]
-            for field in json_fields:
+                else:
+                    for fld in self.fields[typ]:
+                        db_result[fld] = result.get(fld, self.types_of_fields[typ])
+           
+            for field in self.json_fields:
                 value = result.get(field, {})
                 # Convert sets in dict values to lists
                 db_result[field] = json.dumps(value)
                 # print(f"field: {field} value: {value}")
 
-            # attributes of the Cabrillo object need different approach
-            cab_attributes = [
-                'club', 'name', 'location', 'name', 'category_band', 'email',
-                'category_mode', 'category_power', 'category_station', 
-                'cat', 'claimed_score'
-            ]
-            for atr in cab_attributes:
+            for atr in self.cab_attributes:
                 db_result[atr] = getattr(cab, atr, '')
             
             # Timestamps
@@ -233,48 +243,42 @@ class ContestDatabase:
         
         return db_result
     
-    def _deserialize_result(self, row: tuple, columns: List[str]) -> Dict:
-        """
-        Convert database row to result dict.
-        Converts JSON back to Python objects.
-        """
-        result = {}
-        
-        # Convert row to dict
-        for i, col in enumerate(columns):
-            result[col] = row[i]
-        
-        # Convert boolean fields back
-        bool_fields = [
-            'worked_n5lcc',
-            'is_valid'
-        ]
-        
-        for field in bool_fields:
-            if field in result:
-                result[field] = bool(result[field])
-        
-        # Convert JSON back to Python objects
-        json_fields = [
-            'counties_worked', 'states_worked', 'provinces_worked',
-            'dx_worked', 'counties_activated', 'bands_worked',
-            'qsos_by_band', 'qsos_by_mode', 'qsos_by_hour',
-            'errors', 'warnings',  'qsos'
-        ]
-        
-        for field in json_fields:
-            if field in result and result[field]:
-                try:
-                    result[field] = json.loads(result[field])
-                    
-                    # Convert lists back to sets where appropriate
-                    if field in ['counties_worked', 'states_worked', 
-                               'provinces_worked', 'dx_worked', 
-                               'counties_activated', 'bands_worked']:
-                        result[field] = set(result[field])
+    def _deserialize_result(self, result: Dict, row: tuple, columns: List[str]) -> Dict:
+        """ The opposite of serialize_result
+            Reads data from the databaser one operator record
+            Adds simple fields from the "result" object
+            Adds attributes of the "CAB" objext
+            Convert result dict to JSON-usable format.
+            Convert lists to JSON
+            Converts sets to JSON lists, handles complex types.
+            """
+        if result:
+            out_result = result
+            try:
+                # INTEGERS AND sTRINGHS
+                for typ in list(['integer', 'string']):
+                    for fld in self.fields[typ]:
+                        out_result[fld] = result.get(fld, self.types_of_fields[typ])
 
-                except json.JSONDecodeError:
-                    result[field] = [] if field in ['errors', 'warnings'] else {}
+                # SETS
+                for fld in self._fields['set']:
+                   out_result[fld] = set(json.loads(result.get(fld, set())))
+
+                # LISTS
+                for field in self.json_fields:
+                    if field in result and result[field]:
+                        out_result[field] = json.loads(result[field])
+                            
+                # Convert lists back to sets where appropriate
+                if field in ['counties_worked', 'states_worked', 
+                        'provinces_worked', 'dx_worked', 
+                        'counties_activated', 'bands_worked']:
+                    result[field] = set(json.loads(result[field]))
+
+            except Exception as e:
+                s.out_files['errors'].append(f"could not deserialize {result}")
+        else:
+            print(f"deserialize called with row {row} and columns {columns}")
         
         return result
     

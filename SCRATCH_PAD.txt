@@ -1,3 +1,6 @@
+ SELECT callsign, final_score, name, exchange FROM contest_results WHERE year = 2026 AND is_valid = 1 AND location_type in ('LA-FIXED', 'LA-ROVER') ORDER BY final_score DESC; 
+
+
 SELECT callsign, category_rank FROM contest_results
 WHERE cat = 'TSL'  ORDER BY rank DESC;
 
