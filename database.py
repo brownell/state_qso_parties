@@ -58,10 +58,12 @@ class ContestDatabase:
         self.fields = {'integer': [
             'dxcc_code',
             'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
-            'total_multipliers', 'mobile_bonus_points', 'cw_qsos',
+            'total_multipliers', 'cab_mobile_points', 
+            'mtb_mobile_points', 'cw_qsos',
             'ph_qsos', 'dg_qsos', 'ry_qsos', 'score_wo_bonus',
             'special_station_contacts', 'claimed_score', 'uniques', 'nils',
-            'busteds', 'dup_qsos', 'category_rank'
+            'busteds', 'dup_qsos', 'category_rank', 'invalid_exchange_qsos',
+            'other_bad_qsos'
         ],
         'string': [  # from the result object
             'year', 'callsign',  'dxcc_entity'
@@ -112,6 +114,8 @@ class ContestDatabase:
                     nils INTEGER,
                     busteds INTEGER,
                     dup_qsos INTEGER,
+                    invalid_exchange_qsos INTEGER,
+                    other_bad_qsos  INTEGER,
                     counties_worked TEXT,
                     states_worked TEXT,
                     provinces_worked TEXT,
@@ -122,7 +126,8 @@ class ContestDatabase:
                     special_station_contacts INTEGER,
                     score_wo_bonus INTEGER,
                     mobile_activation_counts TEXT,
-                    mobile_bonus_points INTEGER,
+                    cab_mobile_points INTEGER,
+                    mtb_mobile_points INTEGER,
                     mobile_counties_worked TEXT,
                     worked_special_station INTEGER,
                     qsos_by_band TEXT,

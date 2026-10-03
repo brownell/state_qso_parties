@@ -126,15 +126,12 @@ def update_qso_index_dict(s, result, qsos, dxcc):
         result['total_qsos'] += 1
         # remove non-TX to non-TX
         if qso.de_exch[1] not in s.counties and  qso.dx_exch[1] not in s.counties:
+            print(f"Exchanges: {qso.de_exch[1]} { qso.dx_exch[1]}")
             s.out_files['errors'].write(f"QSO Invalid NTX or TX to NTX or TX from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
+            result['errors'].append(f"QSO Invalid NTX or TX to NTX or TX from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
             qso.valid = False
-            result['valid_qsos'] -= 1
+            result['invalid_exchange_qsos'] += 1
             # print(f"NOT VALID TX EXCH: valid qsos: total: {result['total_qsos']} valid: {result['valid_qsos']} de: {qso.de_exch[1]} dx: {qso.dx_exch[1]}")
-            continue
-        if not qso.valid:
-            s.stats['qso_parser_not_valid'] += 1
-            s.stats['calls_w_not_valid_qsos'].add(result['callsign'])
-            # print(f"NOT VALID PARSER total: {result['total_qsos']} valid: {result['valid_qsos']} from parser for {result['callsign']}")
             continue
         # This is now a VALID  qso
         s.stats['valid_qsos'] += 1

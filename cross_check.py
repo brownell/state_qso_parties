@@ -21,19 +21,16 @@ from pathlib import Path
 from cabrillo import QSO
 from cabrillo.qso import frequency_to_band_m
 from score_qsos import score_a_qso, score_an_operator
-from utilities import generate_index_key, debug_print, get_fuzzies, test
+from utilities import generate_index_key, debug_print, get_fuzzies
 
 def cross_check(s):
     '''
-        We use the cabrillo python package "match_against" to check for duplicate QSOs and to cross-check the QSOs in each log against the other logs.  The Cabrillo package has a QSO.match() function that checks for matching QSOs in two logs.  It returns True if the QSOs match, False if they do not match, and None if the QSO is not found in the other log.
-    '''
-    test()
+        We use the cabrillo python package "match_against" to check for duplicate QSOs and to cross-check the QSOs in each log against the other logs.  The Cabrillo package has a QSO.match() function that checks for matching QSOs in two logs.  It returns True if the QSOs match, False if they do not match, and None if the QSO is not found in the other log.'''
     if len(s.results) < 1:
         return False
     print(f"START cross-check")
     c = s.stats
     for result in s.results:
-        # print(f"BEGIN xchk: total: {result['total_qsos']} valid: {result['valid_qsos']} hours {sum(result['qsos_by_hour'])}")
         if result['callsign'] == 'AD4EB':
             print('AD4EB')
         dup = {
@@ -53,7 +50,7 @@ def cross_check(s):
             # print(f"result {result['cab'].callsign} qso {qso_i} de {qso.de_call} dx {qso.dx_call} ")
             # Skip invalid QSOs
             if not qso.valid:
-                print(f"INVALID qso from {qso.de_call} to {qso.dx_call}")
+                result['other_bad_qsos'] += 1
                 result["errors"].append(f"INVALID QSO: from {qso.de_call} to {qso.dx_call} ")
                 continue  
             # receiving call did not submit a log - UNIQUE
@@ -75,8 +72,8 @@ def cross_check(s):
                     # print(f"AFTER SCORE dx {qso.dx_call}: total_qsos: {result['total_qsos']} valid: {result['valid_qsos']} hours {sum(result['qsos_by_hour'])}")
                 else:
                     result['valid_qsos'] -= 1
-                    result['errors'].append(f"QSO did not cross-check {vars(qso)}")
-                    bad_xchk.append(f"QSO did not cross-check {vars(qso)}")
+                    result['busteds'] += 1
+                    result['errors'].append(f"QSO Invalid NTX or TX to NTX or TX from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
                     # print(f"AFTER BAD dx {qso.dx_call} total_qsos: {result['total_qsos']} valid: {result['valid_qsos']} hours {sum(result['qsos_by_hour'])}")
                     continue
 

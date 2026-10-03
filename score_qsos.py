@@ -65,6 +65,7 @@ def score_a_qso(s, r, q, dup):
     else:
         q.valid = False
         r['valid_qsos'] -= 1
+        r['other_bad_qsos'] += 1
         r["errors"].append(f'''receiver exchange not valid: to {q.dx_call} exchs:{q.de_exch[1]}/{q.dx_exch[1]} mode:{q.mo} band:{frequency_to_band_m(q.freq)} Sept {q.date.strftime("%d")}th {q.date.strftime("%H%M")}Z\n''')
 
     try:
@@ -79,6 +80,7 @@ def score_a_qso(s, r, q, dup):
     except:
         q.valid = False
         r['valid_qsos'] -= 1
+        r['other_bad_qsos'] += 1
         r['errors'].append(f"BAD frequency {q.freq} in call from {q.de_call} to {q.dx_call} Sept {q.date.strftime("%d")}th {q.date.strftime("%H:%M")}Z\n\n")
         return
 
@@ -118,12 +120,12 @@ def score_an_operator(s, r):
         for key in list(r['mobile_activation_counts'].keys()):
             if r['mobile_activation_counts'][key] >= 5:
                 counties += 1
-        r['mobile_bonus_points'] += (counties * COUNTIES_ACTIVATED_POINTS)
+        r['cab_mobile_points'] += (counties * COUNTIES_ACTIVATED_POINTS)
 
     ''' Bonus points for ALL operators for each county in which
         they worked a mobile operator'''
-    r['mobile_bonus_points'] += (int(len(r['mobile_worked_counties'])  / ( MOBILE_REQUIRED_QSOS)) * COUNTIES_WORKED_POINTS)
-    r['final_score'] = r['score_wo_bonus'] + r['mobile_bonus_points']
+    r['mtb_mobile_points'] += (int(len(r['mobile_worked_counties'])  / ( MOBILE_REQUIRED_QSOS)) * COUNTIES_WORKED_POINTS)
+    r['final_score'] = r['score_wo_bonus'] + r['mtb_mobile_points']
     
 
     # debug_print(s, r, "SCORED", False)
