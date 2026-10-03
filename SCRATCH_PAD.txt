@@ -1,3 +1,27 @@
+ 1. BUSTED from/to NE8P/N5XU exchs:MI/TRAV mode:CW band:20 Sept 19th 1555Z
+         call from N5UX with TRAV at 1554 to K8PN --- DX wrong callsign GOOD
+2. BUSTED from/to NE8P/N5TM exchs:MI/HAMI mode:CW band:20 Sept 19th 1746Z
+        Call from N5TM with HAMI at 1746 to NE8W --- DX wrong callsign GOOD
+3. BUSTED from/to NE8P/N5TM exchs:MI/ERAT mode:CW band:20 Sept 19th 1822Z
+        Call from N5TM with ERAT at 1822 to NE9P --- DX wrong callsign 
+4. BUSTED from/to NE8P/N5TM exchs:MI/BROW mode:CW band:20 Sept 19th 2031Z
+        Call from N5TM with BROW at 2031 to NE8W --- DX wrong callsign
+5. BUSTED from/to NE8P/N5TM exchs:MI/FBEN mode:CW band:20 Sept 20th 1549Z
+        Call from N5TM with FBEN at 1549 to NE8W --- DX wrong callsign
+6. BUSTED from/to NE8P/N5TM exchs:MI/WALL mode:CW band:20 Sept 20th 1550Z
+        Call from N5TM with WALL at 1549 to NE8W --- DX wrong callsign
+7. BUSTED from/to NE8P/WA5LXS exchs:MI/DENT mode:CW band:20 Sept 19th 2006Z
+        WA5LXS had no contacts before 19th at 1657, but was in DENT
+8. BUSTED from/to NE8P/KG5OWB exchs:MI/BEXA mode:CW band:20 Sept 20th 1430Z
+        Call from KG5OWB with BEXA at 1429 BUT has FL, not MI for exch   --- DX wrong exch
+9. BUSTED from/to NE8P/N4CD exchs:MI/GRSN mode:CW band:20 Sept 20th 1508Z
+        Call from N4CD with ROCK at 1525  --- DE wrong exch
+10. BUSTED from/to NE8P/KG5OWB exchs:MI/BEXA mode:CW band:15 Sept 20th 1524Z  --- DX wrong exch
+11. BUSTED from/to NE8P/N5NA exchs:MI/WINK mode:CW band:15 Sept 20th 1951Z
+        Call from KG5OWB at 1424 BUT has FL not MI  --- DX wrong exch
+ 
+ 
+ 
  SELECT callsign, final_score, name, exchange FROM contest_results WHERE year = 2026 AND is_valid = 1 AND location_type in ('LA-FIXED', 'LA-ROVER') ORDER BY final_score DESC; 
 
 
@@ -150,7 +174,7 @@ True
 CAB object:
 {'callsign': 'AA0AW', 'operators': ['AA0AW'], 'contest': 'TXQP', 'claimed_score': 6156, 'certificate': None, 'category_operator': 'SINGLE-OP', 'category_assisted': 'ASSISTED', 'category_band': 'ALL', 'category_power': 'LOW', 'category_mode': 'MIXED', 'category_station': 'FIXED', 'category_time': None, 'category_transmitter': 'ONE', 'category_overlay': None, 'offtime': None, 'club': None, 'name': 'Douglas Nelson', 'email': 'KJ5BYZ@gmail.com', 'location': 'MN', 'grid_locator': 'EN36VQ', 'address': ['1411 101st Avenue West'], 'address_city': 'Duluth', 'address_state_province': 'MN', 'address_postalcode': '55808-1618', 'address_country': 'UNITED STATES', 'created_by': 'N1MM Logger+ 1.0.10919.0', 'soapbox': None}
 
-QSO
+QSO object:
 {'freq': '21040', 'mo': 'CW', 'date': datetime.datetime(2026, 9, 19, 19, 32), 'de_call': 'AA0AW', 'de_exch': ['599','MN'], 'dx_call': 'K5OT', 'dx_exch': ['599', 'BLAN'], 't': None, 'valid': True}
 
 

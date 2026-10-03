@@ -39,8 +39,8 @@ def main(contest_year):
         Read in all the log files, save the Cabrillo object and the data, 
         save values that will be needed later
     '''
-    # read_prepare(context)
-    # print(f"after read_prepare")
+    read_prepare(context)
+    print(f"after read_prepare")
 
 
     '''
@@ -48,8 +48,8 @@ def main(contest_year):
     Warning messages are generated when qso fails match
     Failed qsos marked invalid so not counted in score
     '''
-    # cross_check(context)
-
+    cross_check(context)
+    print(f"after cross-check results")
 
     # for debugging, print out all the scores
     # for r in context.results:
@@ -59,9 +59,7 @@ def main(contest_year):
     # REMEMBER to close all the out_files
     for f in list(context.out_files.keys()):
         context.out_files[f].close()
-
-        
-    print(f"after cross-check results")
+    
 
 
     #  Save results to database (valid and invalid)

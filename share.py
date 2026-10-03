@@ -3,6 +3,7 @@ from typing import Dict, List, Set, Optional
 import csv
 from cabrillo.parser import parse_log_file
 from cabrillo.qso import frequency_to_band_m
+from cabrillo.cabrillo import Cabrillo
 from collections import defaultdict
 from config.config import (
     CONTEST_YEAR,
@@ -119,7 +120,7 @@ class SHARED:
         return {
 
             'callsign': '', #callsign for this log file
-            'cab': None,    # the Cabrillo object from the cabrillo.parser
+            'cab': Cabrillo,    # the Cabrillo object from the cabrillo.parser
             'header_attribs': {},  # Parsed attributes from Cabrillo header
             'qso_data': [],     # list of dicts, one for each qso
             'year': CONTEST_YEAR,

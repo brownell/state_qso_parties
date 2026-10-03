@@ -80,6 +80,8 @@ def read_prepare(s):
             cats.add(cab.cat)
         except Exception as e:
             print(f"NO CAT for {cab.callsign}")
+            cab.valid = False
+            continue
         s.stats["valid_logs"] += 1
         # print(vars(cab))
         
