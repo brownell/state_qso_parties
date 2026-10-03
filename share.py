@@ -118,7 +118,6 @@ class SHARED:
     def _init_result(self) -> Dict:
         """Initialize result dictionary with standardized structure"""
         return {
-
             'callsign': '', #callsign for this log file
             'cab': Cabrillo,    # the Cabrillo object from the cabrillo.parser
             'header_attribs': {},  # Parsed attributes from Cabrillo header
@@ -147,6 +146,8 @@ class SHARED:
             'score_wo_bonus': 0,
             'mobile_activation_counts': {}, # keys are counties activated, value is QSO count.
             'mobile_worked_counties': set(), # counties where any op worked at least one mobile op
+            'cab_mobile_points': 0,
+            'mtb_mobile_points': 0,
             'mobile_bonus_points': 0,
             'special_station_contacts': 0,
             'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},

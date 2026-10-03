@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Louisiana QSO Party - Database Module
+Texas QSO Party - Database Module
 
 Handles storing and retrieving contest results in SQLite database.
 Records are keyed by year and callsign (composite key).
@@ -43,19 +43,19 @@ class ContestDatabase:
         self._create_tables()
 
         # attributes of the Cabrillo object need different approach
-        self._cab_attributes = [
+        self.cab_attributes = [
             'club', 'name', 'location', 'name', 'category_band', 'email',
             'category_mode', 'category_power', 'category_station', 
             'cat', 'claimed_score'
                     ]
          # dict fields require different aproach from above fields
-        self. dict_fields = [
+        self.dict_fields = [
             'qsos_by_band', 'qsos_by_mode','mobile_activation_counts'
         ]
         
-        self._types_of_fields = {'integer': 0, 'string': '',
+        self.types_of_fields = {'integer': 0, 'string': '',
                             'set': set(), 'list': []}
-        self._fields = {'integer': [
+        self.fields = {'integer': [
             'dxcc_code',
             'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
             'total_multipliers', 'mobile_bonus_points', 'cw_qsos',
@@ -116,13 +116,14 @@ class ContestDatabase:
                     states_worked TEXT,
                     provinces_worked TEXT,
                     dx_worked TEXT,
-                    de_exch_sent TEXT,
-                    dx_exch_rcvd TEXT,
+                    de_exch_rcvd TEXT,
+                    dx_exch_sent TEXT,
                     counties_activated TEXT,
                     special_station_contacts INTEGER,
                     score_wo_bonus INTEGER,
                     mobile_activation_counts TEXT,
                     mobile_bonus_points INTEGER,
+                    mobile_counties_worked TEXT,
                     worked_special_station INTEGER,
                     qsos_by_band TEXT,
                     qsos_by_mode TEXT,
@@ -211,20 +212,21 @@ class ContestDatabase:
         cab = result['cab']
         try:
             # put values from the above listed fields into db_result
-            for typ in list(['integer', 'string']):
+            for typ in self.types_of_fields:
                 if typ == 'set':
                     for fld in self.fields[typ]:
                         value = result.get(fld, self.types_of_fields[typ])
                         db_result[fld] = json.dumps(sorted(list(value)))
                 elif typ == 'list':
-                    value = result.get(fld, self.types_of_fields[typ])
-                    db_result[fld] = json.dumps(list(value))
+                    for fld in self.fields[typ]:
+                        value = result.get(fld, self.types_of_fields[typ])
+                        db_result[fld] = json.dumps(list(value))
 
                 else:
                     for fld in self.fields[typ]:
                         db_result[fld] = result.get(fld, self.types_of_fields[typ])
            
-            for field in self.json_fields:
+            for field in self.dict_fields:
                 value = result.get(field, {})
                 # Convert sets in dict values to lists
                 db_result[field] = json.dumps(value)
@@ -261,11 +263,11 @@ class ContestDatabase:
                         out_result[fld] = result.get(fld, self.types_of_fields[typ])
 
                 # SETS
-                for fld in self._fields['set']:
+                for fld in self.fields['set']:
                    out_result[fld] = set(json.loads(result.get(fld, set())))
 
                 # LISTS
-                for field in self.json_fields:
+                for field in self.dict_fields:
                     if field in result and result[field]:
                         out_result[field] = json.loads(result[field])
                             
@@ -276,7 +278,7 @@ class ContestDatabase:
                     result[field] = set(json.loads(result[field]))
 
             except Exception as e:
-                s.out_files['errors'].append(f"could not deserialize {result}")
+                s.out_files['errors'].write(f"could not deserialize {result}")
         else:
             print(f"deserialize called with row {row} and columns {columns}")
         

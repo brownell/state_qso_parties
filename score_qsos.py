@@ -8,31 +8,36 @@ from cabrillo.qso import frequency_to_band_m
 from utilities import get_dxcc, debug_print
 from config import COUNTIES_ACTIVATED_POINTS, COUNTIES_WORKED_POINTS, MOBILE_REQUIRED_QSOS
 
-qso_modes = ['CW', 'PH', 'DG', 'RY']
-qso_mode_names = ['cw_qsos', 'ph_qsos', 'dg_qsos', 'dg_qsos']
+qso_types = ['CW', 'PH', 'DG', 'RY']
+qso_type_names = ['cw_qsos', 'ph_qsos', 'dg_qsos', 'dg_qsos']
 
 def score_a_qso(s, r, q, dup):
     if not q.valid:
-        return 0
+        return
     
     qso_dup = make_dup(s, r, q)
     
     if qso_dup in dup['qsos']:
         q.valid = False
         r['valid_qsos'] -= 1
-        return 0
+        r['dup_qsos'] += 1
+        dup['num_qso'] += 1
+        s.out_files['errors'].write(f'''TO {q.dx_call} exchs:{q.de_exch[1]}/{q.dx_exch[1]} mode:{q.mo} band:{frequency_to_band_m(q.freq)} Sept {q.date.strftime("%d")}th {q.date.strftime("%H%M")}Z\n''')
+        r['errors'].append(f'''TO {q.dx_call} exchs:{q.de_exch[1]}/{q.dx_exch[1]} mode:{q.mo} band:{frequency_to_band_m(q.freq)} Sept {q.date.strftime("%d")}th {q.date.strftime("%H%M")}Z\n''')
+        return
     dup['qsos'].append(qso_dup)
 
-    gets_mult = False
     if q.dx_exch not in dup['mults']:
         dup['mults'].append(q.dx_exch[1])
     else:
-        return 0
+        dup['num_mult'] += 1
 
     # increment qsos count for each mode
     if q.mo.upper() not in list(s.mode_points.keys()):
         r['errors'].append(f"BAD mode {q.mo} to {q.dx_call} Sept {q.date.strftime("%d")}th {q.date.strftime("%H:%M")}Z\n")
         return 0
+
+    # add 1 to qso type (CW, PH, etc)
     r[f"{q.mo.lower()}_qsos"] += 1
 
     # for ALL operators, record all counties they work
@@ -60,6 +65,7 @@ def score_a_qso(s, r, q, dup):
     else:
         q.valid = False
         r['valid_qsos'] -= 1
+        r["errors"].append(f'''receiver exchange not valid: to {q.dx_call} exchs:{q.de_exch[1]}/{q.dx_exch[1]} mode:{q.mo} band:{frequency_to_band_m(q.freq)} Sept {q.date.strftime("%d")}th {q.date.strftime("%H%M")}Z\n''')
 
     try:
         if q.freq[:2] == '50':
@@ -71,7 +77,10 @@ def score_a_qso(s, r, q, dup):
         r['qsos_by_band'][band] += 1
         r['qsos_by_mode'][q.mo] += 1
     except:
+        q.valid = False
+        r['valid_qsos'] -= 1
         r['errors'].append(f"BAD frequency {q.freq} in call from {q.de_call} to {q.dx_call} Sept {q.date.strftime("%d")}th {q.date.strftime("%H:%M")}Z\n\n")
+        return
 
     # qsos by hour
     hour = int(q.date.strftime("%H"))

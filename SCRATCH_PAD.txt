@@ -19,8 +19,8 @@
 10. BUSTED from/to NE8P/KG5OWB exchs:MI/BEXA mode:CW band:15 Sept 20th 1524Z  --- DX wrong exch
 11. BUSTED from/to NE8P/N5NA exchs:MI/WINK mode:CW band:15 Sept 20th 1951Z
         Call from KG5OWB at 1424 BUT has FL not MI  --- DX wrong exch
- 
- 
+
+result['busteds']+result['nils']
  
  SELECT callsign, final_score, name, exchange FROM contest_results WHERE year = 2026 AND is_valid = 1 AND location_type in ('LA-FIXED', 'LA-ROVER') ORDER BY final_score DESC; 
 

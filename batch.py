@@ -59,8 +59,6 @@ def main(contest_year):
     # REMEMBER to close all the out_files
     for f in list(context.out_files.keys()):
         context.out_files[f].close()
-    
-
 
     #  Save results to database (valid and invalid)
     # valid_count = 0
@@ -81,12 +79,14 @@ def main(contest_year):
             print(f"✗ {result['callsign']}: Database error - {e}")
             # print('BREAK')
         # print('BREAK')
+
+    print("end of saving results to DB")
     
     # # calculate rankings from the database results
     # calculate_rankings(contest_year)
     
-    store_rankings(contest_year)
-    print('BREAK')
+    # store_rankings(contest_year)
+    # print('BREAK')
 
     # generate_final_report_html(contest_year)
     # generate_final_report_html(db_path, contest_year)

@@ -94,12 +94,11 @@ def get_fuzzy_match(de_qso: QSO , dx_qsos: list[QSO], time_key: str = 'date', wi
     else:
         return None
 
-def test(q, d):
-
+def test():
     fuzzies = ['K8PN', 'NE8W', 'NE9P', 'NE8W']
     for f in fuzzies:
-        m, e = get_fuzzies()
-
+       
+        print(f"call {f}  True? { is_fuzzy_match('NE8P', f)}")
 
 def get_fuzzies(qso: QSO, dx_qsos: list[QSO], time_key: str = 'date', within: int = 1) -> list[QSO]:
     # find qsos in dx_qsos that are within "within" minuites
@@ -183,11 +182,9 @@ Comparison is case-insensitive; call signs are conventionally uppercase.
 
 from functools import lru_cache
 
-
 def strip_slash(callsign: str) -> str:
     """Ignore a trailing slash and anything after it."""
     return callsign.split('/', 1)[0].strip().upper()
-
 
 def lcs_length(a: str, b: str) -> int:
     """Length of the longest common subsequence of a and b."""
@@ -206,7 +203,6 @@ def lcs_length(a: str, b: str) -> int:
                 curr[j] = max(prev[j], curr[j - 1])
         prev = curr
     return prev[m]
-
 
 def diff_count(a: str, b: str) -> int:
     """Number of characters different or missing between a and b."""
