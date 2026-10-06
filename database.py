@@ -22,8 +22,142 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime
 from share import SHARED as s
-from config.config import DATABASE_FILE
+from config.config import DATABASE_FILE, DEBUG
 from config.config_txqp import RANKINGS
+
+def create_tables():
+    """Create database tables if they don't exist"""
+    with sqlite3.connect(DATABASE_FILE) as conn:
+        cursor = conn.cursor()
+        
+        # Main results table - keyed by year and callsign
+        # While debugging
+        if DEBUG:
+            cursor.execute('''DROP TABLE IF EXISTS contest_results''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS contest_results (
+                callsign TEXT NOT NULL,
+                year TEXT NOT NULL,
+                name TEXT,
+                email TEXT,
+                club TEXT,
+                exchange TEXT,
+                overlay TEXT,
+                location TEXT,
+                dxcc_code INTEGER,
+                dxcc_entity TEXT,
+                category_mode TEXT,
+                category_power TEXT,
+                category_band TEXT,
+                category_station TEXT,
+                cat TEXT,
+                final_score INTEGER,
+                cw_qsos INTEGER,
+                ph_qsos INTEGER,
+                dg_qsos INTEGER,
+                ry_qsos INTEGER,
+                qso_points INTEGER,
+                total_qsos INTEGER,
+                valid_qsos INTEGER,
+                total_multipliers INTEGER,
+                uniques INTEGER,
+                nils INTEGER,
+                nil_calls TEXT,
+                busteds INTEGER,
+                busted_calls TEXT,
+                dup_qsos INTEGER,
+                invalid_exchange_qsos INTEGER,
+                other_bad_qsos  INTEGER,
+                counties_worked TEXT,
+                states_worked TEXT,
+                provinces_worked TEXT,
+                dx_worked TEXT,
+                de_exch_rcvd TEXT,
+                dx_exch_sent TEXT,
+                counties_activated TEXT,
+                special_station_contacts INTEGER,
+                score_wo_bonus INTEGER,
+                mobile_activation_counts TEXT,
+                cab_mobile_points INTEGER,
+                mtb_mobile_points INTEGER,
+                mobile_counties_worked TEXT,
+                worked_special_station INTEGER,
+                qsos_by_band TEXT,
+                qsos_by_mode TEXT,
+                qsos_by_hour TEXT,
+                bands_worked TEXT,
+                grid_square TEXT,
+                claimed_score INTEGER,
+                errors TEXT,
+                warnings TEXT,
+                is_valid INTEGER,
+                category_rank INTEGER,
+                created_at TEXT,
+                updated_at TEXT,
+                PRIMARY KEY (year, callsign)
+            )
+        ''')
+        
+        # Create indexes for common queries
+        cursor.execute('''
+            CREATE INDEX IF NOT EXISTS idx_year 
+            ON contest_results(year)
+        ''')
+        
+        cursor.execute('''
+            CREATE INDEX IF NOT EXISTS idx_location_type 
+            ON contest_results(year, location)
+        ''')
+        
+        cursor.execute('''
+            CREATE INDEX IF NOT EXISTS idx_mode_category 
+            ON contest_results(year, category_mode)
+        ''')
+        
+        cursor.execute('''
+            CREATE INDEX IF NOT EXISTS idx_score 
+            ON contest_results(year, final_score DESC)
+        ''')
+
+    #  # QSO  results table - keyed by year and callsign
+    #     cursor.execute('''
+    #         CREATE TABLE IF NOT EXISTS qsos (
+    #         qso_date_time INTEGER,
+    #         de_call TEXT, 
+    #         de_exc TEXT,
+    #         dx_call TEXT,
+    #         dx_exch TEXT,
+    #         freq TEXT,
+    #         mo TEXT
+    #         valid BOOLEAN,
+    #         PRIMARY KEY (year, callsign)
+    #         )
+    #     ''')
+
+    # # Create indexes for common queries
+    #     cursor.execute('''
+    #         CREATE INDEX IF NOT EXISTS idx_year 
+    #         ON qsos(year)
+    #     ''')
+        
+    #     cursor.execute('''
+    #         CREATE INDEX IF NOT EXISTS idx_location_type 
+    #         ON qsos(year, location)
+    #     ''')
+        
+    #     cursor.execute('''
+    #         CREATE INDEX IF NOT EXISTS idx_category_mode 
+    #         ON qsos(year, category_mode)
+    #     ''')
+        
+    #     cursor.execute('''
+    #         CREATE INDEX IF NOT EXISTS idx_score 
+    #         ON qsos(year, final_score DESC)
+    #     ''')
+        
+        conn.commit()
+
+create_tables()
 
 class ContestDatabase:
     """Manages contest results in SQLite database"""
@@ -38,9 +172,6 @@ class ContestDatabase:
         self.db_path = Path(db_path)
         # Ensure directory exists
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Create tables if they don't exist
-        self._create_tables()
 
         # attributes of the Cabrillo object need different approach
         self.cab_attributes = [
@@ -74,136 +205,8 @@ class ContestDatabase:
             'de_exch_rcvd', 'dx_exch_sent', 'mobile_counties_worked',
             'mobile_activation_counts'
         ],
-        'list': ['errors', 'warnings', 'qsos_by_hour']
+        'list': ['errors', 'warnings', 'qsos_by_hour', 'busted_calls', 'nil_calls']
         }
-    
-    def _create_tables(self):
-
-        """Create database tables if they don't exist"""
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            
-            # Main results table - keyed by year and callsign
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS contest_results (
-                    callsign TEXT NOT NULL,
-                    year TEXT NOT NULL,
-                    name TEXT,
-                    email TEXT,
-                    club TEXT,
-                    exchange TEXT,
-                    overlay TEXT,
-                    location TEXT,
-                    dxcc_code INTEGER,
-                    dxcc_entity TEXT,
-                    category_mode TEXT,
-                    category_power TEXT,
-                    category_band TEXT,
-                    category_station TEXT,
-                    cat TEXT,
-                    final_score INTEGER,
-                    cw_qsos INTEGER,
-                    ph_qsos INTEGER,
-                    dg_qsos INTEGER,
-                    ry_qsos INTEGER,
-                    qso_points INTEGER,
-                    total_qsos INTEGER,
-                    valid_qsos INTEGER,
-                    total_multipliers INTEGER,
-                    uniques INTEGER,
-                    nils INTEGER,
-                    busteds INTEGER,
-                    dup_qsos INTEGER,
-                    invalid_exchange_qsos INTEGER,
-                    other_bad_qsos  INTEGER,
-                    counties_worked TEXT,
-                    states_worked TEXT,
-                    provinces_worked TEXT,
-                    dx_worked TEXT,
-                    de_exch_rcvd TEXT,
-                    dx_exch_sent TEXT,
-                    counties_activated TEXT,
-                    special_station_contacts INTEGER,
-                    score_wo_bonus INTEGER,
-                    mobile_activation_counts TEXT,
-                    cab_mobile_points INTEGER,
-                    mtb_mobile_points INTEGER,
-                    mobile_counties_worked TEXT,
-                    worked_special_station INTEGER,
-                    qsos_by_band TEXT,
-                    qsos_by_mode TEXT,
-                    qsos_by_hour TEXT,
-                    bands_worked TEXT,
-                    grid_square TEXT,
-                    claimed_score INTEGER,
-                    errors TEXT,
-                    warnings TEXT,
-                    is_valid INTEGER,
-                    category_rank INTEGER,
-                    created_at TEXT,
-                    updated_at TEXT,
-                    PRIMARY KEY (year, callsign)
-                )
-            ''')
-            
-            # Create indexes for common queries
-            cursor.execute('''
-                CREATE INDEX IF NOT EXISTS idx_year 
-                ON contest_results(year)
-            ''')
-            
-            cursor.execute('''
-                CREATE INDEX IF NOT EXISTS idx_location_type 
-                ON contest_results(year, location)
-            ''')
-            
-            cursor.execute('''
-                CREATE INDEX IF NOT EXISTS idx_mode_category 
-                ON contest_results(year, category_mode)
-            ''')
-            
-            cursor.execute('''
-                CREATE INDEX IF NOT EXISTS idx_score 
-                ON contest_results(year, final_score DESC)
-            ''')
-
-        #  # QSO  results table - keyed by year and callsign
-        #     cursor.execute('''
-        #         CREATE TABLE IF NOT EXISTS qsos (
-        #         qso_date_time INTEGER,
-        #         de_call TEXT, 
-        #         de_exc TEXT,
-        #         dx_call TEXT,
-        #         dx_exch TEXT,
-        #         freq TEXT,
-        #         mo TEXT
-        #         valid BOOLEAN,
-        #         PRIMARY KEY (year, callsign)
-        #         )
-        #     ''')
-
-        # # Create indexes for common queries
-        #     cursor.execute('''
-        #         CREATE INDEX IF NOT EXISTS idx_year 
-        #         ON qsos(year)
-        #     ''')
-            
-        #     cursor.execute('''
-        #         CREATE INDEX IF NOT EXISTS idx_location_type 
-        #         ON qsos(year, location)
-        #     ''')
-            
-        #     cursor.execute('''
-        #         CREATE INDEX IF NOT EXISTS idx_category_mode 
-        #         ON qsos(year, category_mode)
-        #     ''')
-            
-        #     cursor.execute('''
-        #         CREATE INDEX IF NOT EXISTS idx_score 
-        #         ON qsos(year, final_score DESC)
-        #     ''')
-            
-            conn.commit()
     
     def _serialize_result(self, result: Dict, contest_year: str) -> Dict:
         """

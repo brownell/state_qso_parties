@@ -22,8 +22,8 @@ def score_a_qso(s, r, q, dup):
         r['valid_qsos'] -= 1
         r['dup_qsos'] += 1
         dup['num_qso'] += 1
-        s.out_files['errors'].write(f'''TO {q.dx_call} exchs:{q.de_exch[1]}/{q.dx_exch[1]} mode:{q.mo} band:{frequency_to_band_m(q.freq)} Sept {q.date.strftime("%d")}th {q.date.strftime("%H%M")}Z\n''')
-        r['errors'].append(f'''TO {q.dx_call} exchs:{q.de_exch[1]}/{q.dx_exch[1]} mode:{q.mo} band:{frequency_to_band_m(q.freq)} Sept {q.date.strftime("%d")}th {q.date.strftime("%H%M")}Z\n''')
+        s.out_files['dups'].write(f'''Duplicate QSO from-to: {q.de_call}-{q.dx_call} exchs:{q.de_exch[1]}-{q.dx_exch[1]} mode:{q.mo} band:{frequency_to_band_m(q.freq)} Sept {q.date.strftime("%d")}th {q.date.strftime("%H%M")}Z\n''')
+        r['errors'].append(f'''Duplicate QSO from-to: {q.de_call}-{q.dx_call} exchs:{q.de_exch[1]}-{q.dx_exch[1]} mode:{q.mo} band:{frequency_to_band_m(q.freq)} Sept {q.date.strftime("%d")}th {q.date.strftime("%H%M")}Z\n''')
         return
     dup['qsos'].append(qso_dup)
 
@@ -66,7 +66,7 @@ def score_a_qso(s, r, q, dup):
         q.valid = False
         r['valid_qsos'] -= 1
         r['other_bad_qsos'] += 1
-        r["errors"].append(f'''receiver exchange not valid: to {q.dx_call} exchs:{q.de_exch[1]}/{q.dx_exch[1]} mode:{q.mo} band:{frequency_to_band_m(q.freq)} Sept {q.date.strftime("%d")}th {q.date.strftime("%H%M")}Z\n''')
+        r["errors"].append(f'''Receiver's exch invalid: to {q.dx_call} exchs:{q.de_exch[1]}-{q.dx_exch[1]} mode:{q.mo} band:{frequency_to_band_m(q.freq)} Sept {q.date.strftime("%d")}th {q.date.strftime("%H%M")}Z\n''')
 
     try:
         if q.freq[:2] == '50':
@@ -98,9 +98,9 @@ def score_a_qso(s, r, q, dup):
 def score_an_operator(s, r):
     # accumulate all the points from qsos and mults for this one operator and score
     # See if operator is disqualified for multiple activated counties when not mobile
-    # if r['callsign'] not in s.mobile_callsigns and len(r['counties_activated']) > 1:
-    #     s.out_files['errors'].write(f"{r['callsign']} log disqualified: not mobile but activated multiple counties\n")
-    #     return False, 0
+    if r['callsign'] not in s.mobile_callsigns and len(r['counties_activated']) > 1:
+        s.out_files['errors'].write(f"{r['callsign']} log disqualified: not mobile but activated multiple counties\n")
+        return False
     
     #accumulate qsos and mults and get score BEFORE BONUSES
     for m in list(s.mode_points.keys()):
@@ -127,7 +127,6 @@ def score_an_operator(s, r):
     r['mtb_mobile_points'] += (int(len(r['mobile_worked_counties'])  / ( MOBILE_REQUIRED_QSOS)) * COUNTIES_WORKED_POINTS)
     r['final_score'] = r['score_wo_bonus'] + r['mtb_mobile_points']
     
-
     # debug_print(s, r, "SCORED", False)
     return True, 0
 
@@ -135,6 +134,3 @@ def make_dup(s, r, qso):
     de = get_dxcc(s, r['cab'].location, r['callsign'])[1]
     dx = get_dxcc(s, qso.dx_exch[1].upper(), qso.dx_call.upper())[1]
     return "_".join([de, dx, qso.de_exch[1].upper(), qso.dx_exch[1].upper(), frequency_to_band_m(qso.freq), qso.mo.upper()])
-
-
-

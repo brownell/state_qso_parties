@@ -61,20 +61,21 @@ def read_prepare(s):
         try:
             file_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR / file).resolve()
             cab = parse_log_file(file_path, ignore_unknown_key=True, check_categories=False, ignore_order=True, check_mode=False)
+            cab.callsign = cab.callsign.split('/')[0]
             # print(f"CAB {cab.callsign} # qsos {len(cab.qso)}")
         except Exception as e:
             if file:
                 s.stats["rejected_logs"] += 1
                 s.stats["rejected_logs_filenames"].append(file)
                 print(f"ERROR: log file {file} was rejected by the parser - REJECTED")
-                s.out_files['errors'].write(f"ERROR: log file {file} was rejected by the parser - REJECTED\n")
+                s.out_files['errors'].write(f"log file {file} was rejected by the parser - REJECTED\n")
                 continue
         # Process Bruce Horn's HQ keys and adding and replacing values in the cab object
         if not process_hq_keys(s, cab):
             s.stats["rejected_logs"] += 1
             s.stats["rejected_logs_filenames"].append(file)
             print(f"ERROR: log file {file} had no HQ- keys - REJECTED")
-            s.out_files['errors'].write(f"ERROR: log file {file} had no HQ- keys - REJECTED\n")
+            s.out_files['errors'].write(f"log file {file} had no HQ- keys - REJECTED\n")
             continue
         try:
             cats.add(cab.cat)
@@ -93,9 +94,11 @@ def read_prepare(s):
         # Add the callsign to the set of all callsigns for UNIQUE detection
         if cab.callsign in list(s.all_callsigns.keys()):
             # multiple logs with the same callsign
-            s.out_files['errors'].write(f"DUPLICATE CALLSIGN: logfile {file} has same callsign as a previous log had\n")
+            s.out_files['dups'].write(f"DUPLICATE CALLSIGN: logfile {file} has same callsign as a previous log had\n")
             print(f"ERROR: DUPLICATE CALLSIGN: logfile {file} has same callsign as a previous log had")
         else:
+            if cab.callsign == 'K5RAW':
+                pass
             s.all_callsigns[cab.callsign] = result_index
             result_index += 1
 
@@ -126,9 +129,9 @@ def update_qso_index_dict(s, result, qsos, dxcc):
         result['total_qsos'] += 1
         # remove non-TX to non-TX
         if qso.de_exch[1] not in s.counties and  qso.dx_exch[1] not in s.counties:
-            # print(f"Exchanges: {qso.de_exch[1]} { qso.dx_exch[1]}")
-            s.out_files['errors'].write(f"QSO Invalid NTX or TX to NTX or TX from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
-            result['errors'].append(f"QSO Invalid NTX or TX to NTX or TX from/to {qso.de_call}/{qso.dx_call} exchs:{qso.de_exch[1]}/{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
+            # print(f"BAD Exchanges: {qso.de_exch[1]} { qso.dx_exch[1]}")
+            s.out_files['invalid_qsos'].write(f"Invalid: No exchange in Texas: from-to {qso.de_call}-{qso.dx_call} exchs:{qso.de_exch[1]}-{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
+            result['errors'].append(f"Invalid: No exchange in Texas: from-to {qso.de_call}-{qso.dx_call} exchs:{qso.de_exch[1]}-{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
             qso.valid = False
             result['invalid_exchange_qsos'] += 1
             # print(f"NOT VALID TX EXCH: valid qsos: total: {result['total_qsos']} valid: {result['valid_qsos']} de: {qso.de_exch[1]} dx: {qso.dx_exch[1]}")
@@ -140,6 +143,10 @@ def update_qso_index_dict(s, result, qsos, dxcc):
         # fix DC --> MD
         if qso.de_exch[1] == 'DC': qso.de_exch[1] = 'MD'
         if qso.dx_exch[1] == 'DC': qso.dx_exch[1] = 'MD'
+        qso.de_call = qso.de_call.split('/')[0].upper()
+        qso.dx_call = qso.dx_call.split('/')[0].upper()
+        qso.de_exch[1] = qso.de_exch[1].split('/')[0].upper()
+        qso.dx_exch[1] = qso.dx_exch[1].split('/')[0].upper()
         k = generate_index_key(s, qso, dxcc, False) # FALSE = key from de POV
         # print(f"END index_dict: qso_count: {qso_count} total:{result['total_qsos']} valid:{result['valid_qsos']} dx:{qso.dx_call}")
         s.qso_index_dict[k].append(qso)

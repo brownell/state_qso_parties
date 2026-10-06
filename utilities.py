@@ -36,9 +36,9 @@ def generate_index_key(s, qso, call_to_use, mirror):
     # to generate the index key for the qso_index_dict
     # this is used to search for matches in cross_check
     if mirror == False:
-        return call_to_use + qso.de_exch[1].upper() + qso.dx_exch[1].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
+        return call_to_use.split('/')[0] + qso.de_exch[1].split('/')[0].upper() + qso.dx_exch[1].split('/')[0].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
     else:
-        return call_to_use + qso.dx_exch[1].upper() + qso.de_exch[1].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
+        return call_to_use.split('/')[0] + qso.dx_exch[1].split('/')[0].upper() + qso.de_exch[1].split('/')[0].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
     
 COUNTS = [
     'counties_worked', 
@@ -85,35 +85,24 @@ def is_fuzzy_match(x: str, y: str, max_missing: int = 2) -> bool:
 
 def get_fuzzy_match(de_qso: QSO , dx_qsos: list[QSO], time_key: str = 'date', within: int = 1) -> QSO:
     # see if any of the fuzzies has a fuzzy match between the qso being processed and any of the
-    # qsos of the operator he says he called
-    fuzzies, exact_fuzzies = get_fuzzies(de_qso, dx_qsos)
-    if len(exact_fuzzies) > 0:
-        return exact_fuzzies[0]
-    elif len(fuzzies) > 0:
+    # look in  qsos of the operator he says he called
+    fuzzies = get_fuzzies(de_qso, dx_qsos)
+    if len(fuzzies) > 0:
         return fuzzies[0]
     else:
         return None
 
-def test():
-    fuzzies = ['K8PN', 'NE8W', 'NE9P', 'NE8W']
-    for f in fuzzies:
-       
-        print(f"call {f}  True? { is_fuzzy_match('NE8P', f)}")
-
 def get_fuzzies(qso: QSO, dx_qsos: list[QSO], time_key: str = 'date', within: int = 1) -> list[QSO]:
     # find qsos in dx_qsos that are within "within" minuites
     # of time in de_qso
-    # NOTE exact_matches have the exact same time
     target_time = getattr(qso, time_key)
     delta = timedelta(minutes=within)
     min_time = target_time - delta
     max_time = target_time + delta
     # Single linear scan (fastest if dx_qsos is unsorted and you only search once)
     matches = []
-    exact_matches = []
-    # 'freq': '14036', 'mo': 'CW', 'date': datetime.datetime(2026, 9, 19, 15, 31), 'de_call': 'NE8P', 'de_exch': ['599', 'MI'], 'dx_call': 'N5TM', 'dx_exch': ['599', 'FALL'], 't': None, 'valid': True}
     for q in dx_qsos:
-        # print(f"a dx_qsos element {vars(q)}")
+        # eliminate dx qsos that are not near the de time
         fuzz = is_fuzzy_match(qso.de_call, q.dx_call)
         if (q.valid and fuzz and
             frequency_to_band_m(q.freq) == frequency_to_band_m(qso.freq) and
@@ -121,11 +110,12 @@ def get_fuzzies(qso: QSO, dx_qsos: list[QSO], time_key: str = 'date', within: in
             q.de_exch[1] == qso.dx_exch[1] and 
             min_time <= getattr(q, time_key) <= max_time):
             matches.append(q)
-    for m in matches:
-        if getattr(m, time_key) ==  getattr(qso, time_key):  # EXACT same datetime
-            exact_matches.append(m)
-    # print(f"get_fuzzies dx_qsos {len(dx_qsos)} {q.de_call} to {q.dx_call} matches: {len(matches)} exact: {exact_matches}")
-    return matches, exact_matches
+    return matches
+
+def test():
+    fuzzies = [['AD4EB', 'AB4EB']]
+    for f in fuzzies:
+       print(f"call {f}  True? { is_fuzzy_match(f[0], f[1])}")
 
 def debug_print(s, r, title, p=True):
     # x = {}

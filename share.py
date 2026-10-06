@@ -53,13 +53,17 @@ class SHARED:
             'uniques': open(SCRIPT_DIR / "UNIQUES_FILE.txt", "w"),
             'busteds': open(SCRIPT_DIR / "BUSTEDS_FILE.txt", "w"),
             'nils': open(SCRIPT_DIR / "NILS_FILE.txt", "w"),
-            'debug': open(SCRIPT_DIR / "DEBUG_FILE.txt", "w")
+            'debug': open(SCRIPT_DIR / "DEBUG_FILE.txt", "w"),
+            'dups': open(SCRIPT_DIR / "DUPS_FILE.txt", "w"),
+            'invalid_qsos': open(SCRIPT_DIR / "INVALID_QSOS_FILE.txt", "w")
         }
         self.out_files['errors'].seek(0)
         self.out_files['uniques'].seek(0)
         self.out_files['busteds'].seek(0)
         self.out_files['nils'].seek(0)
         self.out_files['debug'].seek(0)
+        self.out_files['dups'].seek(0)
+        self.out_files['invalid_qsos'].seek(0)
 
         self.script_dir = Path(__file__).resolve().parent
         self.first_call_qth = None  # To track the sent QTH in a log for checking other QSOs against it
@@ -155,7 +159,9 @@ class SHARED:
             'bands_worked': set(),
             'uniques': 0,
             'nils': 0,
+            'nil_calls': [],
             'busteds': 0,
+            'busted_calls': [],
             'dup_qsos': 0,
             'invalid_exchange_qsos': 0,
             'other_bad_qsos':0,
