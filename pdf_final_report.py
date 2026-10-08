@@ -23,7 +23,7 @@ from ranking_tables import get_section
 try:
     from reportlab.lib import colors
     from reportlab.lib.pagesizes import letter
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, KeepTogether
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, KeepTogether, PageBreak
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 except ImportError:
     print("Error: reportlab is not installed. Please install it with: pip install reportlab")
@@ -89,7 +89,7 @@ section_title_style = ParagraphStyle(
     'SectionTitleStyle',
     parent=styles['Heading2'],
     fontName='Times-Bold',
-    fontSize=14,
+    fontSize=18,
     textColor=colors.HexColor('#8B0000'),
     spaceBefore=14,
     spaceAfter=8
@@ -148,6 +148,7 @@ def _set_up_pdf_document(year):
     story.append(Paragraph(intro_text, intro_style))
 
 def _add_section(section, year):
+    story.append(PageBreak())
     story.append(Paragraph(section['section_title'], section_title_style))
     
     for table in section['tables']:
@@ -156,8 +157,6 @@ def _add_section(section, year):
         
         # Prepare table data
         table_data = []
-        
-
         
         # Headers
         table_data.append(table['headers'])
@@ -220,10 +219,11 @@ def _add_section(section, year):
         table_elements.append(Spacer(1, 10))
         
         story.append(KeepTogether(table_elements))
+        
+    story.append(PageBreak())
 
 def _finish_pdf_document():
     doc.build(story)
-
 
 def main(year):
     generate_final_report_pdf(year)

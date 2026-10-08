@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime
 from share import SHARED as s
-from config.config import DATABASE_FILE, DEBUG
+from config.config import DATABASE_FILE, DB_DROP
 from config.config_txqp import RANKINGS
 
 def create_tables():
@@ -32,7 +32,7 @@ def create_tables():
         
         # Main results table - keyed by year and callsign
         # While debugging
-        if DEBUG:
+        if DB_DROP:
             cursor.execute('''DROP TABLE IF EXISTS contest_results''')
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS contest_results (
@@ -263,27 +263,27 @@ class ContestDatabase:
             Converts sets to JSON lists, handles complex types.
             """
         if result:
-            out_result = result
+            display_result = result
             try:
                 # INTEGERS AND sTRINGHS
                 for typ in list(['integer', 'string']):
                     for fld in self.fields[typ]:
-                        out_result[fld] = result.get(fld, self.types_of_fields[typ])
+                        display_result[fld] = result.get(fld, self.types_of_fields[typ])
 
                 # SETS
                 for fld in self.fields['set']:
-                   out_result[fld] = set(json.loads(result.get(fld, set())))
+                   display_result[fld] = list(set(json.loads(result.get(fld, []))))
 
                 # LISTS
                 for field in self.dict_fields:
                     if field in result and result[field]:
-                        out_result[field] = json.loads(result[field])
+                        display_result[field] = json.loads(result[field])
                             
                 # Convert lists back to sets where appropriate
                 if field in ['counties_worked', 'states_worked', 
                         'provinces_worked', 'dx_worked', 
                         'counties_activated', 'bands_worked']:
-                    result[field] = set(json.loads(result[field]))
+                    display_result[field] = set(json.loads(result[field]))
 
             except Exception as e:
                 s.out_files['errors'].write(f"could not deserialize {result}")

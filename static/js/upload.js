@@ -128,7 +128,7 @@ function generateResultsHTML(result) {
         html += '</div>';
     }
 
-    // DX worked (for LA stations)
+    // DX worked (for local stations)
     if (result.dx_worked && result.dx_worked.length > 0) {
         html += renderResultItem('DX Worked', result.dx_worked_multiplier);
         html += '<div class="result-list">';
@@ -141,17 +141,18 @@ function generateResultsHTML(result) {
     html += '</div>';
 
     // Bonuses
-    let hasBonuses = false;
-    let bonusesHTML = '<div class="result-group">';
-    bonusesHTML += '<h4>Bonuses</h4>';
+    // TODO put mtb and cab bonuses here
+    // let hasBonuses = false;
+    // let bonusesHTML = '<div class="result-group">';
+    // bonusesHTML += '<h4>Bonuses</h4>';
 
-    if (result.worked_n5lcc && result.worked_n5lcc !== 'N/A') {
-        hasBonuses = true;
-        bonusesHTML += renderResultItem('Worked N5LCC', result.worked_n5lcc ? 'Yes' : 'No');
-        if (result.num_n5lcc_contacts > 0) {
-            bonusesHTML += renderResultItem('N5LCC Contacts', result.num_n5lcc_contacts);
-        }
-    }
+    // if (result.worked_n5lcc && result.worked_n5lcc !== 'N/A') {
+    //     hasBonuses = true;
+    //     bonusesHTML += renderResultItem('Worked N5LCC', result.worked_n5lcc ? 'Yes' : 'No');
+    //     if (result.num_n5lcc_contacts > 0) {
+    //         bonusesHTML += renderResultItem('N5LCC Contacts', result.num_n5lcc_contacts);
+    //     }
+    // }
 
     if (result.counties_activated && result.counties_activated.length > 0) {
         hasBonuses = true;

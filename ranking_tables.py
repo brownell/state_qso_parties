@@ -95,7 +95,8 @@ def generate_table(year: str, table_config: Dict, table_fields: List) -> Dict:
         for rank, row in enumerate(rows, 1):
             
             # Build display row: [rank] + [display values]
-            ranked_row = [rank] + list(row[0:])
+            # but remove the "cat" value at the end
+            ranked_row = [rank] + list(row[:-1])
             ranked_rows.append(ranked_row)
     
     # Build headers (Rank + show fields)
