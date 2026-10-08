@@ -42,7 +42,6 @@ def main(contest_year):
     # read_prepare(context)
     print(f"after read_prepare")
 
-
     '''
     Do the cross-checking, marking qsos that fail the match test.
     Warning messages are generated when qso fails match
@@ -57,8 +56,8 @@ def main(contest_year):
         # print(f" {r['callsign']} CW {r['cw_qsos']} PH {r['ph_qsos']} points {r['qso_points']} mults {r['total_multipliers']} score {r['score_wo_bonus']} valid {r['valid_qsos']}\n{r['errors']}\n")
 
     # REMEMBER to close all the out_files
-    for f in list(context.out_files.keys()):
-        context.out_files[f].close()
+    # for f in list(context.out_files.keys()):
+    #     context.out_files[f].close()
 
     #  Save results to database (valid and invalid)
     # valid_count = 0
@@ -77,16 +76,13 @@ def main(contest_year):
     #             print(f"✗ {result['callsign']}: Database save failed")
     #     except Exception as e:
     #         print(f"✗ {result['callsign']}: Database error - {e}")
-    #         # print('BREAK')
-    #     # print('BREAK')
+            # print('BREAK')
+        # print('BREAK')
 
     print("end of saving results to DB")
     
-    # # calculate rankings from the database results
-    # calculate_rankings(contest_year)
-    
     # store_rankings(contest_year)
-    # print('BREAK')
+    print('rankings stored')
 
     # generate_final_report_html(contest_year)
     generate_final_report_pdf(contest_year)

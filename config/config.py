@@ -96,7 +96,7 @@ POINTS = {
 
 
 # Bonus points
-BONUS_CALLSIGN = 'N5LCC'  # Bonus for working N5LCC (Louisiana Contest Club)
+BONUS_CALLSIGN = 'xxxxx'  # Bonus for working N5LCC (Louisiana Contest Club)
 CALLSIGN_BONUS_POINTS = 100  # Bonus for working N5LCC (Louisiana Contest Club)
 ROVER_COUNTY_BONUS = 50  # Bonus per county activated (rovers only)
 EXTRA_BONUS_CALLS = os.environ.get('EXTRA_BONUS_CALLS', ['KI5ZAW', 'N5SCJ', 'K5TD'])

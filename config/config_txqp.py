@@ -116,7 +116,7 @@ RANK_TABLES = [
                 ['qso_points', 'QSOPts'],
                 ['total_multipliers', 'Mults'],
                 ['score_wo_bonus', 'QSO Score'],
-                ['mtb_bonus_points', 'Mob Pts'],
+                ['mtb_mobile_points', 'Mob Pts'],
                 ['exchange', 'Exch']
             ],
             'discussion': f"This is an area where discussion can be added",
@@ -129,9 +129,9 @@ RANK_TABLES = [
         {'title': 'TMH', 'cat': 'TX', 'show':  [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
         {'title': 'TQS', 'cat': 'TX QRP SO', 'show':  [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
         {'title': 'TCSL', 'cat': 'TX CWO SO LP', 'show': [['cw_qsos', 'CWQs']]},
-        {'title': 'TCSH', 'cat': 'TX CWO SO HP', 'show': ['cw_qsos', 'CWQs']},
-        {'title': 'TPSL', 'cat': 'TX PHO SO LP', 'show': ['ph_qsos', 'PHQs']},
-        {'title': 'TPSH', 'cat': 'TX PHO SO HP', 'show':  ['ph_qsos', 'PHQs']}
+        {'title': 'TCSH', 'cat': 'TX CWO SO HP', 'show': [['cw_qsos', 'CWQs']]},
+        {'title': 'TPSL', 'cat': 'TX PHO SO LP', 'show': [['ph_qsos', 'PHQs']]},
+        {'title': 'TPSH', 'cat': 'TX PHO SO HP', 'show':  [['ph_qsos', 'PHQs']]}
     ],
     ###############
     # SECTION 2 #
@@ -144,7 +144,7 @@ RANK_TABLES = [
                 ['qso_points', 'QSOPts'],
                 ['total_multipliers', 'Mults'],
                 ['score_wo_bonus', 'QSO Score'],
-                ['mobile_bonus_points', 'QSO Score'],
+                ['mtb_mobile_points', 'QSO Score'],
                 ['final_score', 'Score']
             ],
         },
@@ -164,7 +164,7 @@ RANK_TABLES = [
                 ['qso_points', 'QSOPts'],
                 ['total_multipliers', 'Mults'],
                 ['score_wo_bonus', 'QSO Score'],
-                ['mobile_bonus_points', 'QSO Score'],
+                ['mtb_mobile_points', 'QSO Score'],
                 ['final_score', 'Score']
             ],
         },
@@ -185,7 +185,7 @@ RANK_TABLES = [
                 ['qso_points', 'QSOPts'],
                 ['total_multipliers', 'Mults'],
                 ['score_wo_bonus', 'QSO Score'],
-                ['mobile_bonus_points', 'QSO Score'],
+                ['mtb_mobile_points', 'QSO Score'],
                 ['final_score', 'Score']
             ],
         },
@@ -203,7 +203,7 @@ RANK_TABLES = [
                 ['qso_points', 'QSOPts'],
                 ['total_multipliers', 'Mults'],
                 ['score_wo_bonus', 'QSO Score'],
-                ['mobile_bonus_points', 'QSO Score'],
+                ['mtb_mobile_points', 'QSO Score'],
                 ['final_score', 'Score']
             ],
         },

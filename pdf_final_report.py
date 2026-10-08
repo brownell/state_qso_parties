@@ -4,6 +4,8 @@ Texas QSO Party - Generate Final Report PDF
 
 Generates PDF final report with tables for a contest year natively using ReportLab.
 Saves to data/results/final_report_{year}.pdf
+
+Create the PDF document natively using ReportLab
 """
 
 import sys
@@ -33,40 +35,7 @@ output_path.mkdir(parents=True, exist_ok=True)
 # Define output file path
 output_file = (output_path / f"final_report_{CONTEST_YEAR}.pdf")
 
-# def generate_final_report_pdf(year: str):
-def main(year):
-    """
-    Generate final report PDF for a year using ReportLab.
-    
-    Args:
-        year: Contest year
-    """
-    print("=" * 60)
-    print(f"Texas QSO Party - Generate Final Report PDF ({year})")
-    print("=" * 60)
-    
-    print("Set up PDF...")
-    _set_up_pdf_document()
-
-    for section_config in RANK_TABLES:
-        section = get_section(year, section_config, RANKINGS)
-        print(f"doing section with title: {section_config['section_title']}")
-        _add_section(section)
-
-    print(f"finish PDF document")
-    _finish_pdf_document()
-
-    # Summary
-    print()
-    print("=" * 60)
-    print("Summary")
-    print("=" * 60)
-    print(f"Saved to: {output_file}")
-    print()
-
 # make these "global" since they are being used in two different functions
-"""Create the PDF document natively using ReportLab"""
-
 doc = SimpleDocTemplate(
     output_file,
     pagesize=letter,
@@ -137,7 +106,37 @@ table_title_style = ParagraphStyle(
 
 story = []
 
-def _set_up_pdf_document():
+def generate_final_report_pdf(year: str):
+    """
+    Generate final report PDF for a year using ReportLab.
+    
+    Args:
+        year: Contest year
+    """
+    print("=" * 60)
+    print(f"Texas QSO Party - Generate Final Report PDF ({year})")
+    print("=" * 60)
+    
+    print("Set up PDF...")
+    _set_up_pdf_document(year)
+
+    for section_config in RANK_TABLES:
+        section = get_section(year, section_config)
+        # print(f"doing section with title: {section_config['section_title']}")
+        _add_section(section, year)
+
+    print(f"finish PDF document")
+    _finish_pdf_document()
+
+    # Summary
+    print()
+    print("=" * 60)
+    print("Summary")
+    print("=" * 60)
+    print(f"Saved to: {output_file}")
+    print()
+
+def _set_up_pdf_document(year):
     """Set up the PDF document natively using ReportLab"""
     # Header
     story.append(Paragraph(f"Texas QSO Party {year}", title_style))
@@ -148,7 +147,7 @@ def _set_up_pdf_document():
     intro_text = FINAL_REPORT_TXT if FINAL_REPORT_TXT else 'Congratulations to all participants!'
     story.append(Paragraph(intro_text, intro_style))
 
-def _add_section(section):
+def _add_section(section, year):
     story.append(Paragraph(section[0]['section_title'], section_title_style))
     
     for table in section[1:]:
@@ -157,6 +156,8 @@ def _add_section(section):
         
         # Prepare table data
         table_data = []
+        
+
         
         # Headers
         table_data.append(table['headers'])
@@ -222,6 +223,10 @@ def _add_section(section):
 
 def _finish_pdf_document():
     doc.build(story)
+
+
+def main(year):
+    generate_final_report_pdf(year)
 
 if __name__ == "__main__":
     from config.config import CONTEST_YEAR
