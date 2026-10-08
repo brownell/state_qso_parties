@@ -48,7 +48,7 @@ def format_set_as_list(s):
 #         'callsign', 'exchange', 'overlay', 'location_type', 'mode_category',
 #         'power_level', 'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
 #         'total_multipliers', 'counties_worked_multiplier', 'states_worked_multiplier',
-#         'provinces_worked_multiplier', 'dx_worked_multiplier', 'mobile_bonus_points',
+#         'provinces_worked_multiplier', 'dx_worked_multiplier', 'mtb_mobile_points',
 #         'worked_n5lcc', 'num_n5lcc_contacts', 'name', 'club', 'claimed_score', 'year'
 #     ]
     

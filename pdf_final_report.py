@@ -37,7 +37,7 @@ output_file = (output_path / f"final_report_{CONTEST_YEAR}.pdf")
 
 # make these "global" since they are being used in two different functions
 doc = SimpleDocTemplate(
-    output_file,
+    str(output_file),
     pagesize=letter,
     rightMargin=15,
     leftMargin=15,
@@ -148,9 +148,9 @@ def _set_up_pdf_document(year):
     story.append(Paragraph(intro_text, intro_style))
 
 def _add_section(section, year):
-    story.append(Paragraph(section[0]['section_title'], section_title_style))
+    story.append(Paragraph(section['section_title'], section_title_style))
     
-    for table in section[1:]:
+    for table in section['tables']:
         table_elements = []
         table_elements.append(Paragraph(table['title'], table_title_style))
         

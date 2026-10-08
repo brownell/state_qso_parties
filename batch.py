@@ -39,7 +39,7 @@ def main(contest_year):
         Read in all the log files, save the Cabrillo object and the data, 
         save values that will be needed later
     '''
-    # read_prepare(context)
+    read_prepare(context)
     print(f"after read_prepare")
 
     '''
@@ -47,44 +47,43 @@ def main(contest_year):
     Warning messages are generated when qso fails match
     Failed qsos marked invalid so not counted in score
     '''
-    # cross_check(context)
+    cross_check(context)
     print(f"after cross-check results")
 
     # for debugging, print out all the scores
     # for r in context.results:
-    #     debug_print(context, r, "", False)
+        # debug_print(context, context.results[0], "", False)
         # print(f" {r['callsign']} CW {r['cw_qsos']} PH {r['ph_qsos']} points {r['qso_points']} mults {r['total_multipliers']} score {r['score_wo_bonus']} valid {r['valid_qsos']}\n{r['errors']}\n")
+    # for i in [0,10,300]:
+    #     r = context.results[i]
+    #     print(f"results[{i}]: {r['callsign']} {r['final_score']} {r['mtb_mobile_points']} {r['score_wo_bonus']} {r['total_multipliers']} {r['qso_points']} {r['ph_qsos']} {r['cw_qsos']}")
 
     # REMEMBER to close all the out_files
-    # for f in list(context.out_files.keys()):
-    #     context.out_files[f].close()
+    for f in list(context.out_files.keys()):
+        context.out_files[f].close()
 
     #  Save results to database (valid and invalid)
     # valid_count = 0
     # invalid_count = 0
     saved_count = 0
     
-    # for result in context.results:
-        
-    #     # # Save to database (both valid and invalid for record-keeping)
-    #     try:
-    #         if save_result(result, contest_year):
-    #             saved_count += 1
-    #             status = "✓" if result['is_valid'] else "✗"
-    #             # print(f"{status} {result['callsign']}: Saved to database")
-    #         else:
-    #             print(f"✗ {result['callsign']}: Database save failed")
-    #     except Exception as e:
-    #         print(f"✗ {result['callsign']}: Database error - {e}")
-            # print('BREAK')
-        # print('BREAK')
+    for result in context.results:
+        # # Save to database (both valid and invalid for record-keeping)
+        try:
+            if save_result(result, contest_year):
+                saved_count += 1
+                status = "✓" if result['is_valid'] else "✗"
+                # print(f"{status} {result['callsign']}: Saved to database")
+            else:
+                print(f"✗ {result['callsign']}: Database save failed")
+        except Exception as e:
+            print(f"✗ {result['callsign']}: Database error - {e}")
 
     print("end of saving results to DB")
     
-    # store_rankings(contest_year)
+    store_rankings(contest_year)
     print('rankings stored')
 
-    # generate_final_report_html(contest_year)
     generate_final_report_pdf(contest_year)
 
 

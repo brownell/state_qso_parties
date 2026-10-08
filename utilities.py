@@ -46,7 +46,7 @@ COUNTS = [
     'provinces_worked', 
     'dx_worked' 
     ]
-INTG = ['final_score', 'score_wo_bonus', 'mobile_bonus_points', 'total_multipliers', 'qso_points', 'total_qsos', 'valid_qsos', 'cw_qsos', 'ph_qsos', 'dg_qsos', 'ry_qsos'
+INTG = ['final_score', 'score_wo_bonus', 'mtb_mobile_points', 'total_multipliers', 'qso_points', 'total_qsos', 'valid_qsos', 'cw_qsos', 'ph_qsos', 'dg_qsos', 'ry_qsos'
     ] 
 
 def is_fuzzy_match(x: str, y: str, max_missing: int = 2) -> bool:
@@ -130,7 +130,7 @@ def debug_print(s, r, title, p=True):
     # s.out_files['debug'].write(f"\n")   
     # for z in y:
     #      s.out_files['debug'].write(f"{len(z)}")
-    s.out_files['debug'].write(f"{r['final_score']} {r['mobile_bonus_points']} {r['score_wo_bonus']} {r['total_multipliers']} {r['qso_points']} {r['ph_qsos']} {r['cw_qsos']} {r['callsign']}\n")   
+    s.out_files['debug'].write(f"{r['final_score']} {r['mtb_mobile_points']} {r['score_wo_bonus']} {r['total_multipliers']} {r['qso_points']} {r['ph_qsos']} {r['cw_qsos']} {r['callsign']}\n")   
     # counts: {y}  sets: {x} mobile {r['callsign'] in s.mobile_callsigns}\n")
     # if len(r['errors']) > 0:
     #      s.out_files['debug'].write(f"{r['errors']}\n")

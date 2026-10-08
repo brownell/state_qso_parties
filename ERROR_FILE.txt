@@ -1,0 +1,14 @@
+log file AA5AH.log was rejected by the parser - REJECTED
+K5BAY log disqualified: not mobile but activated multiple counties
+K5CM log disqualified: not mobile but activated multiple counties
+K5PTB log disqualified: not mobile but activated multiple counties
+KD2KW log disqualified: not mobile but activated multiple counties
+KE5CW log disqualified: not mobile but activated multiple counties
+N4CD log disqualified: not mobile but activated multiple counties
+N5NA log disqualified: not mobile but activated multiple counties
+N5NAA log disqualified: not mobile but activated multiple counties
+N5OT log disqualified: not mobile but activated multiple counties
+N5TM log disqualified: not mobile but activated multiple counties
+N8AI log disqualified: not mobile but activated multiple counties
+WA5DSS log disqualified: not mobile but activated multiple counties
+WB0TEV log disqualified: not mobile but activated multiple counties
