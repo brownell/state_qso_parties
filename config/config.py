@@ -173,20 +173,6 @@ TIME_WINDOW_MINUTES = 60  # ±60 minutes for time matching
 ENABLE_FUZZY_MATCHING = True  # Check for callsign errors
 MAX_EDIT_DISTANCE = 2  # Maximum character differences for fuzzy matching
 
-# ============================================================================
-# FINAL REPORT TEXT
-# ============================================================================
-
-FINAL_REPORT_TXT = """
-<p class=final-intro>Congratulations to all participants in the Louisiana QSO Party!
-
-The Jefferson Amateur Radio Club is proud to present the final results.
-Thank you for your participation and we look forward to seeing you next year!
-
-73,
-Jefferson Amateur Radio Club</p>
-"""
-
 # # ============================================================================
 # # Admin settings
 # # ============================================================================

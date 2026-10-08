@@ -57,6 +57,19 @@ except ImportError:
 TX = ['TSL', 'TSH', 'TML', 'TMH', 'TQS', ]
 NTX = []
 TXM = []
+# ============================================================================
+# FINAL REPORT TEXT
+# ============================================================================
+
+FINAL_REPORT_TXT = """
+<p class=final-intro>Congratulations to all participants in the Texas QSO Party!
+
+The Texas DX Society is proud to present the final results.
+Thank you for your participation and we look forward to seeing you next year!
+
+73,
+Texas DX Society</p>
+"""
 RANKINGS = {
 
     # Texas – Fixed Station
@@ -90,7 +103,7 @@ RANKINGS = {
     'C': 'Check Log Not Including in Rankings'
 }
 
-LEADERBOARDS = [ 
+RANK_TABLES = [ 
     ###############
     # SECTION 1 #
     ###############
@@ -98,15 +111,18 @@ LEADERBOARDS = [
         {
             'section_title': 'Texas - Fixed Stations',
             'show': [
-                ['callsign', 'CallSign'],
+                ['callsign', 'Call'],
+                ['final_score', 'Score'],
                 ['qso_points', 'QSOPts'],
                 ['total_multipliers', 'Mults'],
                 ['score_wo_bonus', 'QSO Score'],
-                ['mobile_bonus_points', 'QSO Score'],
-                ['final_score', 'Score']
+                ['mtb_bonus_points', 'Mob Pts'],
+                ['exchange', 'Exch']
             ],
             'discussion': f"This is an area where discussion can be added",
         },
+        # the 'show' list, if not empty adds columns after the final score column
+        #   shows field name and column header 
         {'title': 'TSL', 'cat': 'TX SO LP', 'show': [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
         {'title': 'TSH', 'cat': 'TX SO HP', 'show': [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
         {'title': 'TML', 'cat': 'TX MO LP', 'show': [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},

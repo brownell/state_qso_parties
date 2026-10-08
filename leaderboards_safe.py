@@ -61,6 +61,19 @@ class LeaderboardGenerator:
         
         return sections
     
+    def _clear_all_rankings(self, year: str):
+        """Clear rankings field for all users in a year before regenerating"""
+        foo =  datetime.now().isoformat()
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                UPDATE contest_results
+                SET rankings = ?, updated_at = ?
+                WHERE year = ?
+            ''', (json.dumps({}), datetime.utcnow().isoformat(), year))
+
+            conn.commit()
+    
     def _generate_section(self, year: str, section_config: List[Dict], 
                          rankings_dict: Dict = None, save_rankings: bool = True) -> Dict:
         """
@@ -155,7 +168,7 @@ class LeaderboardGenerator:
             'rows': ranked_rows
         }
     
-    def _save_user_ranking(self, year: str, callsign: str, ranking_code: str, rank: int):
+def save_all_ranking(self, year: str, ):
         """
         Save a user's ranking in a category.
         
@@ -167,34 +180,26 @@ class LeaderboardGenerator:
             ranking_code: Ranking category code (e.g., 'NQ')
             rank: User's rank in that category (1, 2, 3, ...)
         """
+
+        sql1 = '''WITH ranked AS (
+            SELECT year, callsign, ROW_NUMBER() OVER (ORDER BY final_score DESC) AS calculated_rank
+            FROM contest_results
+            WHERE year = 2026 AND cat = ?)
+            UPDATE contest_results
+            SET category_rank = ranked.calculated_rank
+            FROM ranked
+            WHERE contest_results.year = ranked.year
+            AND contest_results.callsign = ranked.callsign;'''
+        
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             
-            # Get current rankings
-            cursor.execute('''
-                SELECT rankings FROM contest_results
-                WHERE year = ? AND callsign = ?
-            ''', (year, callsign))
-            
-            row = cursor.fetchone()
-            if not row:
-                return  # User not found
-            
-            # Parse current rankings
-            try:
-                rankings = json.loads(row[0]) if row[0] else {}
-            except (json.JSONDecodeError, TypeError):
-                rankings = {}
-            
-            # Add this ranking
-            rankings[ranking_code] = rank
-            
-            # Save back to database
-            cursor.execute('''
-                UPDATE contest_results
-                SET rankings = ?, updated_at = ?
-                WHERE year = ? AND callsign = ?
-            ''', (json.dumps(rankings), datetime.utcnow().isoformat(), year, callsign))
+            # for each rank
+            for rank in RANKINGS:
+                cursor.execute('''
+                    SELECT rankings FROM contest_results
+                    WHERE year = ? AND callsign = ?
+                ''', (year, rank))
             
             conn.commit()
     

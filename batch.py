@@ -20,7 +20,7 @@ from config.config import (
     )
 from database import save_result
 from pathlib import Path
-from generate_final_report import generate_final_report_html
+from pdf_final_report import generate_final_report_pdf
 from read_prepare import read_prepare
 from cross_check import cross_check
 from utilities import debug_print
@@ -39,7 +39,7 @@ def main(contest_year):
         Read in all the log files, save the Cabrillo object and the data, 
         save values that will be needed later
     '''
-    read_prepare(context)
+    # read_prepare(context)
     print(f"after read_prepare")
 
 
@@ -48,7 +48,7 @@ def main(contest_year):
     Warning messages are generated when qso fails match
     Failed qsos marked invalid so not counted in score
     '''
-    cross_check(context)
+    # cross_check(context)
     print(f"after cross-check results")
 
     # for debugging, print out all the scores
@@ -65,20 +65,20 @@ def main(contest_year):
     # invalid_count = 0
     saved_count = 0
     
-    for result in context.results:
+    # for result in context.results:
         
-        # # Save to database (both valid and invalid for record-keeping)
-        try:
-            if save_result(result, contest_year):
-                saved_count += 1
-                status = "✓" if result['is_valid'] else "✗"
-                # print(f"{status} {result['callsign']}: Saved to database")
-            else:
-                print(f"✗ {result['callsign']}: Database save failed")
-        except Exception as e:
-            print(f"✗ {result['callsign']}: Database error - {e}")
-            # print('BREAK')
-        # print('BREAK')
+    #     # # Save to database (both valid and invalid for record-keeping)
+    #     try:
+    #         if save_result(result, contest_year):
+    #             saved_count += 1
+    #             status = "✓" if result['is_valid'] else "✗"
+    #             # print(f"{status} {result['callsign']}: Saved to database")
+    #         else:
+    #             print(f"✗ {result['callsign']}: Database save failed")
+    #     except Exception as e:
+    #         print(f"✗ {result['callsign']}: Database error - {e}")
+    #         # print('BREAK')
+    #     # print('BREAK')
 
     print("end of saving results to DB")
     
@@ -89,7 +89,9 @@ def main(contest_year):
     # print('BREAK')
 
     # generate_final_report_html(contest_year)
-    # generate_final_report_html(db_path, contest_year)
+    generate_final_report_pdf(contest_year)
+
+
     
     # print()
     # print("=" * 60)

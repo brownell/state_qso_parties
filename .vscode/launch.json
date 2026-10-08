@@ -46,6 +46,24 @@
             "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
         },
         {
+            
+            "name": "pdf_final_report",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "pdf_final_report.py",
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+        },
+        {
+            
+            "name": "temp",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "temp.py",
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+        },
+        {
             "name": "WIN Final Report (batch)",
             "type": "debugpy",
             "request": "launch",

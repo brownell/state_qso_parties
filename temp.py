@@ -1,30 +1,43 @@
 from pathlib import Path
+import sqlite3
+from config.config_txqp import RANKINGS, RANK_TABLES
+from config.config import DATABASE_FILEtry:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, KeepTogether
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+
 SCRIPT_DIR = Path(__file__).resolve().parent
-print(SCRIPT_DIR)
+
+print(type(RANK_TABLES))
+
+def save_all_rankings():
+    """
+    Saves the category_rank for all users.
+    
+    Args:
+        year: Contest year
+    """
+
+    sql = '''WITH ranked AS (
+        SELECT year, callsign, ROW_NUMBER() OVER (ORDER BY final_score DESC) AS calculated_rank
+        FROM contest_results
+        WHERE year = ? AND cat = ?)
+        UPDATE contest_results
+        SET category_rank = ranked.calculated_rank
+        FROM ranked
+        WHERE contest_results.year = ranked.year
+        AND contest_results.callsign = ranked.callsign;'''
+    
+    with sqlite3.connect(DATABASE_FILE) as conn:
+        cursor = conn.cursor()
+        
+        # for each rank
+        for rank in list(RANKINGS.keys()):
+            cursor.execute(sql, ('2026', rank))
+        
+        conn.commit()
+        print('DONE')
 
 
-
-
-# for d in [19, 20]:
-#     # print('hello')
-#     for h in range(14, 26):
-#         print(f"day: {d},  hour:{h},  index {h - 14 + ((d - 19) * 12)}")
-#         # print('hi')
-
-# for h in range(14, 26):
-#     # print(f"day: {d},  hour:{h}, index {(h - 13) * ((d - 19) * 12)}"))
-#     print(h)
-# x = ['2026-09-19 15:00:00', '2026-09-19 19:58:00', '2026-09-20 19:55:00',  '2026-09-20 01:59:00', '2026-09-20 00:59:00', '2026-09-19 14:00:00', '2026-09-19 23:59:00', '2026-09-21 00:59:00', '2026-09-21 01:59:00', '2026-09-19 23:59:00', '2026-09-19 23:40:00', '2026-09-19 23:30:00', '2026-09-19 23:00:00']
-# r = [0] * 24
-# for s in x:
-
-#     a = int(s.split(' ')[1].split(':')[0])
-#     if a > 1:
-#         a -= 14
-#     else:
-#         a -= 2
-#     b = (int(s.split(' ')[0].split('-')[2])-19) * 12
-
-#     print(f"{s}:  {a} + {b} = {a + b}")
-#     r[a + ((int(s.split(' ')[0].split('-')[2]) - 19) * 12)] += 1
-# print(f"{r}")
+save_all_rankings()

@@ -1,3 +1,6 @@
+
+
+
  1. BUSTED from/to NE8P/N5XU exchs:MI/TRAV mode:CW band:20 Sept 19th 1555Z
          call from N5UX with TRAV at 1554 to K8PN --- DX wrong callsign GOOD
 2. BUSTED from/to NE8P/N5TM exchs:MI/HAMI mode:CW band:20 Sept 19th 1746Z
