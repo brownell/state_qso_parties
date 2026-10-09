@@ -11,11 +11,8 @@ import tempfile
 from pathlib import Path
 from typing import Dict, List, Optional
 
-# Import the unified processor and database
-from processor import process_single_log
-from create_reports import get_individual_result
-from database import save_result
-from config.config import SECRET_KEY, CONTEST_YEAR, BATCH_INPUT_DIR, ALLOWED_LOG_EXTENSIONS, RANKINGS
+from database import save_result, get_result
+from config.config import SECRET_KEY, CONTEST_YEAR, BATCH_INPUT_DIR, ALLOWED_LOG_EXTENSIONS
 
 app = Flask(__name__)
 
@@ -143,7 +140,7 @@ def api_individual_results():
     """
     try:
         data = request.get_json()
-        year = data.get('year', '').strip()
+        year = '2026'   #data.get('year', '').strip()
         if len(year) > 4:
             year = year[:4]
         callsign = data.get('callsign', '').strip().upper()
@@ -155,8 +152,7 @@ def api_individual_results():
             }), 400
         
         # Get result from database
-        from database import get_result
-        result = get_individual_result(year, callsign)
+        result = get_result(year, callsign)
         
         if not result:
             return jsonify({
@@ -165,7 +161,7 @@ def api_individual_results():
             }), 404
 
         # Format result for JSON (convert sets to lists)
-        json_result = format_result_for_display(result)
+        json_result = deserialize_result(result)
         app.json.sort_keys = False
         return jsonify({
             'success': True,

@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import List, Dict, Tuple
 from datetime import datetime
 from share import SHARED as s
-from database import db
+from database import deserialize_result
 
 from config.config import DATABASE_FILE, CONTEST_YEARS
 from config.config_txqp import RANKINGS, LEADERBOARDS
@@ -50,10 +50,21 @@ def get_individual_result(year: str, callsign: str) -> Dict:
             print(f"Error getting result: {e}")
             return False
 
-        return db.deserialize(dict(row))
+        return deserialize_result(dict(row))
 
         
-
+with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT * FROM contest_results
+                WHERE year = ? AND callsign = ?
+            ''', (year, callsign.upper()))
+            
+            row = cursor.fetchone()
+            if row:
+                columns = [desc[0] for desc in cursor.description]
+                return self._deserialize_result(row, columns)
+            return None
 
     # return the Dict to the web app
 

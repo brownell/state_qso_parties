@@ -187,7 +187,6 @@ class ContestDatabase:
         self.types_of_fields = {'integer': 0, 'string': '',
                             'set': set(), 'list': []}
         self.fields = {'integer': [
-            'dxcc_code',
             'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
             'total_multipliers', 'cab_mobile_points', 
             'mtb_mobile_points', 'cw_qsos',
@@ -197,7 +196,8 @@ class ContestDatabase:
             'other_bad_qsos'
         ],
         'string': [  # from the result object
-            'year', 'callsign',  'dxcc_entity'
+            'year', 'callsign',  'dxcc_entity', 'club', 'name', 'location', 'name', 'category_band', 'email', 'category_mode', 'category_power', 'category_station', 
+                'cat', 'claimed_score'
         ],
         'set': [
             'counties_worked', 'states_worked', 'provinces_worked',
@@ -253,7 +253,7 @@ class ContestDatabase:
         
         return db_result
     
-    def _deserialize_result(self, result: Dict, row: tuple, columns: List[str]) -> Dict:
+    def _deserialize_result(self, result: Dict) -> Dict:
         """ The opposite of serialize_result
             Reads data from the databaser one operator record
             Adds simple fields from the "result" object
@@ -263,16 +263,12 @@ class ContestDatabase:
             Converts sets to JSON lists, handles complex types.
             """
         if result:
-            display_result = result
+            display_result = {}
             try:
                 # INTEGERS AND sTRINGHS
-                for typ in list(['integer', 'string']):
+                for typ in list([ 'set', 'integer', 'string', 'list']):
                     for fld in self.fields[typ]:
-                        display_result[fld] = result.get(fld, self.types_of_fields[typ])
-
-                # SETS
-                for fld in self.fields['set']:
-                   display_result[fld] = list(set(json.loads(result.get(fld, []))))
+                        display_result[fld] = json.loads(result.get(fld, self.types_of_fields[typ]))
 
                 # LISTS
                 for field in self.dict_fields:
@@ -350,15 +346,15 @@ class ContestDatabase:
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            cursor.execute('''
-                SELECT * FROM contest_results
-                WHERE year = ? AND callsign = ?
-            ''', (year, callsign.upper()))
-            
+            cursor.execute('''SELECT * FROM contest_results WHERE year = ? AND callsign = ?''', ('2026', callsign.upper()))
             row = cursor.fetchone()
             if row:
                 columns = [desc[0] for desc in cursor.description]
-                return self._deserialize_result(row, columns)
+                result = {}
+                for i, col in enumerate(columns):
+                    result[col] = row[i]
+                return self._deserialize_result(result)
+                
             return None
     
     def store_rankings(self, year):

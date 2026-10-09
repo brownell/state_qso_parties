@@ -6,7 +6,63 @@ from typing import Dict, List, Optional
 from datetime import datetime
 from config.config_txqp import RANKINGS, RANK_TABLES
 from config.config import DATABASE_FILE
+# def format_result_for_display(result):
+#     """
+#     Convert the result dictionary to a format suitable for HTML display
+#     Handles sets, dicts, and other complex type
+#     """
+#     display_result = {}
+    
+#     # Copy simple values
+#     simple_fields = [
+#         'callsign', 'exchange', 'overlay', 'location_type', 'mode_category',
+#         'power_level', 'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
+#         'total_multipliers', 'counties_worked_multiplier', 'states_worked_multiplier',
+#         'provinces_worked_multiplier', 'dx_worked_multiplier', 'mtb_mobile_points',
+#         'worked_n5lcc', 'num_n5lcc_contacts', 'name', 'club', 'claimed_score', 'year'
+#     ]
+    
+#     for field in simple_fields:
+#         display_result[field] = result.get(field, 'N/A')
+    
+#     # Convert sets to sorted lists
+#     display_result['counties_worked'] = format_set_as_list(result.get('counties_worked', set()))
+#     display_result['states_worked'] = format_set_as_list(result.get('states_worked', set()))
+#     display_result['provinces_worked'] = format_set_as_list(result.get('provinces_worked', set()))
+#     display_result['dx_worked'] = format_set_as_list(result.get('dx_worked', set()))
+#     display_result['counties_activated'] = format_set_as_list(result.get('counties_activated', set()))
+#     display_result['bands_worked'] = format_set_as_list(result.get('bands_worked', set()))
+    
+#     # Format QSOs by band
+#     qsos_by_band = result.get('qsos_by_band', {})
+#     display_result['qsos_by_band'] = [
+#         {'band': band, 'count': count}
+#         for band, count in sorted(qsos_by_band.items(), key=lambda x: x[0])
+#     ]
+    
+#     # Format QSOs by mode
+#     qsos_by_mode = result.get('qsos_by_mode', {})
+#     display_result['qsos_by_mode'] = [
+#         {'mode': mode, 'count': count}
+#         for mode, count in qsos_by_mode.items()
+#     ]
+    
 
+#     # Format QSOs by hour
+#     try:
+#         temp = result.get('qsos_by_hour', {})
+#         display_result['qsos_by_hour'] = {}
+#         for key in temp:
+#             display_result['qsos_by_hour'][key] =  temp[key]
+#     except Exception as e:
+#         print(f"Error formatting qsos_by_hour for display: {e}")
+#         display_result['qsos_by_hour'] = []
+    
+#     ## errors and warnings
+#     display_result['errors'] = result['errors']
+#     display_result['warnings'] = result['warnings']
+
+#     return display_result
 import json
 SCRIPT_DIR = Path(__file__).resolve().parent
 seq_cab_attributes = [
