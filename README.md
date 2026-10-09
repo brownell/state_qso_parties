@@ -2,12 +2,12 @@
 
 ### Contest log processing system for the State QSO Parties
 ### Used and sponsored by the Texas DX Society and the Jefferson Amateur Radio Club
-#### Initial development for TQP and LAQP by Brownell Chalstrom, KJ5BYZ and Charles Sanders, NO5W
+#### Initial development for TQP and TXQP by Brownell Chalstrom, KJ5BYZ and Charles Sanders, NO5W
 
 # Overview
 
 ## What it does and produces
-This software processes log files that have been captured and pre-processed by the log upload system created by Bruce Horn, WA7BNM, bhorn@hornucopia.com . LAQP's site hosted by Bruce is at https://laqp.contesting.com/. Log files MUST be obtained from this system. It does two important things. It makes sure the log file is valid Cabrillo. And it makes operators fill out a form and select from a list of options, and using that it "standardizes" the Cabrillo values. An example of this is the entry of the "CLUB" name for the TQP.
+This software processes log files that have been captured and pre-processed by the log upload system created by Bruce Horn, WA7BNM, bhorn@hornucopia.com . TXQP's site hosted by Bruce is at https://txqp.contesting.com/. Log files MUST be obtained from this system. It does two important things. It makes sure the log file is valid Cabrillo. And it makes operators fill out a form and select from a list of options, and using that it "standardizes" the Cabrillo values. An example of this is the entry of the "CLUB" name for the TQP.
 
 ## Log Validation
 The log uploader system created by Bruce Horn, WA7BNM, bhorn@hornucopia.com does some of the work we would otherwise have to do. This is why it is REQUIRED
@@ -267,7 +267,7 @@ The batch system is run on a Linux system to product the results that are going 
 - the database, party.db. This usually includes multiple years of data.
 - the final report(s) for each year, using a naming convention: final_report_<year>.html
 ## Web system
-The web system for LAQP is currently running on the Fly.io hosting system, at https://laqp.w5gad.org. It runs in a DOCKER container, and there are files to create the Fly.io Docker, including fly.toml, Dockerfile. There is also a docker-compose.yml for running the web system locally. It uses wsgi for running locally, but Fly.io uses nginx (we think).
+The web system for TXQP is currently running on the Fly.io hosting system, at https://txqp.w5gad.org. It runs in a DOCKER container, and there are files to create the Fly.io Docker, including fly.toml, Dockerfile. There is also a docker-compose.yml for running the web system locally. It uses wsgi for running locally, but Fly.io uses nginx (we think).
 
 ## File structure for both Batch and Web
 Reference data files - like county abbreviations - live in the repo in /reference_data
@@ -356,42 +356,42 @@ It's best to read their documentation if using this hosting for the Web app. The
 
 Louisiana QSO Party  
 Jefferson Amateur Radio Club   
-laqp@w5gad.org      
+txqp@w5gad.org      
 Contest Manager: KJ5BYZ  
 or brownell.kj5byz@w5gad.org, no5w@w5gad.org, or brownell@chalstrom.com
 #
 #
 # Partial information - needs editing and restructuring
 
-## Key Differences: LAQP vs TQP
+## Key Differences: TXQP vs TQP
 
 ### Categories
 - **TQP**: Power (QRP/LOW/HIGH) × Mode (CWO/PHO/DGO/MIX) × Location (DX/NTX/TX-Fixed/TX-Mobile) × Operators (SO/MO)
-- **LAQP**: Mode only (Phone/CW-Digital/Mixed) × Location (DX/Non-LA/LA-Fixed/LA-Rover)
+- **TXQP**: Mode only (Phone/CW-Digital/Mixed) × Location (DX/Non-LA/LA-Fixed/LA-Rover)
   - Power is tracked but doesn't create separate categories
   - Number of operators is ignored (everyone lumped together)
   - Overlays (WIRES/TB-WIRES/POTA) are separate awards, not categories
 
 ### Scoring
 - **TQP**: 2 pts phone, 3 pts CW/digital
-- **LAQP**: 2 pts phone, 4 pts CW/digital
+- **TXQP**: 2 pts phone, 4 pts CW/digital
 
 ### Multipliers
 - **TQP**: Counted once for entire contest
-- **LAQP**: Counted per band AND per mode type (CW/Digital vs Phone)
+- **TXQP**: Counted per band AND per mode type (CW/Digital vs Phone)
   - Example: Working CADDO county on 40m CW and 40m SSB = 2 multipliers
 
 ### Bonuses
 - **TQP**: 
   - Mobile tracking: 500 pts per 5 counties worked per mobile
   - County activation: 1000 pts per county with 5+ QSOs
-- **LAQP**:
+- **TXQP**:
   - N5LCC bonus: 100 pts one-time for working club station
   - Rover activation: 50 pts per county activated (rovers only)
 
 ### Contest Period
 - **TQP**: Two sessions (Saturday afternoon + Sunday afternoon)
-- **LAQP**: Single session (Saturday 1400Z - Sunday 0200Z)
+- **TXQP**: Single session (Saturday 1400Z - Sunday 0200Z)
 
 ## Development Roadmap
 
@@ -444,7 +444,7 @@ or brownell.kj5byz@w5gad.org, no5w@w5gad.org, or brownell@chalstrom.com
 - TB-WIRES: Tribander + wires
 - POTA: Parks/campgrounds/refuges
 
-## Clarifications to the LAQP Rules
+## Clarifications to the TXQP Rules
 - Users fill out a web form to upload the Cabrillo log file. If anything in the header section of the log file disagrees with what was entered - or is missing -  the log file is rejected immediately and the user is asked to fix the log file or change the responses on the form, and resubmit. A log file may be resubmitted any number of times, with each new upload replacing the previous ones. Fields required on the form and in the Cabrillo log file are: call sign, email, power, mode, and station type. Overlay is an OPTIONAL field, but if included the values on the upload form and in the Cabrillo file must match.
 
 - QSOs that do not match the “CATEGORY-MODE” are ignored and receive no points. For example, Phone QSOs are ignored if the mode is “CW/DIGITAL”. Of course, "MIXED" mode allows any mode in QSOs.

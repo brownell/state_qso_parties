@@ -152,6 +152,8 @@ def api_individual_results():
             }), 400
         
         # Get result from database
+        # they come back deserialized
+        # i.e. in json format
         result = get_result(year, callsign)
         
         if not result:
@@ -160,12 +162,10 @@ def api_individual_results():
                 'error': f'No results found for {callsign} in {year}'
             }), 404
 
-        # Format result for JSON (convert sets to lists)
-        json_result = deserialize_result(result)
         app.json.sort_keys = False
         return jsonify({
             'success': True,
-            'result': json_result,
+            'result': result,
             'rank' : result['category_rank']
         })
     
@@ -174,7 +174,6 @@ def api_individual_results():
             'success': False,
             'error': f'Server error: {str(e)}'
         }), 500
-
 
 @app.route('/api/final_report/<year>')
 def api_final_report(year):
@@ -231,7 +230,6 @@ def rules():
 def upload():
     """Render the log upload page with user upload form"""
     return render_template('upload.html')
-
 
 @app.route('/health')
 def health():

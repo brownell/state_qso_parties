@@ -4,7 +4,7 @@
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_DIR="/home/brownell/Documents/fly_backups"
 
-BACKUP_DB_FILE="$BACKUP_DIR/db/laqp_$TIMESTAMP.db"
+BACKUP_DB_FILE="$BACKUP_DIR/db/txqp_$TIMESTAMP.db"
 
 BACKUP_LOGS_DIR_2026="$BACKUP_DIR/logs/2026_$TIMESTAMP/"
 LOGS_2026_REMOTE_DIR="data/batch_input/2026"
@@ -15,8 +15,8 @@ mkdir -p "$BACKUP_DIR/db/"
 mkdir -p "$LOGS_2026_REMOTE_DIR"
 
 # Get the Database backup from REMOTE
-flyctl ssh sftp get data/database/laqp.db "$BACKUP_DB_FILE"
-find "$BACKUP_DIR + /db/" -name "laqp_*.db" -mtime +10 -delete
+flyctl ssh sftp get data/database/txqp.db "$BACKUP_DB_FILE"
+find "$BACKUP_DIR + /db/" -name "txqp_*.db" -mtime +10 -delete
 echo "✅ Database backup complete in: $BACKUP_DB_FILE"
 echo "📂 Current database backups in $BACKUP_DIR/db/"
 ls -lht "$BACKUP_DIR/db/"

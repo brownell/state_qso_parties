@@ -2,7 +2,7 @@
 
 # Upload result files (db, final_reports) to Fly.io
 
-curl -s https://laqp.fly.dev/health > /dev/null
+curl -s https://txqp.fly.dev/health > /dev/null
 sleep 3 
 flyctl ssh console << EOF
 sleep 2
@@ -23,7 +23,7 @@ read -rsp $'DELETED all remote files.....Press any key to continue...\n' -n1
 
 echo "============================="
 echo "📦 Creating archive... for final reports"
-tar -czf temp/final_reports.tar.gz -C ../laqp_data/final_reports .
+tar -czf temp/final_reports.tar.gz -C ../txqp_data/final_reports .
 read -rsp $'Created reports tar.....Press any key to continue...\n' -n1
 
 echo "============================="
@@ -52,7 +52,7 @@ read -rsp $'Extracted reports tar on fly.io.....Press any key to continue...\n' 
 echo "============================="
 echo "📤 Uploading to Fly.io... for db"
 flyctl ssh sftp shell << EOF
-put ../laqp_data/database/laqp.db /data/database/laqp.db
+put ../txqp_data/database/txqp.db /data/database/txqp.db
 cd /app/temp
 EOF
 read -rsp $'Uploaded DB tar....Press any key to continue...\n' -n1

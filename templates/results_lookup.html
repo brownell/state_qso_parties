@@ -14,7 +14,7 @@
         <header class="banner">
             <h1>Jefferson Amateur Radio Club</h1>
             <h2>Louisiana QSO Party - Contest Results</h2>
-            <a href="{{url_for('home')}}">Back to LAQP home</a>
+            <a href="{{url_for('home')}}">Back to TXQP home</a>
         </header>
 
         <div class="separator"></div>
@@ -57,6 +57,19 @@
                             Show Final Report
                         </button>
                     </div>
+
+                    <!-- <div class="option-card">
+                        <h5>Final Contest Report</h5>
+                        <p>View complete results with all category ranking tables</p>
+                        <a href="{{ url_for('static', filename='pdfs/final_report_2026.pdf') }}" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            class="pdf-button">
+                            <button type="button" class="btn-secondary">
+                                Open Final Report PDF in Another Tab
+                            </button>
+                            </a>
+                    </div> -->
                 </div>
 
                 <!-- Loading indicator -->
@@ -120,7 +133,7 @@
 
         <footer>
             <p>&copy; 2026 Jefferson Amateur Radio Club | Louisiana QSO Party</p>
-            <p><a href="https://laqp.contesting.com" style="color: #8B0000; text-decoration: none;">← Submit Your Log</a></p>
+            <p><a href="https://txqp.contesting.com" style="color: #8B0000; text-decoration: none;">← Submit Your Log</a></p>
         </footer>
     </div>
 

@@ -26,11 +26,11 @@ RUN mkdir -p /data/batch_input \
     /data/final_reports 
 
 # Create non-root user for running the app
-RUN useradd -m -u 1000 laqp && \
-    chown -R laqp:laqp /app /data
+RUN useradd -m -u 1000 txqp && \
+    chown -R txqp:txqp /app /data
 
 # Switch to non-root user
-USER laqp
+USER txqp
 
 # Expose port
 EXPOSE 5000

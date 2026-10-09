@@ -100,7 +100,7 @@ function generateResultsHTML(result) {
     
     // Counties worked (for NON-LA stations)
     if (result.counties_worked && result.counties_worked.length > 0) {
-        html += renderResultItem('Counties Worked', result.counties_worked_multiplier);
+        html += renderResultItem('Counties Worked', result.mtb_bonus_points);
         html += '<div class="result-list">';
         result.counties_worked.forEach(county => {
             html += `<span class="result-list-item">${county}</span>`;
@@ -153,6 +153,16 @@ function generateResultsHTML(result) {
     //         bonusesHTML += renderResultItem('N5LCC Contacts', result.num_n5lcc_contacts);
     //     }
     // }
+    //     if (result.rover_bonus_points > 0) {
+    //     hasBonuses = true;
+    //     bonusesHTML += renderResultItem('Rover Bonus Points', result.rover_bonus_points.toLocaleString());
+    // }
+
+    // bonusesHTML += '</div>';
+
+    // if (hasBonuses) {
+    //     html += bonusesHTML;
+    // }
 
     if (result.counties_activated && result.counties_activated.length > 0) {
         hasBonuses = true;
@@ -201,7 +211,6 @@ function renderResultItem(label, value, highlight = false) {
         </div>
     `;
 }
-
 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('uploadForm');

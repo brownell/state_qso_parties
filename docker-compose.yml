@@ -1,14 +1,14 @@
 version: '3.8'
 
 services:
-  laqp-web:
+  txqp-web:
     build: .
-    container_name: laqp-web
+    container_name: txqp-web
     ports:
       - "5000:5000"
     volumes:
       # Persist database
-      - laqp-data:/data
+      - txqp-data:/data
       
       # Mount reference data files (read-only from host)
       - ./data/reference_data:/data/reference_data:ro
@@ -17,7 +17,7 @@ services:
       - ./config:/app/config:ro
       
       # Temporary files (doesn't need persistence)
-      - laqp-temp:/tmp
+      - txqp-temp:/tmp
     
     environment:
       # Flask settings
@@ -25,7 +25,7 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       
       # Database (in volume)
-      - DATABASE_PATH=/data/database/laqp.db
+      - DATABASE_PATH=/data/database/txqp.db
       
       # File paths (in volumes)
       - BATCH_INPUT_DIR=/data/batch_input
@@ -47,12 +47,12 @@ services:
 
 # Named volumes for data persistence
 volumes:
-  laqp-data:
+  txqp-data:
     driver: local
-  laqp-temp:
+  txqp-temp:
     driver: local
 
 # Networks
 networks:
   default:
-    name: laqp-network
+    name: txqp-network

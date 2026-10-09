@@ -78,13 +78,13 @@ restore_volume() {
 }
 
 # Restore database
-restore_volume "laqp-database" "database.tar.gz"
+restore_volume "txqp-database" "database.tar.gz"
 
 # Restore logs
-restore_volume "laqp-logs" "logs.tar.gz"
+restore_volume "txqp-logs" "logs.tar.gz"
 
 # Restore HTML results
-restore_volume "laqp-results" "results.tar.gz"
+restore_volume "txqp-results" "results.tar.gz"
 
 # Start containers
 echo ""

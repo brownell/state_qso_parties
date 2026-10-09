@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for laqp on 2026-03-12T21:21:58-05:00
+# fly.toml app configuration file generated for txqp on 2026-03-12T21:21:58-05:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "laqp"
+app = "txqp"
 primary_region = 'iad'
 
 [build]
@@ -13,10 +13,10 @@ primary_region = 'iad'
 [env]
   CONFIG_DIR = '/app/config'
   CONTEST_YEAR = "2026"
-  DATABASE_PATH = "/data/laqp.db"
+  DATABASE_PATH = "/data/txqp.db"
 
 [[mounts]]
-  source = 'laqp_data'
+  source = 'txqp_data'
   destination = '/data'
 
 [http_service]

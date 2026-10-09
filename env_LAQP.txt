@@ -4,7 +4,7 @@
 # ============================================================================
 # CONTEST
 # ============================================================================
-CONTEST='laqp'  
+CONTEST='txqp'  
 CONTEST_NAME= 'Louisiana QSO Party' 
 
 # ============================================================================
@@ -29,13 +29,13 @@ MAX_UPLOAD_SIZE=5242880ex
 # ============================================================================
 # DATABASE
 # ============================================================================
-DATABASE_FILE=..\laqp_data\database\laqp.db  
+DATABASE_FILE=..\txqp_data\database\txqp.db  
 
 # ============================================================================
 # DIRECTORIES
 # ============================================================================
-BATCH_INPUT_DIR=..\laqp_data\batch_input  
-FINAL_REPORTS_DIR=..\laqp_data\final_reports   
+BATCH_INPUT_DIR=..\txqp_data\batch_input  
+FINAL_REPORTS_DIR=..\txqp_data\final_reports   
 REFERENCE_DATA_DIR=.\reference_data
 ALLOWED_LOG_EXTENSIONS={'log','txt','cbr'}
 
@@ -43,7 +43,7 @@ ALLOWED_LOG_EXTENSIONS={'log','txt','cbr'}
 # Admin settings
 # ============================================================================
 # Admin settings (if needed in future)
-# ADMIN_EMAIL=laqp@w5gad.org
+# ADMIN_EMAIL=txqp@w5gad.org
 # W5GAD_URL=w5gad.org
 
 # ============================================================================
@@ -58,4 +58,4 @@ ALLOWED_LOG_EXTENSIONS={'log','txt','cbr'}
 
 # Logging
 # LOG_LEVEL=INFO
-# LOG_FILE=data\logs\laqp.log
+# LOG_FILE=data\logs\txqp.log

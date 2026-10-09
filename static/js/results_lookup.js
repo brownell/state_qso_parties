@@ -1,5 +1,5 @@
 // Louisiana QSO Party Results Lookup - JavaScript
-
+console.log("js has loaded")
 document.addEventListener('DOMContentLoaded', function() {
     const yearSelect = document.getElementById('year');
     const callsignInput = document.getElementById('callsign');
@@ -21,22 +21,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const year = yearSelect.value.trim();
         const callsign = callsignInput.value.trim().toUpperCase();
         // statsH3.innerText = `Score & Statistics for ${year} Louisiana QSO Party`;
-
-
         if (!year) {
             showMessage('Please select a contest year', 'error');
             return;
         }
-
         if (!callsign) {
             showMessage('Please enter your callsign', 'error');
             return;
         }
-
         await loadIndividualResults(year, callsign);
     });
 
     // Show final report
+    // TODO PDF final reort
     showFinalReportBtn.addEventListener('click', async function() {
         const year = yearSelect.value.trim();
 
@@ -44,7 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
             showMessage('Please select a contest year', 'error');
             return;
         }
-
         await loadFinalReport(year);
     });
 
@@ -61,16 +57,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    year: year,
+                    year: 2026,
                     callsign: callsign
                 })
             });
 
             const data = await response.json();
             hideLoading();
-
             if (data.success) {
-                displayIndividualResults(data.result, data.rankings_display);
+                displayIndividualResults(data.result);
                 scrollToResults();
             } else {
                 showMessage(data.error || 'Results not found', 'error');
@@ -108,9 +103,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Display individual results
-    function displayIndividualResults(result, rankingsDisplay) {
+    function displayIndividualResults(result) {
         // Generate certificate
-        const certificateHTML = generateCertificate(result, rankingsDisplay);
+        const certificateHTML = generateCertificate(result);
         document.getElementById('certificateContent').innerHTML = certificateHTML;
 
         // Generate statistics (reuse existing format function from upload.js)
@@ -135,22 +130,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Generate certificate HTML
-    function generateCertificate(result, rankingsDisplay) {
-        rankingsHTML = '<ul class="rankings-list">';
-        for (const [key, value] of Object.entries(rankingsDisplay)) {
-            console.log(`${key} → ${value}`);
-            rankingsHTML += `<li class="rankings-item"># ${value}  in  ${key}</li>`;
-        }
-        rankingsHTML += '</ul>';
-        console.log('Rankings Display:', rankingsDisplay);
-        console.log('Rankings HTML:', rankingsHTML);
-
+    function generateCertificate(result) {
+// TODO club might be string 'None'
         return `
             <div class="certificate">
                 <div class="certificate-header">
-                <div class="certificate-title">${result.year} Louisiana QSO Party</div>
-                    <div class="certificate-org">Jefferson Amateur Radio Club</div>
-                    <div class="certificate-subtitle">Takes pleasure in awarding this Certificate of Merit to</div>
+                <div class="certificate-title">${result.year} Texas QSO Party</div>
+                    <div class="certificate-org">Texas DX Society</div>
+                    <div class="certificate-subtitle">Takes DX Society pleasure in awarding this Certificate of Merit to</div>
                 </div>
 
                 <div class="certificate-body">
@@ -164,7 +151,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
 
                 <div class="certificate-rankings">
-                    ${rankingsHTML}
+                    <h2>${result.cat}</h2>
+                    <p>Place ${result.rank}
                 </div>
                 <div class="certificate-footer-container">
                     <div class="certificate-footer">
@@ -189,15 +177,18 @@ document.addEventListener('DOMContentLoaded', function() {
         if (result.name) {
             html += `<div class="result-item"><div class="result-label">Operator Name:</div><div class="result-value">${result.name}</div></div>`;
         }
-        if (result.overlay) {
-            html += `<div class="result-item"><div class="result-label">Overlay:</div><div class="result-value">${result.overlay}</div></div>`;
+        // if (result.overlay) {
+        //     html += `<div class="result-item"><div class="result-label">Overlay:</div><div class="result-value">${result.overlay}</div></div>`;
+        // }
+        if (result.dx_entity != result.callsign) {
+            html += `<div class="result-item"><div class="result-label">Station Location:</div><div class="result-value">${result.dx_entity}</div></div>`;
+        } else {
+            html += `<div class="result-item"><div class="result-label">Station Location:</div><div class="result-value">${result.category_location}</div></div>`;
         }
-        html += `<div class="result-item"><div class="result-label">Location Type:</div><div class="result-value">${result.location_type}</div></div>`;
-        if (result.location_type != 'LA-FIXED' && result.location_type != 'LA-ROVER') {
-            html += `<div class="result-item"><div class="result-label">Exchange (from QSOs):</div><div class="result-value">${result.exchange}</div></div>`;
-        }
-        html += `<div class="result-item"><div class="result-label">Mode:</div><div class="result-value">${result.mode_category}</div></div>`;
-        html += `<div class="result-item"><div class="result-label">Power Level:</div><div class="result-value">${result.power_level}</div></div>`;
+        html += `<div class="result-item"><div class="result-label">Station Type:</div><div class="result-value">${result.category_station}</div></div>`;
+        html += `<div class="result-item"><div class="result-label">Station Type:</div><div class="result-value">${result.category_station}</div></div>`;
+        html += `<div class="result-item"><div class="result-label">Mode:</div><div class="result-value">${result.category_mode}</div></div>`;
+        html += `<div class="result-item"><div class="result-label">Power Level:</div><div class="result-value">${result.category_power}</div></div>`;
         html += '</div>';
 
         // Score Summary
@@ -206,68 +197,77 @@ document.addEventListener('DOMContentLoaded', function() {
         if (result.claimed_score) {
             html += `<div class="result-item"><div class="result-label">Claimed Score:</div><div class="result-value">${result.claimed_score.toLocaleString()}</div></div>`;
         }
+        if (result.cab_bonus_points > 0 || result.mtb_bonus_points > 0) {
+            html += `<div class="result-item"><div class="result-label">Score Before Bonus Added</div><div class="result-value">${result.score_wo_bonus}</div></div>`;
+        }
+        if (result.cab_bonus_points > 0) {
+            html += `<div class="result-item"><div class="result-label">County Activation Bonus Points</div><div class="result-value">${result.cab_bonus_points}</div></div>`;
+        }
+        if (result.mtb_bonus_points > 0) {
+            html += `<div class="result-item"><div class="result-label">Mobile Tracking Bonus Points</div><div class="result-value">${result.cab_bonus_points}</div></div>`;
+        }
         html += `<div class="result-item"><div class="result-label">QSO Points:</div><div class="result-value">${result.qso_points.toLocaleString()}</div></div>`;
-        html += `<div class="result-item"><div class="result-label">Total Multipliers:</div><div class="result-value">${result.total_multipliers}</div></div>`;
+        html += `<div class="result-item"><div class="result-label">Total Multipliers:</div><div class="result-value">${result.total_multipliers.toLocaleString}</div></div>`;
 
-        // Bonuses
-        let hasBonuses = false;
-        let bonusesHTML = '<div class="result-group">';
-        bonusesHTML += '<h4>Bonuses</h4>';
-
-        if (result.worked_n5lcc && result.worked_n5lcc !== 'N/A') {
-            hasBonuses = true;
-            bonusesHTML += renderResultItem('Worked N5LCC', result.worked_n5lcc ? 'Yes' : 'No');
-            if (result.num_n5lcc_contacts > 0) {
-                bonusesHTML += renderResultItem('N5LCC Contacts', result.num_n5lcc_contacts);
-            }
-        }
-
-        if (result.location_type == 'LA_ROVER' && result.counties_activated && result.counties_activated.length > 0) {
-            hasBonuses = true;
-            bonusesHTML += renderResultItem('Counties Activated (Rover)', result.counties_activated.length);
-            bonusesHTML += '<div class="result-list">';
-            result.counties_activated.forEach(county => {
-                bonusesHTML += `<span class="result-list-item">${county}</span>`;
-            });
-            bonusesHTML += '</div>';
-        }
-
-        if (result.rover_bonus_points > 0) {
-            hasBonuses = true;
-            bonusesHTML += renderResultItem('Rover Bonus Points', result.rover_bonus_points.toLocaleString());
-        }
-
-        bonusesHTML += '</div>';
-
-        if (hasBonuses) {
-            html += bonusesHTML;
-        }
-        html += '</div>';
+        // if (result.worked_n5lcc && result.worked_n5lcc !== 'N/A') {
+        //     hasBonuses = true;
+        //     bonusesHTML += renderResultItem('Worked N5LCC', result.worked_n5lcc ? 'Yes' : 'No');
+        //     if (result.num_n5lcc_contacts > 0) {
+        //         bonusesHTML += renderResultItem('N5LCC Contacts', result.num_n5lcc_contacts);
+        //     }
+        // }
 
         // QSO Statistics
         html += '<div class="result-group"><h4>QSO Statistics</h4>';
+        html += '<p>To see which QSO were not scored, see the section of messages below.</p>'
         html += `<div class="result-item"><div class="result-label">Total QSOs:</div><div class="result-value ">${result.total_qsos.toLocaleString()}</div></div>`;
         html += `<div class="result-item"><div class="result-label">Valid QSOs:</div><div class="result-value ">${result.valid_qsos.toLocaleString()}</div></div>`;
+        if (result.cw_qsos > 0) {
+        html += `<div class="result-item"><div class="result-label">CW QSOs:</div><div class="result-value ">${result.cw_qsos.toLocaleString()}</div></div>`; }
+        if (result.ph_qsos > 0) {
+        html += `<div class="result-item"><div class="result-label">Phone QSOs:</div><div class="result-value ">${result.ph_qsos.toLocaleString()}</div></div>`; }
+        if (result.rt_qsos > 0) {
+        html += `<div class="result-item"><div class="result-label">RTTY QSOs:</div><div class="result-value ">${result.rt_qsos.toLocaleString()}</div></div>`; }
+        if (result.dg_qsos > 0) {
+        html += `<div class="result-item"><div class="result-label">Other Digital QSOs:</div><div class="result-value ">${result.dg_qsos.toLocaleString()}</div></div>`; }
         html += '</div>';
 
-        // Multipliers
-        html += '<div class="result-group">';
-        html += '<h4>Multipliers</h4>';
-        html += '<table class="result-table">';
-        html += '<thead><tr><th>Multiplier Type</th><th>Count</th></tr></thead>';
-        html += '<tbody>';
-        html += `<tr><td>Total Multipliers</td><td>${result.total_multipliers}</td></tr>`;
-        html += `<tr><td>County Multiplier</td><td>${result.counties_worked_multiplier}</td></tr>`;
-        html += `<tr><td>State Multiplier</td><td>${result.states_worked_multiplier}</td></tr>`;
-        html += `<tr><td>Province Multiplier</td><td>${result.provinces_worked_multiplier}</td></tr>`;
-        html += `<tr><td>DX Multiplier</td><td>${result.dx_worked_multiplier}</td></tr>`;
-        html += '</tbody></table>';
+        if (result.uniques > 0) {
+        html += `<div class="result-item"><div class="result-label">Uniques (points awarded):</div><div class="result-value ">${result.uniques.toLocaleString()}</div></div>`; }
+        
+        if (result.nils > 0) {
+        html += `<div class="result-item"><div class="result-label">Not In Log (no points):</div><div class="result-value ">${result.nils.toLocaleString()}</div></div>`; }
+        html += '</div>';
+        
+        if (result.busteds > 0) {
+        html += `<div class="result-item"><div class="result-label"Busted Callsign (no points):</div><div class="result-value ">${result.busteds.toLocaleString()}</div></div>`; }
+        html += '</div>';
+        
+        if (result.dup_qsos > 0) {
+        html += `<div class="result-item"><div class="result-label">Duplicate QSOs (no points):</div><div class="result-value ">${result.dup_qsos.toLocaleString()}</div></div>`; }
+        html += '</div>';
+        
+        if (result.invalid_exchange_qso > 0) {
+        html += `<div class="result-item"><div class="result-label">QSOs With Invalid Exchange:</div><div class="result-value ">${result.invalid_exchange_qso.toLocaleString()}</div></div>`; }
+        html += '</div>';
+        
+        if (result.other_bad_qsos > 0) {
+        html += `<div class="result-item"><div class="result-label">Other Bad Qsos (no points):</div><div class="result-value ">${result.other_bad_qsos.toLocaleString()}</div></div>`; }
         html += '</div>';
 
+        // // Multipliers
+        // html += '<div class="result-group">';
+        // html += '<h4>Multipliers</h4>';
+        // html += '<table class="result-table">';
+        // html += '<thead><tr><th>Multiplier Type</th><th>Count</th></tr></thead>';
+        // html += '<tbody>';
+        // html += `<tr><td>Total Multipliers</td><td>${result.total_multipliers}</td></tr>`;        
+        // html += '</tbody></table>';
+        // html += '</div>';
 
-        // counties activated for LA-FIXED
-        if (result.location_type == 'LA-FIXED' && result.counties_activated && result.counties_activated.length > 0) {
-            html += renderResultItem('County Activated', result.counties_activated.length);
+        // counties activated for 
+        if (result.category_station == 'MOB' && result.counties_activated && result.counties_activated.length > 0) {
+            html += renderResultItem('Counties Activated', result.counties_activated.length);
             html += '<div class="result-list">';
             result.counties_activated.forEach(county => {
                 html += `<span class="result-list-item">${county}</span>`;
@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Counties worked (for NON-LA stations)
         if (result.counties_worked && result.counties_worked.length > 0) {
-            html += renderResultItem('Counties Worked', result.counties_worked_multiplier);
+            html += renderResultItem('Counties Worked', result.counties_worked.length);
             html += '<div class="result-list">';
             result.counties_worked.forEach(county => {
                 html += `<span class="result-list-item">${county}</span>`;
@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // States worked (for LA stations)
         if (result.states_worked && result.states_worked.length > 0) {
-            html += renderResultItem('States Worked', result.states_worked_multiplier);
+            html += renderResultItem('States Worked', result.states_worked.length);
             html += '<div class="result-list">';
             result.states_worked.forEach(state => {
                 html += `<span class="result-list-item">${state}</span>`;
@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Provinces worked (for LA stations)
         if (result.provinces_worked && result.provinces_worked.length > 0) {
-            html += renderResultItem('Provinces Worked', result.provinces_worked_multiplier);
+            html += renderResultItem('Provinces Worked', result.provinces_worked.length);
             html += '<div class="result-list">';
             result.provinces_worked.forEach(province => {
                 html += `<span class="result-list-item">${province}</span>`;
@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // DX worked (for LA stations)
         if (result.dx_worked && result.dx_worked.length > 0) {
-            html += renderResultItem('DX Worked', result.dx_worked_multiplier);
+            html += renderResultItem('DX Worked', result.dx_worked.length);
             html += '<div class="result-list">';
             result.dx_worked.forEach(dx => {
                 html += `<span class="result-list-item">${dx}</span>`;
@@ -468,6 +468,7 @@ function printStatistics() {
     document.body.classList.remove('print-statistics');
 }
 
+// TODO pdf final report
 function printFinalReport() {
     document.body.classList.add('print-final-report');
     window.print();

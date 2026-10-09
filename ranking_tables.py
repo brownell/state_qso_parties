@@ -174,7 +174,7 @@ def save_all_rankings():
 
 
 if __name__ == "__main__":
-    print("LAQP Leaderboard Generator")
+    print("TXQP Leaderboard Generator")
     print("This module should be imported, not run directly.")
     print()
     print("Usage:")

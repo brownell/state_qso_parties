@@ -1,7 +1,7 @@
 #!/bin/bash
 # Upload all log files to Fly.io
 
-curl -s https://laqp.fly.dev/health > /dev/null
+curl -s https://txqp.fly.dev/health > /dev/null
 sleep 3 
 flyctl ssh console << EOF
 sleep 3
@@ -11,7 +11,7 @@ EOF
 echo "should be back at local prompt"
 YEAR=$1
 echo "year is $YEAR"
-LOCAL_DIR="../laqp_data/batch_input/$YEAR"
+LOCAL_DIR="../txqp_data/batch_input/$YEAR"
 REMOTE_DIR="/data/batch_input/$YEAR"
 echo "local $LOCAL_DIR, remote $REMOTE_DIR"
 

@@ -26,11 +26,11 @@ RUN mkdir -p /app/data \
     /app/temp
 
 # Create non-root user for running the app
-RUN useradd -m -u 1000 laqp && \
-    chown -R laqp:laqp /app
+RUN useradd -m -u 1000 txqp && \
+    chown -R txqp:txqp /app
 
 # Switch to non-root user
-USER laqp
+USER txqp
 
 # Expose port
 EXPOSE 5000
@@ -38,7 +38,7 @@ EXPOSE 5000
 # Environment variables
 ENV FLASK_APP=app.py \
     PYTHONUNBUFFERED=1 \
-    DATABASE_PATH=/app/database/laqp.db \
+    DATABASE_PATH=/app/database/txqp.db \
     UPLOAD_FOLDER=/app/logs/incoming \
     HTML_RESULTS_DIR=/app/HTML_RESULTS \
     TEMP_DIR=/app/temp

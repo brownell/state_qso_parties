@@ -1,5 +1,5 @@
 """
-Test script for LAQP cross-checking module
+Test script for TXQP cross-checking module
 
 This creates synthetic test data to verify cross-checking logic works correctly.
 Run this before processing real contest data.
@@ -348,7 +348,7 @@ if __name__ == '__main__':
         clear_test_data()
     else:
         print("=" * 70)
-        print("LAQP Cross-Checking Test Suite")
+        print("TXQP Cross-Checking Test Suite")
         print("=" * 70)
         print()
         

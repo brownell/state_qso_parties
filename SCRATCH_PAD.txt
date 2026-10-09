@@ -1,4 +1,6 @@
 
+
+
   SELECT callsign, final_score, cw_qsos, ph_qsos, qso_points, total_multipliers, score_wo_bonus, mtb_bonus_points, exchange, cat FROM contest_results  WHERE year = ?' AND cat = ?ORDER BY final_score DESC 
   
 

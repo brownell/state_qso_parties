@@ -10,7 +10,7 @@ from pathlib import Path
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from laqp.core.individual_results import IndividualResultsGenerator
+from txqp.core.individual_results import IndividualResultsGenerator
 
 def test_individual_results():
     """Test generating individual result files"""

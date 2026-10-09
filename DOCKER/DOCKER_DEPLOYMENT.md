@@ -1,17 +1,17 @@
 # Louisiana QSO Party - Docker Deployment Guide
 
-This guide covers deploying the LAQP web application using Docker.
+This guide covers deploying the TXQP web application using Docker.
 
 ## 🐳 What Docker Handles
 
 ### Persistent Data (Survives Container Restarts)
-- ✅ **SQLite Database** → Volume: `laqp-database`
-- ✅ **Uploaded Logs** → Volume: `laqp-logs`
-- ✅ **HTML Results** → Volume: `laqp-results`
+- ✅ **SQLite Database** → Volume: `txqp-database`
+- ✅ **Uploaded Logs** → Volume: `txqp-logs`
+- ✅ **HTML Results** → Volume: `txqp-results`
 - ✅ **Data Files** (parishes, states) → Mounted from host
 
 ### Temporary Data (Cleared on Restart)
-- ✅ **Temp Files** → Volume: `laqp-temp` (ephemeral)
+- ✅ **Temp Files** → Volume: `txqp-temp` (ephemeral)
 - ✅ **Application Cache** → Inside container
 
 ## 📁 Directory Structure
@@ -135,7 +135,7 @@ docker-compose logs -f
 docker-compose logs --tail=100
 
 # View logs for specific service
-docker-compose logs -f laqp-web
+docker-compose logs -f txqp-web
 ```
 
 ### Rebuild
@@ -153,13 +153,13 @@ docker-compose up -d
 
 ```bash
 # Open shell in running container
-docker-compose exec laqp-web bash
+docker-compose exec txqp-web bash
 
 # Run Python in container
-docker-compose exec laqp-web python
+docker-compose exec txqp-web python
 
 # Run one-off command
-docker-compose exec laqp-web ls -la /app/database
+docker-compose exec txqp-web ls -la /app/database
 ```
 
 ## 💾 Data Persistence
@@ -170,31 +170,31 @@ Docker creates named volumes for persistent data:
 
 ```bash
 # List volumes
-docker volume ls | grep laqp
+docker volume ls | grep txqp
 
 # Inspect volume
-docker volume inspect laqp-database
+docker volume inspect txqp-database
 
 # Backup volume
-docker run --rm -v laqp-database:/data -v $(pwd):/backup \
-  alpine tar czf /backup/laqp-database-backup.tar.gz -C /data .
+docker run --rm -v txqp-database:/data -v $(pwd):/backup \
+  alpine tar czf /backup/txqp-database-backup.tar.gz -C /data .
 
 # Restore volume
-docker run --rm -v laqp-database:/data -v $(pwd):/backup \
-  alpine tar xzf /backup/laqp-database-backup.tar.gz -C /data
+docker run --rm -v txqp-database:/data -v $(pwd):/backup \
+  alpine tar xzf /backup/txqp-database-backup.tar.gz -C /data
 ```
 
 ### Database Location
 
-Inside container: `/app/database/laqp.db`
+Inside container: `/app/database/txqp.db`
 
 To access from host:
 ```bash
 # Copy database out
-docker cp laqp-web:/app/database/laqp.db ./laqp.db
+docker cp txqp-web:/app/database/txqp.db ./txqp.db
 
 # Copy database in
-docker cp ./laqp.db laqp-web:/app/database/laqp.db
+docker cp ./txqp.db txqp-web:/app/database/txqp.db
 ```
 
 ### HTML Results Location
@@ -204,7 +204,7 @@ Inside container: `/app/HTML_RESULTS/`
 To add pre-generated results:
 ```bash
 # Copy results into container
-docker cp HTML_RESULTS/2026/ laqp-web:/app/HTML_RESULTS/
+docker cp HTML_RESULTS/2026/ txqp-web:/app/HTML_RESULTS/
 ```
 
 ## 🔐 Security
@@ -223,7 +223,7 @@ SECRET_KEY=<generated-key-here>
 
 ### Run as Non-Root
 
-The container runs as user `laqp` (UID 1000), not root.
+The container runs as user `txqp` (UID 1000), not root.
 
 ### File Permissions
 
@@ -231,10 +231,10 @@ If you have permission issues with volumes:
 
 ```bash
 # Check volume ownership
-docker-compose exec laqp-web ls -la /app/database
+docker-compose exec txqp-web ls -la /app/database
 
 # Fix ownership (if needed)
-docker-compose exec --user root laqp-web chown -R laqp:laqp /app/database
+docker-compose exec --user root txqp-web chown -R txqp:txqp /app/database
 ```
 
 ## 🌐 Production Deployment
@@ -246,7 +246,7 @@ Create `nginx.conf`:
 ```nginx
 server {
     listen 80;
-    server_name laqp.example.com;
+    server_name txqp.example.com;
 
     location / {
         proxy_pass http://localhost:5000;
@@ -271,7 +271,7 @@ server {
 sudo apt-get install certbot python3-certbot-nginx
 
 # Get certificate
-sudo certbot --nginx -d laqp.example.com
+sudo certbot --nginx -d txqp.example.com
 
 # Auto-renewal is configured automatically
 ```
@@ -280,7 +280,7 @@ sudo certbot --nginx -d laqp.example.com
 
 ```yaml
 services:
-  laqp-web:
+  txqp-web:
     # ... existing config ...
     environment:
       - FLASK_ENV=production
@@ -304,7 +304,7 @@ curl http://localhost:5000/health
 
 ```bash
 # View resource usage
-docker stats laqp-web
+docker stats txqp-web
 
 # View disk usage
 docker system df
@@ -340,13 +340,13 @@ If you need to run database migrations:
 
 ```bash
 # Access container
-docker-compose exec laqp-web bash
+docker-compose exec txqp-web bash
 
 # Run migration script
 python migrate.py
 
 # Or directly
-docker-compose exec laqp-web python migrate.py
+docker-compose exec txqp-web python migrate.py
 ```
 
 ## 🐛 Troubleshooting
@@ -355,7 +355,7 @@ docker-compose exec laqp-web python migrate.py
 
 ```bash
 # Check logs
-docker-compose logs laqp-web
+docker-compose logs txqp-web
 
 # Check if port 5000 is in use
 lsof -i :5000
@@ -377,7 +377,7 @@ docker-compose restart
 # Fix volume permissions
 docker-compose down
 docker-compose up -d
-docker-compose exec --user root laqp-web chown -R laqp:laqp /app
+docker-compose exec --user root txqp-web chown -R txqp:txqp /app
 ```
 
 ### Can't Access from Outside
@@ -391,14 +391,14 @@ sudo ufw allow 5000
 docker-compose ps
 
 # Check port mapping
-docker port laqp-web
+docker port txqp-web
 ```
 
 ### Data Files Not Found
 
 ```bash
 # Verify data files are mounted
-docker-compose exec laqp-web ls -la /app/data/
+docker-compose exec txqp-web ls -la /app/data/
 
 # If missing, check docker-compose.yml volumes section
 # Make sure ./data exists on host
@@ -418,15 +418,15 @@ BACKUP_DIR="backups/$DATE"
 mkdir -p $BACKUP_DIR
 
 # Backup database
-docker run --rm -v laqp-database:/data -v $(pwd)/$BACKUP_DIR:/backup \
+docker run --rm -v txqp-database:/data -v $(pwd)/$BACKUP_DIR:/backup \
   alpine tar czf /backup/database.tar.gz -C /data .
 
 # Backup logs
-docker run --rm -v laqp-logs:/data -v $(pwd)/$BACKUP_DIR:/backup \
+docker run --rm -v txqp-logs:/data -v $(pwd)/$BACKUP_DIR:/backup \
   alpine tar czf /backup/logs.tar.gz -C /data .
 
 # Backup results
-docker run --rm -v laqp-results:/data -v $(pwd)/$BACKUP_DIR:/backup \
+docker run --rm -v txqp-results:/data -v $(pwd)/$BACKUP_DIR:/backup \
   alpine tar czf /backup/results.tar.gz -C /data .
 
 echo "Backup complete: $BACKUP_DIR"
@@ -441,15 +441,15 @@ echo "Backup complete: $BACKUP_DIR"
 BACKUP_DIR=$1
 
 # Restore database
-docker run --rm -v laqp-database:/data -v $(pwd)/$BACKUP_DIR:/backup \
+docker run --rm -v txqp-database:/data -v $(pwd)/$BACKUP_DIR:/backup \
   alpine tar xzf /backup/database.tar.gz -C /data
 
 # Restore logs
-docker run --rm -v laqp-logs:/data -v $(pwd)/$BACKUP_DIR:/backup \
+docker run --rm -v txqp-logs:/data -v $(pwd)/$BACKUP_DIR:/backup \
   alpine tar xzf /backup/logs.tar.gz -C /data
 
 # Restore results
-docker run --rm -v laqp-results:/data -v $(pwd)/$BACKUP_DIR:/backup \
+docker run --rm -v txqp-results:/data -v $(pwd)/$BACKUP_DIR:/backup \
   alpine tar xzf /backup/results.tar.gz -C /data
 
 echo "Restore complete from: $BACKUP_DIR"
@@ -462,7 +462,7 @@ echo "Restore complete from: $BACKUP_DIR"
 ```yaml
 # docker-compose.dev.yml
 services:
-  laqp-web:
+  txqp-web:
     build: .
     volumes:
       # Mount code for live reload
@@ -495,7 +495,7 @@ Use the standard `docker-compose.yml` with:
 |----------|---------|-------------|
 | `SECRET_KEY` | (required) | Flask secret key |
 | `CONTEST_YEAR` | 2026 | Current contest year |
-| `DATABASE_PATH` | /app/database/laqp.db | SQLite database path |
+| `DATABASE_PATH` | /app/database/txqp.db | SQLite database path |
 | `UPLOAD_FOLDER` | /app/logs/incoming | Upload directory |
 | `HTML_RESULTS_DIR` | /app/HTML_RESULTS | Results output directory |
 | `TEMP_DIR` | /app/temp | Temporary files directory |
@@ -519,9 +519,9 @@ Use the standard `docker-compose.yml` with:
 If you encounter issues:
 
 1. Check logs: `docker-compose logs -f`
-2. Verify volumes: `docker volume ls | grep laqp`
+2. Verify volumes: `docker volume ls | grep txqp`
 3. Check container status: `docker-compose ps`
-4. Access container: `docker-compose exec laqp-web bash`
+4. Access container: `docker-compose exec txqp-web bash`
 5. Review this guide's troubleshooting section
 
 ---

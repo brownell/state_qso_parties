@@ -2,6 +2,6 @@
 # tests/__init__.py
 # ============================================================
 """
-Test suite for LAQP processor
+Test suite for TXQP processor
 """
 __all__ = []

@@ -265,11 +265,15 @@ class ContestDatabase:
         if result:
             display_result = {}
             try:
-                # INTEGERS AND sTRINGHS
-                for typ in list([ 'set', 'integer', 'string', 'list']):
+                # INTEGERS AND STRINGS
+                for typ in list(['integer', 'string']):
                     for fld in self.fields[typ]:
-                        display_result[fld] = json.loads(result.get(fld, self.types_of_fields[typ]))
+                        display_result[fld] = result.get(fld, self.types_of_fields[typ])
 
+                # SETS AND LISTS
+                for typ in list([ 'set', 'list']):
+                                    for fld in self.fields[typ]:
+                                        display_result[fld] = json.loads(result.get(fld, self.types_of_fields[typ]))
                 # LISTS
                 for field in self.dict_fields:
                     if field in result and result[field]:
@@ -283,10 +287,8 @@ class ContestDatabase:
 
             except Exception as e:
                 s.out_files['errors'].write(f"could not deserialize {result}")
-        else:
-            print(f"deserialize called with row {row} and columns {columns}")
         
-        return result
+        return display_result
     
     def save_result(self, contest_year: str, result: Dict) -> bool:
         """
@@ -353,6 +355,9 @@ class ContestDatabase:
                 result = {}
                 for i, col in enumerate(columns):
                     result[col] = row[i]
+# TODO add convertion tables for mode, power, and station
+# TODO convert cab.cat to long category name
+# TODO conversion table for qsos_by_mode
                 return self._deserialize_result(result)
                 
             return None

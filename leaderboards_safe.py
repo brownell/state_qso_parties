@@ -285,7 +285,7 @@ def generate_leaderboards(year: str, leaderboards_config: List,
 
 
 if __name__ == "__main__":
-    print("LAQP Leaderboard Generator")
+    print("TXQP Leaderboard Generator")
     print("This module should be imported, not run directly.")
     print()
     print("Usage:")

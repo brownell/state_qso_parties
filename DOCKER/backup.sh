@@ -41,13 +41,13 @@ backup_volume() {
 }
 
 # Backup database
-backup_volume "laqp-database" "database.tar.gz"
+backup_volume "txqp-database" "database.tar.gz"
 
 # Backup logs
-backup_volume "laqp-logs" "logs.tar.gz"
+backup_volume "txqp-logs" "logs.tar.gz"
 
 # Backup HTML results
-backup_volume "laqp-results" "results.tar.gz"
+backup_volume "txqp-results" "results.tar.gz"
 
 # Create backup manifest
 cat > "$BACKUP_DIR/manifest.txt" << EOF
@@ -57,9 +57,9 @@ Date: $(date)
 Hostname: $(hostname)
 
 Volumes:
-- database.tar.gz (laqp-database)
-- logs.tar.gz (laqp-logs)
-- results.tar.gz (laqp-results)
+- database.tar.gz (txqp-database)
+- logs.tar.gz (txqp-logs)
+- results.tar.gz (txqp-results)
 
 Container Status:
 EOF
