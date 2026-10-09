@@ -322,11 +322,12 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '<table class="result-table">';
             html += '<thead><tr><th>Band</th><th>Count</th></tr></thead>';
             html += '<tbody>';
-            result.qsos_by_band.forEach(item => {
-                if (item.count > 0) {
-                    html += `<tr><td>${item.band}m</td><td>${item.count}</td></tr>`;
+            for (const [key, value] of Object.entries(result.qsos_by_band)) {
+                console.log(`by mode  ${key}: ${value}`);
+                if (value > 0) {
+                    html += `<tr><td>${key}</td><td>${value}</td></tr>`;
                 }
-            });
+            }
             html += '</tbody></table>';
             html += '</div>';
         }
@@ -338,11 +339,12 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '<table class="result-table">';
             html += '<thead><tr><th>Mode</th><th>Count</th></tr></thead>';
             html += '<tbody>';
-            result.qsos_by_mode.forEach(item => {
-                if (item.count > 0) {
-                    html += `<tr><td>${item.mode}</td><td>${item.count}</td></tr>`;
+            for (const [key, value] of Object.entries(result.qsos_by_mode)) {
+                console.log(`by mode  ${key}: ${value}`);
+                if (value > 0) {
+                    html += `<tr><td>${key}</td><td>${value}</td></tr>`;
                 }
-            });
+            }
             html += '</tbody></table>';
             html += '</div>';
         }
