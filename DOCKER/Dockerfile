@@ -1,4 +1,4 @@
-# Louisiana QSO Party Web Application - Dockerfile
+# Texas QSO Party Web Application - Dockerfile
 FROM python:3.11-slim
 
 # Set working directory

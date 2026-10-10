@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Louisiana QSO Party - Generate Final Report HTML
+Texas QSO Party - Generate Final Report HTML
 
 Generates HTML final report with leaderboards for a contest year.
 Saves to data/results/final_report_{year}.html
@@ -26,7 +26,7 @@ def generate_final_report_html(year: str, output_dir: str = FINAL_REPORTS_DIR):
         output_dir: Directory to save HTML file
     """
     print("=" * 60)
-    print(f"Louisiana QSO Party - Generate Final Report HTML ({year})")
+    print(f"Texas QSO Party - Generate Final Report HTML ({year})")
     print("=" * 60)
     print()
     
@@ -77,7 +77,7 @@ def _create_html_document(year: str, sections: list) -> str:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Louisiana QSO Party {year} - Final Results</title>
+    <title>Texas QSO Party {year} - Final Results</title>
     <style>
 {_get_css()}
     </style>
@@ -85,7 +85,7 @@ def _create_html_document(year: str, sections: list) -> str:
 <body>
     <div class="container">
         <header class="report-header">
-            <h1>Louisiana QSO Party {year}</h1>
+            <h1>Texas QSO Party {year}</h1>
             <h2>Final Results</h2>
             <p class="generated-date">Generated: {datetime.now().strftime('%B %d, %Y')}</p>
         </header>
@@ -102,8 +102,8 @@ def _create_html_document(year: str, sections: list) -> str:
     # Document footer
     html_parts.append("""
         <footer class="report-footer">
-            <p>&copy; 2026 Jefferson Amateur Radio Club</p>
-            <p>Louisiana QSO Party</p>
+            <p>&copy; 2026 Texas DX Society</p>
+            <p>Texas QSO Party</p>
         </footer>
     </div>
 </body>
@@ -176,7 +176,7 @@ def _generate_table_html(table: dict) -> str:
 def _get_css() -> str:
     """Return CSS for Excel-like table styling"""
     return """
-/* Louisiana QSO Party Final Report CSS */
+/* Texas QSO Party Final Report CSS */
 
 * {
     margin: 0;

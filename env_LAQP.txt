@@ -1,11 +1,11 @@
-# Louisiana QSO Party - Environment Variables
+# Texas QSO Party - Environment Variables
 # Copy this to .env and fill in your values
 
 # ============================================================================
 # CONTEST
 # ============================================================================
 CONTEST='txqp'  
-CONTEST_NAME= 'Louisiana QSO Party' 
+CONTEST_NAME= 'Texas QSO Party' 
 
 # ============================================================================
 # SECURITY - REQUIRED

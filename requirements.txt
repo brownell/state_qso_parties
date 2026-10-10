@@ -1,4 +1,4 @@
-# Louisiana QSO Party Processor - Python Dependencies
+# Texas QSO Party Processor - Python Dependencies
 
 # Database
 SQLAlchemy>=2.0.0

@@ -1,4 +1,4 @@
-// Louisiana QSO Party Results Lookup - JavaScript
+// Texas QSO Party Results Lookup - JavaScript
 console.log("js has loaded")
 document.addEventListener('DOMContentLoaded', function() {
     const yearSelect = document.getElementById('year');
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     showIndividualBtn.addEventListener('click', async function() {
         const year = yearSelect.value.trim();
         const callsign = callsignInput.value.trim().toUpperCase();
-        // statsH3.innerText = `Score & Statistics for ${year} Louisiana QSO Party`;
+        // statsH3.innerText = `Score & Statistics for ${year} Texas QSO Party`;
         if (!year) {
             showMessage('Please select a contest year', 'error');
             return;
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const statisticsHTML = generateStatisticsHTML(result);
         document.getElementById('statisticsContent').innerHTML = statisticsHTML;
         year = result.year;
-        document.getElementById('statsH3').innerHTML = `Your Statistics for ${year} Louisiana QSO Party`;
+        document.getElementById('statsH3').innerHTML = `Your Statistics for ${year} Texas QSO Party`;
 
 
         // Show individual results section

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Louisiana QSO Party - Leaderboard Generator
+Texas QSO Party - Leaderboard Generator
 
 Generates leaderboard tables based on declarative configuration.
 Interprets LEADERBOARDS configuration to create ranked tables.

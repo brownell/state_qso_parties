@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Louisiana QSO Party - Log Cross-Checking Module
+Texas QSO Party - Log Cross-Checking Module
 
 This module cross-checks all submitted logs to validate QSOs by finding
 reciprocal contacts in other logs. Invalid QSOs are marked and warnings

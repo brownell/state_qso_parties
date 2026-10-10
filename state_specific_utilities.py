@@ -6,7 +6,7 @@ Each new state QSO party will modify the functions in this file to reflect the r
 from batch import shared as s
 
 # get location type of a QSO's sender
-# an Example for Louisiana
+# an Example for Texas
 def determine_location_type() -> str:
         """Determine location type from QSOs"""
         

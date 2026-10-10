@@ -1,12 +1,12 @@
 #!/bin/bash
-# Louisiana QSO Party - Quick Start Script
+# Texas QSO Party - Quick Start Script
 #
 # Sets up and starts the Docker containers
 
 set -e
 
 echo "================================================"
-echo "Louisiana QSO Party - Docker Quick Start"
+echo "Texas QSO Party - Docker Quick Start"
 echo "================================================"
 echo ""
 
@@ -47,7 +47,7 @@ if [ ! -d data ]; then
     mkdir -p data
     echo ""
     echo "You need to add these files to data/:"
-    echo "  - LA_County_Abbrevs.txt (all 64 Louisiana counties)"
+    echo "  - LA_County_Abbrevs.txt (all 64 Texas counties)"
     echo "  - WVE_Abbrevs.txt (US states and Canadian provinces)"
     echo ""
     read -p "Press Enter to continue (you can add files later)..."
@@ -104,7 +104,7 @@ fi
 
 echo ""
 echo "================================================"
-echo "Louisiana QSO Party is now running!"
+echo "Texas QSO Party is now running!"
 echo "================================================"
 echo ""
 echo "Access the application:"

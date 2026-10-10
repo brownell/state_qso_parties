@@ -1,7 +1,7 @@
 # State QSO Party Log Processor
 
 ### Contest log processing system for the State QSO Parties
-### Used and sponsored by the Texas DX Society and the Jefferson Amateur Radio Club
+### Used and sponsored by the Texas DX Society and the Texas DX Society
 #### Initial development for TQP and TXQP by Brownell Chalstrom, KJ5BYZ and Charles Sanders, NO5W
 
 # Overview
@@ -170,23 +170,23 @@ RANKINGS = {
     # All Operators
     'ALL': 'All Operators',
     
-    # Non-Louisiana
-    'NS': 'Class: Non Louisiana & SSB (phone)',
-    'NC': 'Class: Non Louisiana & CW/Digital',
-    'NM': 'Class: Non Louisiana & MIXED Modes (SSB, CW, Digital)',
+    # Non-Texas
+    'NS': 'Class: Non Texas & SSB (phone)',
+    'NC': 'Class: Non Texas & CW/Digital',
+    'NM': 'Class: Non Texas & MIXED Modes (SSB, CW, Digital)',
 
 
-    # Louisiana Fixed
-    'LFA': 'Class: All Louisiana & Fixed and Rover & All Stations',
-    'LFS': 'Class: Louisiana & Fixed & SSB (phone)',
-    'LFC': 'Class: Louisiana & Fixed & CW/Digital',
-    'LFM': 'Class: Louisiana & Fixed & MIXED Modes (SSB, CW, Digital)',
+    # Texas Fixed
+    'LFA': 'Class: All Texas & Fixed and Rover & All Stations',
+    'LFS': 'Class: Texas & Fixed & SSB (phone)',
+    'LFC': 'Class: Texas & Fixed & CW/Digital',
+    'LFM': 'Class: Texas & Fixed & MIXED Modes (SSB, CW, Digital)',
     
-    # Louisiana Rover
-    'LRA': 'Louisiana & Rover - All Stations ',
-    'LRS': 'Louisiana & Rover & SSB (phone)',
-    'LRC': 'Louisiana & Rover & CW/Digital',
-    'LRM': 'Louisiana & Rover & MIXED Modes (SSB, CW, Digital)',
+    # Texas Rover
+    'LRA': 'Texas & Rover - All Stations ',
+    'LRS': 'Texas & Rover & SSB (phone)',
+    'LRC': 'Texas & Rover & CW/Digital',
+    'LRM': 'Texas & Rover & MIXED Modes (SSB, CW, Digital)',
     
     # Overlays
     # WIRES': 'WIRES Overlay'
@@ -207,29 +207,29 @@ RANKINGS = {
     'PM': 'POTA Overlay & MIXED Modes (SSB, CW, Digital)',
 
     # By Class
-    'IN': 'Inside Louisiana (Fixed or Rover)',
-    'OUT': 'Outside Louisiana (US, Canada, or DX)',
+    'IN': 'Inside Texas (Fixed or Rover)',
+    'OUT': 'Outside Texas (US, Canada, or DX)',
 
     # By Mode combined with Power amd Class
-    'PHQ': 'Class: Louisiana & SSB (Phone) & QRP Power',
-    'PHL': 'Class: Louisiana & SSB (Phone) & Low Power',
-    'PHH': 'Class: Louisiana & SSB (Phone) & High Power',
-    'CWQ': 'Class: Louisiana & CW or DIGITAL & QRP Power',
-    'CWL': 'Class: Louisiana & CW or DIGITAL & Low Power',
-    'CWH': 'Class: Louisiana & CW or DIGITAL & High Power',
-    'MXQ': 'Class: Louisiana & Mixed Mode & QRP Power',
-    'MXL': 'Class: Louisiana & Mixed Mode & Low Power',
-    'MXH': 'Class: Louisiana & Mixed Mode & High Power',
+    'PHQ': 'Class: Texas & SSB (Phone) & QRP Power',
+    'PHL': 'Class: Texas & SSB (Phone) & Low Power',
+    'PHH': 'Class: Texas & SSB (Phone) & High Power',
+    'CWQ': 'Class: Texas & CW or DIGITAL & QRP Power',
+    'CWL': 'Class: Texas & CW or DIGITAL & Low Power',
+    'CWH': 'Class: Texas & CW or DIGITAL & High Power',
+    'MXQ': 'Class: Texas & Mixed Mode & QRP Power',
+    'MXL': 'Class: Texas & Mixed Mode & Low Power',
+    'MXH': 'Class: Texas & Mixed Mode & High Power',
 
-    'PHQN': 'Class: NON-Louisiana & SSB (Phone) & QRP Power',
-    'PHLN': 'Class: NON-Louisiana & SSB (Phone) & Low Power',
-    'PHHN': 'Class: NON-Louisiana & SSB (Phone) & High Power',
-    'CWQN': 'Class: NON-Louisiana & CW or DIGITAL & QRP Power',
-    'CWLN': 'Class: NON-Louisiana & CW or DIGITAL & Low Power',
-    'CWHN': 'Class: NON-Louisiana & CW or DIGITAL & High Power',
-    'MXQN': 'Class: NON-Louisiana & Mixed Mode & QRP Power',
-    'MXLN': 'Class: NON-Louisiana & Mixed Mode & Low Power',
-    'MXHN': 'Class: NON-Louisiana & Mixed Mode & High Power',
+    'PHQN': 'Class: NON-Texas & SSB (Phone) & QRP Power',
+    'PHLN': 'Class: NON-Texas & SSB (Phone) & Low Power',
+    'PHHN': 'Class: NON-Texas & SSB (Phone) & High Power',
+    'CWQN': 'Class: NON-Texas & CW or DIGITAL & QRP Power',
+    'CWLN': 'Class: NON-Texas & CW or DIGITAL & Low Power',
+    'CWHN': 'Class: NON-Texas & CW or DIGITAL & High Power',
+    'MXQN': 'Class: NON-Texas & Mixed Mode & QRP Power',
+    'MXLN': 'Class: NON-Texas & Mixed Mode & Low Power',
+    'MXHN': 'Class: NON-Texas & Mixed Mode & High Power',
 }
 ```
 Then for each category, the query is created. The queries are grouped into sections with a section header and a list of columns to show in that category. There is a secion title, a set of fields to show as columns, and the definitions of two leaderboard, one called "IN" (state) and the other "OUT".
@@ -237,7 +237,7 @@ Then for each category, the query is created. The queries are grouped into secti
  # Section 1: Class (either LA or outside of LA)
     [
         {
-            'section_title': 'Two Competitive Classes: Inside Louisiana (Fixed or Rover) or Outside of Louisiana (US, Canada, DX)',
+            'section_title': 'Two Competitive Classes: Inside Texas (Fixed or Rover) or Outside of Texas (US, Canada, DX)',
             'show': [
                 ['callsign', 'CallSign'],
                 ['final_score', 'Score'],
@@ -249,7 +249,7 @@ Then for each category, the query is created. The queries are grouped into secti
         {'title': 'OUT', 'ands': [["location_type in ('NON-LA', 'DX')"]]},
     ],
 ```
-Rather than have the programmer have to write each query in full, and to allow for a different database system to be used, a shorthand was invented to specify the query. Each category has two keys: 'title' and 'ands'. The title is used above the leaderboard table in the Final Report, but the value is not the actual title, but the key in the Rankings dictionary. So "IN" translates to an actual title of "Inside Louisiana (Fixed or Rover)".
+Rather than have the programmer have to write each query in full, and to allow for a different database system to be used, a shorthand was invented to specify the query. Each category has two keys: 'title' and 'ands'. The title is used above the leaderboard table in the Final Report, but the value is not the actual title, but the key in the Rankings dictionary. So "IN" translates to an actual title of "Inside Texas (Fixed or Rover)".
 
 The value of the "and" key uses SQL syntax that works with sqlite3, and has three forms:
 - a list of one or more SQL queries. Examples:  
@@ -284,7 +284,7 @@ parent folder --- repo (state_qso_party) --- reference_data (files like country 
 ```
 # Converting to a different contest
 
-Here are some guildelines for someone wishing to use this software for a contest different from the Louisiana or Texas QSO Parties.
+Here are some guildelines for someone wishing to use this software for a contest different from the Texas or Texas QSO Parties.
 
 The software uses the word "county" instead of "parish", since that is what a new contest will have. (I guess it could be province.)
 
@@ -354,8 +354,8 @@ It's best to read their documentation if using this hosting for the Web app. The
 
 ## Contact
 
-Louisiana QSO Party  
-Jefferson Amateur Radio Club   
+Texas QSO Party  
+Texas DX Society   
 txqp@w5gad.org      
 Contest Manager: KJ5BYZ  
 or brownell.kj5byz@w5gad.org, no5w@w5gad.org, or brownell@chalstrom.com

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Louisiana QSO Party Log Upload Application
+Texas QSO Party Log Upload Application
 Web interface for contestants to submit and validate Cabrillo log files
 """
 

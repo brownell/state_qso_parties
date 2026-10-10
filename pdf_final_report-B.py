@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Louisiana QSO Party - Generate Final Report PDF
+Texas QSO Party - Generate Final Report PDF
 
 Generates PDF final report with leaderboards for a contest year natively using ReportLab.
 Saves to data/results/final_report_{year}.pdf
@@ -35,7 +35,7 @@ def generate_final_report_pdf(year: str, output_dir: str = FINAL_REPORTS_DIR):
         output_dir: Directory to save PDF file
     """
     print("=" * 60)
-    print(f"Louisiana QSO Party - Generate Final Report PDF ({year})")
+    print(f"Texas QSO Party - Generate Final Report PDF ({year})")
     print("=" * 60)
     print()
     
@@ -154,7 +154,7 @@ def _create_pdf_document(year: str, sections: list, output_filename: str):
     story = []
     
     # Header
-    story.append(Paragraph(f"Louisiana QSO Party {year}", title_style))
+    story.append(Paragraph(f"Texas QSO Party {year}", title_style))
     story.append(Paragraph("Final Results", subtitle_style))
     story.append(Paragraph(f"Generated: {datetime.now().strftime('%B %d, %Y')}", date_style))
     

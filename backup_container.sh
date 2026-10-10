@@ -1,5 +1,5 @@
 #!/bin/bash
-# Louisiana QSO Party - Docker Backup Script
+# Texas QSO Party - Docker Backup Script
 #
 # Backs up all Docker volumes to timestamped directory
 #
@@ -16,7 +16,7 @@ BACKUP_DIR="$BACKUP_BASE_DIR/$DATE"
 mkdir -p "$BACKUP_DIR"
 
 echo "================================================"
-echo "Louisiana QSO Party - Docker Backup"
+echo "Texas QSO Party - Docker Backup"
 echo "================================================"
 echo "Backup directory: $BACKUP_DIR"
 echo ""
@@ -51,7 +51,7 @@ backup_volume "txqp-results" "results.tar.gz"
 
 # Create backup manifest
 cat > "$BACKUP_DIR/manifest.txt" << EOF
-Louisiana QSO Party - Backup Manifest
+Texas QSO Party - Backup Manifest
 ======================================
 Date: $(date)
 Hostname: $(hostname)

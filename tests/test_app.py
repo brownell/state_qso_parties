@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Quick test script for the Louisiana QSO Party web app
+Quick test script for the Texas QSO Party web app
 
 This script tests the key components without requiring a full Flask server.
 """
@@ -187,7 +187,7 @@ def test_json_serialization():
 def run_all_tests():
     """Run all tests"""
     print("=" * 60)
-    print("Louisiana QSO Party Web App - Test Suite")
+    print("Texas QSO Party Web App - Test Suite")
     print("=" * 60)
     print()
     

@@ -1,4 +1,4 @@
-# Louisiana QSO Party - Docker Deployment Guide
+# Texas QSO Party - Docker Deployment Guide
 
 This guide covers deploying the TXQP web application using Docker.
 

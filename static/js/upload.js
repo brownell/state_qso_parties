@@ -1,4 +1,4 @@
-// Louisiana QSO Party Log Upload - JavaScript
+// Texas QSO Party Log Upload - JavaScript
 
 // Display results
 function displayResults(result) {

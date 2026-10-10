@@ -75,8 +75,8 @@ PHONE_QSO_POINTS = 2
 CW_DIGITAL_QSO_POINTS = 4
 
 # Bonus points
-BONUS_CALLSIGN = 'N5LCC'  # Bonus for working N5LCC (Louisiana Contest Club)
-CALLSIGN_BONUS_POINTS = 100  # Bonus for working N5LCC (Louisiana Contest Club)
+BONUS_CALLSIGN = 'N5LCC'  # Bonus for working N5LCC (Texas Contest Club)
+CALLSIGN_BONUS_POINTS = 100  # Bonus for working N5LCC (Texas Contest Club)
 ROVER_COUNTY_BONUS = 50  # Bonus per county activated (rovers only)
 EXTRA_BONUS_CALLS = os.environ.get('EXTRA_BONUS_CALLS', ['KI5ZAW', 'N5SCJ', 'K5TD'])
 EXTRA_BONUS_POINTS = os.environ.get('EXTRA_BONUS_POINTS', 25)
@@ -154,33 +154,33 @@ RANKINGS = {
     # All Operators
     'ALL': 'All Operators',
     
-    # Non-Louisiana
-    # 'NQ': 'Non Louisiana - QRP Power',
-    # 'NL': 'Non Louisiana - LOW Power',
-    # 'NH': 'Non Louisiana - HIGH Power',
-    # 'NA': 'Class: Non Louisiana - All Stations',
-    'NS': 'Class: Non Louisiana & SSB (phone)',
-    'NC': 'Class: Non Louisiana & CW/Digital',
-    'NM': 'Class: Non Louisiana & MIXED Modes (SSB, CW, Digital)',
+    # Non-Texas
+    # 'NQ': 'Non Texas - QRP Power',
+    # 'NL': 'Non Texas - LOW Power',
+    # 'NH': 'Non Texas - HIGH Power',
+    # 'NA': 'Class: Non Texas - All Stations',
+    'NS': 'Class: Non Texas & SSB (phone)',
+    'NC': 'Class: Non Texas & CW/Digital',
+    'NM': 'Class: Non Texas & MIXED Modes (SSB, CW, Digital)',
 
 
-    # Louisiana Fixed
-    # 'LFQ': 'Louisiana & Fixed QRP Power',
-    # 'LFL': 'Louisiana & Fixed LOW Power',
-    # 'LFH': 'Louisiana & Fixed HIGH Power',
-    'LFA': 'Class: All Louisiana & Fixed and Rover & All Stations',
-    'LFS': 'Class: Louisiana & Fixed & SSB (phone)',
-    'LFC': 'Class: Louisiana & Fixed & CW/Digital',
-    'LFM': 'Class: Louisiana & Fixed & MIXED Modes (SSB, CW, Digital)',
+    # Texas Fixed
+    # 'LFQ': 'Texas & Fixed QRP Power',
+    # 'LFL': 'Texas & Fixed LOW Power',
+    # 'LFH': 'Texas & Fixed HIGH Power',
+    'LFA': 'Class: All Texas & Fixed and Rover & All Stations',
+    'LFS': 'Class: Texas & Fixed & SSB (phone)',
+    'LFC': 'Class: Texas & Fixed & CW/Digital',
+    'LFM': 'Class: Texas & Fixed & MIXED Modes (SSB, CW, Digital)',
     
-    # Louisiana Rover
-    # 'LRQ': 'Louisiana & Rover QRP Power',
-    # 'LRL': 'Louisiana & Rover LOW Power',
-    # 'LRH': 'Louisiana & Rover HIGH Power',
-    'LRA': 'Louisiana & Rover - All Stations ',
-    'LRS': 'Louisiana & Rover & SSB (phone)',
-    'LRC': 'Louisiana & Rover & CW/Digital',
-    'LRM': 'Louisiana & Rover & MIXED Modes (SSB, CW, Digital)',
+    # Texas Rover
+    # 'LRQ': 'Texas & Rover QRP Power',
+    # 'LRL': 'Texas & Rover LOW Power',
+    # 'LRH': 'Texas & Rover HIGH Power',
+    'LRA': 'Texas & Rover - All Stations ',
+    'LRS': 'Texas & Rover & SSB (phone)',
+    'LRC': 'Texas & Rover & CW/Digital',
+    'LRM': 'Texas & Rover & MIXED Modes (SSB, CW, Digital)',
     
     # Overlays
     # WIRES': 'WIRES Overlay'
@@ -201,29 +201,29 @@ RANKINGS = {
     'PM': 'POTA Overlay & MIXED Modes (SSB, CW, Digital)',
 
     # By Class
-    'IN': 'Inside Louisiana (Fixed or Rover)',
-    'OUT': 'Outside Louisiana (US, Canada, or DX)',
+    'IN': 'Inside Texas (Fixed or Rover)',
+    'OUT': 'Outside Texas (US, Canada, or DX)',
 
     # By Mode combined with Power amd Class
-    'PHQ': 'Class: Louisiana & SSB (Phone) & QRP Power',
-    'PHL': 'Class: Louisiana & SSB (Phone) & Low Power',
-    'PHH': 'Class: Louisiana & SSB (Phone) & High Power',
-    'CWQ': 'Class: Louisiana & CW or DIGITAL & QRP Power',
-    'CWL': 'Class: Louisiana & CW or DIGITAL & Low Power',
-    'CWH': 'Class: Louisiana & CW or DIGITAL & High Power',
-    'MXQ': 'Class: Louisiana & Mixed Mode & QRP Power',
-    'MXL': 'Class: Louisiana & Mixed Mode & Low Power',
-    'MXH': 'Class: Louisiana & Mixed Mode & High Power',
+    'PHQ': 'Class: Texas & SSB (Phone) & QRP Power',
+    'PHL': 'Class: Texas & SSB (Phone) & Low Power',
+    'PHH': 'Class: Texas & SSB (Phone) & High Power',
+    'CWQ': 'Class: Texas & CW or DIGITAL & QRP Power',
+    'CWL': 'Class: Texas & CW or DIGITAL & Low Power',
+    'CWH': 'Class: Texas & CW or DIGITAL & High Power',
+    'MXQ': 'Class: Texas & Mixed Mode & QRP Power',
+    'MXL': 'Class: Texas & Mixed Mode & Low Power',
+    'MXH': 'Class: Texas & Mixed Mode & High Power',
 
-    'PHQN': 'Class: NON-Louisiana & SSB (Phone) & QRP Power',
-    'PHLN': 'Class: NON-Louisiana & SSB (Phone) & Low Power',
-    'PHHN': 'Class: NON-Louisiana & SSB (Phone) & High Power',
-    'CWQN': 'Class: NON-Louisiana & CW or DIGITAL & QRP Power',
-    'CWLN': 'Class: NON-Louisiana & CW or DIGITAL & Low Power',
-    'CWHN': 'Class: NON-Louisiana & CW or DIGITAL & High Power',
-    'MXQN': 'Class: NON-Louisiana & Mixed Mode & QRP Power',
-    'MXLN': 'Class: NON-Louisiana & Mixed Mode & Low Power',
-    'MXHN': 'Class: NON-Louisiana & Mixed Mode & High Power',
+    'PHQN': 'Class: NON-Texas & SSB (Phone) & QRP Power',
+    'PHLN': 'Class: NON-Texas & SSB (Phone) & Low Power',
+    'PHHN': 'Class: NON-Texas & SSB (Phone) & High Power',
+    'CWQN': 'Class: NON-Texas & CW or DIGITAL & QRP Power',
+    'CWLN': 'Class: NON-Texas & CW or DIGITAL & Low Power',
+    'CWHN': 'Class: NON-Texas & CW or DIGITAL & High Power',
+    'MXQN': 'Class: NON-Texas & Mixed Mode & QRP Power',
+    'MXLN': 'Class: NON-Texas & Mixed Mode & Low Power',
+    'MXHN': 'Class: NON-Texas & Mixed Mode & High Power',
 
 
 }
@@ -246,7 +246,7 @@ LEADERBOARDS = [
     # Section 1: Class (either LA or outside of LA)
     [
         {
-            'section_title': 'Two Competitive Classes: Inside Louisiana (Fixed or Rover) or Outside of Louisiana (US, Canada, DX)',
+            'section_title': 'Two Competitive Classes: Inside Texas (Fixed or Rover) or Outside of Texas (US, Canada, DX)',
             'show': [
                 ['callsign', 'CallSign'],
                 ['final_score', 'Score'],
@@ -260,10 +260,10 @@ LEADERBOARDS = [
         {'title': 'OUT', 'ands': [["location_type in ('NON-LA', 'DX')"]]},
     ],
     
-    # Section 1: Non-Louisiana Stations
+    # Section 1: Non-Texas Stations
     [
         {
-            'section_title': 'Non-Louisiana Stations (US, Canada, DX)',
+            'section_title': 'Non-Texas Stations (US, Canada, DX)',
             'show': [
                 ['callsign', 'CallSign'],
                 ['final_score', 'Score'],
@@ -282,12 +282,12 @@ LEADERBOARDS = [
         {'title': 'NM', 'ands': [["location_type in ('NON-LA', 'DX')"], ['mode_category', 'MIXED']]},
     ],
     
-    # Section 2: Louisiana FIXED Stations
+    # Section 2: Texas FIXED Stations
     [
 
         # Section header
         {
-            'section_title': 'Louisiana Fixed Stations',
+            'section_title': 'Texas Fixed Stations',
             'show': [
                 ['callsign', 'CallSign'],
                 ['final_score', 'Score'],
@@ -308,12 +308,12 @@ LEADERBOARDS = [
         {'title': 'LFM', 'ands': [['location_type', 'LA-FIXED'], ['mode_category', 'MIXED']]},
     ],
 
-     # Section 3: Louisiana ROVER Stations
+     # Section 3: Texas ROVER Stations
     [
 
         # Section header
         {
-            'section_title': 'Louisiana Rover Stations',
+            'section_title': 'Texas Rover Stations',
             'show': [
                 ['callsign', 'CallSign'],
                 ['final_score', 'Score'],
@@ -423,11 +423,11 @@ LEADERBOARDS = [
 # ============================================================================
 
 FINAL_REPORT_TXT = """
-<p class=final-intro>Congratulations to all participants in the Louisiana QSO Party!
+<p class=final-intro>Congratulations to all participants in the Texas QSO Party!
 
-The Jefferson Amateur Radio Club is proud to present the final results.
+The Texas DX Society is proud to present the final results.
 Thank you for your participation and we look forward to seeing you next year!
 
 73,
-Jefferson Amateur Radio Club</p>
+Texas DX Society</p>
 """

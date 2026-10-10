@@ -930,11 +930,11 @@ wp-singular page-template-default page page-id-204 custom-background wp-embed-re
 <path fill-rule="evenodd" d="M332.5,45 C330.567003,45 329,43.4329966 329,41.5 C329,39.5670034 330.567003,38 332.5,38 C334.432997,38 336,39.5670034 336,41.5 C336,43.4329966 334.432997,45 332.5,45 Z M342,45 C340.067003,45 338.5,43.4329966 338.5,41.5 C338.5,39.5670034 340.067003,38 342,38 C343.932997,38 345.5,39.5670034 345.5,41.5 C345.5,43.4329966 343.932997,45 342,45 Z M351.5,45 C349.567003,45 348,43.4329966 348,41.5 C348,39.5670034 349.567003,38 351.5,38 C353.432997,38 355,39.5670034 355,41.5 C355,43.4329966 353.432997,45 351.5,45 Z" transform="translate(-329 -38)"></path>
 # cspell:ignore-file
 that's workijng great! Next step is to save the individual rankings for each operator in the database. We created a field in the content_results table called rankings that is a dict. The idea I had was to add each applicable ranking into this dict, with the key being a code for the "category" and the value being his numerical rank. I want you to think about whether this is a good way to go, or whether we should make another table that has the rankings for each operator, indexed the existing table by year+callsign. We might end up with literally dozens of ranking categories, but each individual user will probably only be ranked in less than a dozen. I have created a constant dict - RANKINGS - that has as its key  the short code for the category, and the value is the descriptive string for that category to be used in displays. For example:
-'LRS': 'Louisiana - Rover SSB (phone) Mode',
- 'LRM': 'Louisiana - Rover MIXED Modes (SSB, CW, Digital',
- 'NQ': 'Non Louisiana - QRP Power',
- 'NL': ‘Non Louisiana - LOW Power' …
-I have also changed the LEADERBOARD list. The dicts that have a ‘title’ key used to have a string to display as the title of the grid, but I have changed it so that the value for the ‘title’ key is now the key from the RANKINGS dict. So where we used to have something like ‘title’: ‘Non Louisiana - QRP Power', you now have ‘title’: ‘NQ’. You need to use this key to get the title string from the RANKINGS dict. So here is my thinking on how to populate the rankings field in the contest_results table. Each query you make
+'LRS': 'Texas - Rover SSB (phone) Mode',
+ 'LRM': 'Texas - Rover MIXED Modes (SSB, CW, Digital',
+ 'NQ': 'Non Texas - QRP Power',
+ 'NL': ‘Non Texas - LOW Power' …
+I have also changed the LEADERBOARD list. The dicts that have a ‘title’ key used to have a string to display as the title of the grid, but I have changed it so that the value for the ‘title’ key is now the key from the RANKINGS dict. So where we used to have something like ‘title’: ‘Non Texas - QRP Power', you now have ‘title’: ‘NQ’. You need to use this key to get the title string from the RANKINGS dict. So here is my thinking on how to populate the rankings field in the contest_results table. Each query you make
 
 
 Members and friends,
@@ -943,7 +943,7 @@ Members and friends,
 I want to ask for a favor. Actually a couple.
 
 
-We have taken on the job of running the Louisiana QSO Party this year and it is only one month from now on April 4.  This contest has languished in recent years, partly because those outside Louisiana complain there are not enough Louisiana operators: in 2023 there were only 13. We want to generate more interest, so if you have a Facebook account, please follow facebook.com/w5gad. Go to the LAQP event on Facebook and indicate you are participating. And encourage any ham friends, in or out of state to join us.
+We have taken on the job of running the Texas QSO Party this year and it is only one month from now on April 4.  This contest has languished in recent years, partly because those outside Texas complain there are not enough Texas operators: in 2023 there were only 13. We want to generate more interest, so if you have a Facebook account, please follow facebook.com/w5gad. Go to the LAQP event on Facebook and indicate you are participating. And encourage any ham friends, in or out of state to join us.
 
 
 The second favor is more work. Contact with a station we operate, N5LCC, yields operators 100 bonus points. So we need people to operate as much as possible. We can have as many operators using that call sign as we want, in different locations, at the same time, AS LONG as no two are on the same band&mode. So you can operate from home for the club. If you are interested, please email laqp.w5gad.org. You can only operate the strict schedule we end up making to avoid multiple operators using the sme band&mode at the same time.
@@ -991,7 +991,7 @@ https://forms.gle/ihRTwg7tHSPbw4ni7
 We hope to present the results of that survey this Thursday night, 2/26.
 
 
-After the General Members Meeting on Thursday, Houston, Polson, ARRL head of the Louisiana section, will talk to us about what ARRL is doing for clubs like ours.
+After the General Members Meeting on Thursday, Houston, Polson, ARRL head of the Texas section, will talk to us about what ARRL is doing for clubs like ours.
 
 
 73

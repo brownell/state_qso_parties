@@ -1,5 +1,5 @@
 #!/bin/bash
-# Louisiana QSO Party - Docker Restore Script
+# Texas QSO Party - Docker Restore Script
 #
 # Restores Docker volumes from backup
 #
@@ -29,7 +29,7 @@ if [ ! -d "$BACKUP_DIR" ]; then
 fi
 
 echo "================================================"
-echo "Louisiana QSO Party - Docker Restore"
+echo "Texas QSO Party - Docker Restore"
 echo "================================================"
 echo "Restoring from: $BACKUP_DIR"
 echo ""

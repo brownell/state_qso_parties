@@ -13,7 +13,7 @@ from config.config import CONTEST_YEAR, CW_DIGITAL_QSO_POINTS, EXTRA_BONUS_POINT
 
 def score_qsos() -> None:
     '''
-    The code here is specific to the Louisiana QSO Party.  It scores the QSOs in each log based on the contest rules.  It also checks for duplicate QSOs and multipliers.  The results are stored in the result dictionary for each log.
+    The code here is specific to the Texas QSO Party.  It scores the QSOs in each log based on the contest rules.  It also checks for duplicate QSOs and multipliers.  The results are stored in the result dictionary for each log.
     A mult dup is when a QSO is a duplicate for multiplier purposes (same band/mode/rcvd_qth) but not a point dup (different rcvd_call).  These get qso points (if otherwise valid) but not  multipliers.  
     # A qso dup is when all of band/mode/rcvd_call are the same, in which case it should not count for points or multipliers.
     '''
