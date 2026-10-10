@@ -28,7 +28,7 @@ def score_all_qsos(s):
                 result["errors"].append(f"INVALID QSO: from {qso.de_call} to {qso.dx_call} QSO: {qso}")
                 continue
             try:
-                _score_a_qso(s, result, qso, dup)
+                score_a_qso(s, result, qso, dup)
             except Exception as e:
                 # exception trying to score qso
                 result['errors'].append(f"Exception {e} when trying to score QSO {str(qso)}")
@@ -39,8 +39,12 @@ def score_all_qsos(s):
                     print(f"✗ {result['callsign']}: Database save failed")
             except Exception as e:
                 print(f"✗ {result['callsign']}: Database error - {e}")
+            print(f"{result['callsign']}: cw:{result['cw_qsos']} ph:{result['ph_qsos']} m:{result['ph_qsos']}")
+        score_an_operator(s, result)
+        if result['callsign'] == "AD4EB":
+            return
 
-def _score_a_qso(s, r, q, dup):
+def score_a_qso(s, r, q, dup):
     if not q.valid:
         return
     
@@ -100,6 +104,8 @@ def _score_a_qso(s, r, q, dup):
     try:
         if q.freq[:2] == '50':
             band = '6'
+        if q.freq[:2] == '1':
+            band = '2'
         elif len(q.freq) in [4, 5]:
             band = frequency_to_band_m(q.freq)
         else:
@@ -129,6 +135,7 @@ def score_an_operator(s, r):
     # See if operator is disqualified for multiple activated counties when not mobile
     if r['callsign'] not in s.mobile_callsigns and len(r['counties_activated']) > 1:
         s.out_files['errors'].write(f"{r['callsign']} log disqualified: not mobile but activated multiple counties\n")
+        r['errors'].append(f"{r['callsign']} log disqualified: not mobile but activated multiple counties\n")
         return False
     
     #accumulate qsos and mults and get score BEFORE BONUSES
@@ -154,7 +161,7 @@ def score_an_operator(s, r):
     ''' Bonus points for ALL operators for each county in which
         they worked a mobile operator'''
     r['mtb_mobile_points'] += (int(len(r['mobile_worked_counties'])  / ( MOBILE_REQUIRED_QSOS)) * COUNTIES_WORKED_POINTS)
-    r['final_score'] = r['score_wo_bonus'] + r['mtb_mobile_points']
+    r['final_score'] = r['score_wo_bonus'] + r['mtb_mobile_points'] +  r['cab_mobile_points']
     
     # debug_print(s, r, "SCORED", False)
     return True, 0
