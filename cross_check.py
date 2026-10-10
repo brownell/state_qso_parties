@@ -28,11 +28,10 @@ def cross_check(s):
         We use the cabrillo python package "match_against" to check for duplicate QSOs and to cross-check the QSOs in each log against the other logs.  The Cabrillo package has a QSO.match() function that checks for matching QSOs in two logs.  It returns True if the QSOs match, False if they do not match, and None if the QSO is not found in the other log.'''
     if len(s.results) < 1:
         return False
-    test()
     print(f"START cross-check")
     c = s.stats
     for result in s.results:
-        if result['callsign'] == 'AD4EB':
+        if result['callsign'] == 'F4EUG':
             print('AD4EB')
         dup = {
             'qsos': [],
