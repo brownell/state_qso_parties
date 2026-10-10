@@ -61,31 +61,21 @@ def read_prepare(s):
         try:
             file_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR / file).resolve()
             cab = parse_log_file(file_path, ignore_unknown_key=True, check_categories=False, ignore_order=True, check_mode=False)
-            if cab.callsign == 'OM2VL':
-                pass
             cab.callsign = cab.callsign.split('/')[0]
         except Exception as e:
             if file:
                 s.stats["rejected_logs"] += 1
                 s.stats["rejected_logs_filenames"].append(file)
-                print(f"ERROR: log file {file} was rejected by the parser - REJECTED")
-                s.out_files['errors'].write(f"log file {file} was rejected by the parser - REJECTED\n")
+                print(f"ERROR - REJECTED: log file {file} was rejected by the parser")
+                s.out_files['errors'].write(f"REJECTED log file {file} was rejected by the parser\n")
                 continue
-        # Process Bruce Horn's HQ keys and adding and replacing values in the cab object
+        # adds category, cat, category, club, and other Bruce Horn HQ-anything fields to cab
         if not process_hq_keys(s, cab):
             s.stats["rejected_logs"] += 1
             s.stats["rejected_logs_filenames"].append(file)
             print(f"ERROR: log file {file} had no HQ- keys - REJECTED")
             s.out_files['errors'].write(f"log file {file} had no HQ- keys - REJECTED\n")
             continue
-        try:
-            cats.add(cab.cat)
-        except Exception as e:
-            print(f"NO CAT for {cab.callsign}")
-            cab.valid = False
-            continue
-        s.stats["valid_logs"] += 1
-        # print(vars(cab))
         
         result = s._init_result()
 
@@ -101,7 +91,6 @@ def read_prepare(s):
         # update result if a DX station
         result['dxcc_code'], result['dxcc_entity'] = get_dxcc(s, cab.location, cab.callsign)
         if result['dxcc_entity'] != cab.callsign:
-            cab.cat = 'DX'
             cab.location = result['dxcc_entity']
         # Add MOBILE stations to that set
         if 'MOBILE' in cab.category:
@@ -109,14 +98,11 @@ def read_prepare(s):
 
         result['cab'] = cab
         result['callsign'] = cab.callsign.upper().split('/')[0]
-        update_qso_index_dict(s, result, cab.qso, result['dxcc_entity'])
+        update_qso_index_dict(s, result, cab)
         # result['header_attribs'] = vars(cab)
         s.results.append(result)
-        # print('BREAK')
-    # print(f"ALL the cab.cat values:\n{cats}")
-    # print("BREAK")
    
-def update_qso_index_dict(s, result, qsos, dxcc):
+def update_qso_index_dict(s, result, cab):
     """
     Update the qso_index_dict for quick lookup of QSOs by 
     received call (dx_call in the cabrillo object) plus mode plus band
@@ -124,7 +110,7 @@ def update_qso_index_dict(s, result, qsos, dxcc):
     """
     qso_count = 0
     # print(f"BEGIN index_dict: qso_count: {qso_count} total: {result['total_qsos']} valid: {result['valid_qsos']} call: {result['callsign']}")
-    for qso in qsos:
+    for qso in cab.qso:
         qso_count += 1
         s.stats['total_qsos'] += 1
         result['total_qsos'] += 1
@@ -136,7 +122,7 @@ def update_qso_index_dict(s, result, qsos, dxcc):
             result['invalid_exchange_qsos'] += 1
             # print(f"NOT VALID TX EXCH: valid qsos: total: {result['total_qsos']} valid: {result['valid_qsos']} de: {qso.de_exch[1]} dx: {qso.dx_exch[1]}")
             continue
-        elif qso.de_exch[1] == 'TX' or   qso.dx_exch[1] == 'TX':
+        elif qso.de_exch[1] == 'TX' or  qso.dx_exch[1] == 'TX':
             qso.valid = False
             s.out_files['invalid_qsos'].write(f"Invalid:'TX' invalid exchange: from-to {qso.de_call}-{qso.dx_call} exchs:{qso.de_exch[1]}-{qso.dx_exch[1]} mode:{qso.mo} band:      {frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
             result['errors'].append(f"Invalid: 'TX' invalid exchange: from-to {qso.de_call}-{qso.dx_call} exchs:{qso.de_exch[1]}-{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
@@ -146,21 +132,24 @@ def update_qso_index_dict(s, result, qsos, dxcc):
         # This is now a VALID  qso
         s.stats['valid_qsos'] += 1
         result['valid_qsos'] += 1
-        # print(f"index_dict VALID total: qso_count: {qso_count} {result['total_qsos']} valid: {result['valid_qsos']}  for {result['callsign']}")
-        # fix DC --> MD
+        # fix de_exch for foreign station
+        if result['dxcc_entity'] != result['callsign']:
+            qso.de_call = qso.de_call + "-DX"
+        # fix dx_exch if receiver if for foreigh station
+        x, dxcc = get_dxcc(s, cab.location, cab.callsign)
+        if dxcc != cab.callsign:
+            qso.dx_call = qso.dx_call + "-DX"
         if qso.de_exch[1] == 'DC': qso.de_exch[1] = 'MD'
         if qso.dx_exch[1] == 'DC': qso.dx_exch[1] = 'MD'
         qso.de_call = qso.de_call.split('/')[0].upper()
         qso.dx_call = qso.dx_call.split('/')[0].upper()
-        qso.de_exch[1] = qso.de_exch[1].split('/')[0].upper()
-        qso.dx_exch[1] = qso.dx_exch[1].split('/')[0].upper()
         k = generate_index_key(s, qso, result['callsign'], False) # FALSE = key from de POV
         # print(f"END index_dict: qso_count: {qso_count} total:{result['total_qsos']} valid:{result['valid_qsos']} dx:{qso.dx_call}")
         s.qso_index_dict[k].append(qso)
 
 def process_hq_keys(s, cab):
     try:
-        if len(cab.hq_anything):
+        if 'hq_anything' in list(cab.__dict__.keys()):
             cab.category = cab.hq_anything['HQ-CATEGORY'].upper()
             temp = cab.hq_anything['HQ-CAT'].upper().split()
             try:
@@ -178,7 +167,7 @@ def process_hq_keys(s, cab):
                 if cab.club not in list(s.contest_clubs.keys()):
                     s.contest_clubs.setdefault(cab.club, 0)
             else:
-                cab.club = "None"
+                cab.club = ""
             temp = {
                 key.strip(): value.strip()
                 for item in cab.hq_anything['HQ-QUESTIONS'].split(",")

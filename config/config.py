@@ -28,7 +28,7 @@ except ImportError:
 # ============================================================================
 
 DEBUG = False
-DB_DROP = False
+DB_DROP = True
 REPORTS_ONLY = False
 SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:

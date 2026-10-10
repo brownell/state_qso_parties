@@ -7,8 +7,17 @@ This file must be at config_txqp.py for TXQP
 NOTE: set up for Windows dev and deployment
 """
 import os
+from datetime import datetime
 
 from pathlib import Path
+
+# contest times
+CONTEST_TIMES = [
+        {'start': datetime(2026, 9, 19, 14, 0, 0),
+         'end': datetime(2026, 9, 20, 2, 0, 0)},
+        {'start': datetime(2026, 9, 20, 14, 0, 0),
+                 'end': datetime(2026, 9, 21, 2, 0, 0)} 
+    ]
 
 # Load environment variables from .env file (for local development)
 # In production (Fly.io), environment variables are already set
@@ -47,11 +56,11 @@ except ImportError:
     NTX SO CWO — 'NSC':  'CW Only Single Operator (no contest power limits)',
     NTX SO PHO — 'NSP':  'Phone Only Single Operator (no contest power limits)',
     DX Stations
-    DX SO — 'DX':  'Single Operator Mixed (no contest power limits)',
+    DX SO — 'DS':  'Single Operator Mixed (no contest power limits)',
 }
 '''
 '''
-['C', 'DX', 'NS', 'NSC', 'NSP', 'NSQ', 'TCSH', 'TCSL', 'TMH', 'TML', 'TMS', 'TMSC', 'TMSP', 'TPSH', 'TPSL', 'TQS', 'TSH', 'TSL']
+['C', 'DS', 'NS', 'NSC', 'NSP', 'NSQ', 'TCSH', 'TCSL', 'TMH', 'TML', 'TMS', 'TMSC', 'TMSP', 'TPSH', 'TPSL', 'TQS', 'TSH', 'TSL']
 '''
 
 TX = ['TSL', 'TSH', 'TML', 'TMH', 'TQS', ]
@@ -96,7 +105,7 @@ RANKINGS = {
 	'NSP':  'Phone Only Single Operator (no contest power limits)',
 
     # DX Stations
-	'DX':  'DX Single Operator Mixed (no contest power limits)',
+	'DS':  'DX Single Operator Mixed (no contest power limits)',
 
     # CheckLog
     'C': 'Check Log Not Including in Rankings'
@@ -192,7 +201,7 @@ RANK_TABLES = [
                 ['claimed_score', 'Claimed']
             ],
         },
-        {'title': 'DX', 'category': 'DX SO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]}
+        {'title': 'DS', 'category': 'DX SO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]}
     ],
 
     ###############

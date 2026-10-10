@@ -25,6 +25,7 @@ from read_prepare import read_prepare
 from cross_check import cross_check
 from utilities import debug_print
 from database import store_rankings
+from score_qsos import score_all_qsos
 from share import SHARED
 from config.config import DATABASE_FILE, REPORTS_ONLY, DEBUG
 
@@ -62,34 +63,16 @@ def main(contest_year):
     #     r = context.results[i]
     #     print(f"results[{i}]: {r['callsign']} {r['final_score']} {r['mtb_mobile_points']} {r['score_wo_bonus']} {r['total_multipliers']} {r['qso_points']} {r['ph_qsos']} {r['cw_qsos']}")
 
+    if not REPORTS_ONLY:
+        score_all_qsos(context)
+        store_rankings(contest_year)
+        print('all QSOs scored and stored AND rankings stored')
+
+    
     # REMEMBER to close all the out_files
     if not REPORTS_ONLY:
         for f in list(context.out_files.keys()):
             context.out_files[f].close()
-
-    #  Save results to database (valid and invalid)
-    # valid_count = 0
-    # invalid_count = 0
-    saved_count = 0
-    
-    if not REPORTS_ONLY:
-        saved_count = 0
-        for result in context.results:
-            # # Save to database (both valid and invalid for record-keeping)
-            try:
-                if save_result(result, contest_year):
-                    saved_count += 1
-                    status = "✓" if result['is_valid'] else "✗"
-                    # print(f"{status} {result['callsign']}: Saved to database")
-                else:
-                    print(f"✗ {result['callsign']}: Database save failed")
-            except Exception as e:
-                print(f"✗ {result['callsign']}: Database error - {e}")
-        print("end of saving results to DB")
-    
-    if not REPORTS_ONLY:
-        store_rankings(contest_year)
-        print('rankings stored')
 
     generate_final_report_pdf(contest_year)
 

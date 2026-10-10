@@ -6,12 +6,41 @@ This file will almost certainly be QSO-party-dependent.
 from datetime import datetime
 from cabrillo.qso import frequency_to_band_m
 from utilities import get_dxcc, debug_print
-from config import COUNTIES_ACTIVATED_POINTS, COUNTIES_WORKED_POINTS, MOBILE_REQUIRED_QSOS
+from database import save_result
+from config import COUNTIES_ACTIVATED_POINTS, COUNTIES_WORKED_POINTS, MOBILE_REQUIRED_QSOS, CONTEST_YEAR
 
 qso_types = ['CW', 'PH', 'DG', 'RY']
 qso_type_names = ['cw_qsos', 'ph_qsos', 'dg_qsos', 'dg_qsos']
 
-def score_a_qso(s, r, q, dup):
+# after cross-check, we are going to score and save all the qsos
+
+def score_all_qsos(s):
+    for result in s.results:
+        dup = {
+            'qsos': [],
+            'num_qso': 0,
+            'mults': [],
+            'num_mult': 0
+        }
+        for qso in result['cab'].qso:  
+            if not qso.valid:
+                result['other_bad_qsos'] += 1
+                result["errors"].append(f"INVALID QSO: from {qso.de_call} to {qso.dx_call} QSO: {qso}")
+                continue
+            try:
+                _score_a_qso(s, result, qso, dup)
+            except Exception as e:
+                # exception trying to score qso
+                result['errors'].append(f"Exception {e} when trying to score QSO {str(qso)}")
+                continue
+            try:
+                if not save_result(result, CONTEST_YEAR):
+                    result['errors'].append(f"could not save result for {result['callsign']}")
+                    print(f"✗ {result['callsign']}: Database save failed")
+            except Exception as e:
+                print(f"✗ {result['callsign']}: Database error - {e}")
+
+def _score_a_qso(s, r, q, dup):
     if not q.valid:
         return
     

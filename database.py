@@ -356,7 +356,6 @@ class ContestDatabase:
                 for i, col in enumerate(columns):
                     result[col] = row[i]
 # TODO add convertion tables for mode, power, and station
-# TODO convert cab.cat to long category name
 # TODO conversion table for qsos_by_mode
                 return self._deserialize_result(result)
                 

@@ -16,18 +16,17 @@ my_callinfo = Callinfo(my_lookup_lib)
 
 def get_dxcc(s, location, callsign):
     ## check if this log is from a DX station, and save the dxcc_entity which will be used for cross-checking
-    if location == "DX" or (location not in s.states and location not in s.provinces and location not in s.counties):
+    if (location not in s.states and location not in s.provinces and location not in s.counties):
         # it's not in US or Canada
         try:
-            callinfo = my_callinfo.get_all(callsign.split('/')[0])
+            callinfo = my_callinfo.get_all(callsign)
         except:
             try:
-                callinfo = my_callinfo.get_all(callsign.split('/')[1])
+                callinfo = my_callinfo.get_all(callsign)
             except:
                 return 0, callsign
 
-        if not (callinfo and callinfo['country'] in ['United States', 'Canada']):
-            # print(f"FOREIGN CALLSIGN location: {location} Call: {callsign}")
+        if (callinfo and callinfo['country'] in ['United States', 'Canada']):
             return callinfo['adif'], callinfo['country']
             
     return 0, callsign
@@ -83,16 +82,7 @@ def is_fuzzy_match(x: str, y: str, max_missing: int = 2) -> bool:
     # print(f"is fuzzy match: {lcs_length >= len(x) - max_missing} lcs_length: {lcs_length}, len(x): {len(x)}")
     return lcs_length >= len(x) - max_missing
 
-def get_fuzzy_match(de_qso: QSO , dx_qsos: list[QSO], time_key: str = 'date', within: int = 1) -> QSO:
-    # see if any of the fuzzies has a fuzzy match between the qso being processed and any of the
-    # look in  qsos of the operator he says he called
-    fuzzies = get_fuzzies(de_qso, dx_qsos)
-    if len(fuzzies) > 0:
-        return fuzzies[0]
-    else:
-        return None
-
-def get_fuzzies(qso: QSO, dx_qsos: list[QSO], time_key: str = 'date', within: int = 1) -> list[QSO]:
+def get_fuzzy_match(qso: QSO, dx_qsos: list[QSO], time_key: str = 'date', within: int = 1) -> bool:
     # find qsos in dx_qsos that are within "within" minuites
     # of time in de_qso
     target_time = getattr(qso, time_key)
@@ -110,7 +100,8 @@ def get_fuzzies(qso: QSO, dx_qsos: list[QSO], time_key: str = 'date', within: in
             q.de_exch[1] == qso.dx_exch[1] and 
             min_time <= getattr(q, time_key) <= max_time):
             matches.append(q)
-    return matches
+    
+    return (len(matches) > 0)
 
 def test():
     fuzzies = [['AD4EB', 'AB4EB']]
