@@ -9,7 +9,6 @@ Batch Control program to process ALL the logs in the incoming directory
 
 from typing import Dict, List, Set, Optional
 import sqlite3
-from pyhamtools import LookupLib, Callinfo
 from cabrillo.parser import parse_log_file
 from cabrillo.qso import frequency_to_band_m
 from collections import defaultdict
@@ -63,9 +62,11 @@ def main(contest_year):
     #     r = context.results[i]
     #     print(f"results[{i}]: {r['callsign']} {r['final_score']} {r['mtb_mobile_points']} {r['score_wo_bonus']} {r['total_multipliers']} {r['qso_points']} {r['ph_qsos']} {r['cw_qsos']}")
 
+    print("BREAK")
     if not REPORTS_ONLY:
+        print("BREAK")
         score_all_qsos(context)
-        store_rankings(contest_year)
+        # store_rankings(contest_year)
         print('all QSOs scored and stored AND rankings stored')
 
     

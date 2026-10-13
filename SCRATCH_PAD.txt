@@ -1,4 +1,28 @@
+            elif "Mobile" in result['cab'].category:
+                # we have to capture both mobile_activated_counties and counties_worked_mobile
+                if "/" in qso.de_exch[1]:
+                    # First we have to see how many counties in the qso
+                    # op should have made this two qsos but we do it for them
+                    # mobile put multiple counties in the same QSO separated by "/"
+                    writefile(s, result, qso, 'warnings', 'Multi-county exchange', False, True)
+                    counties = qso.de_exch[1].split('/')
+                    qso.de_exch[1] = counties[0]
+                    for c in counties[1:]:
+                        new_qso = qso
+                        new_qso.de_call = c
+                        result['cab'].qso.append(new_qso)
+                
+                # we next have to capture both mobile_activated_counties and counties_worked_mobile
 
+ BUSTED              result['busteds'] += 1
+            writefile(s, result, qso, 'busteds', 'Busted QSO')
+            result['busted_calls'].append([qso.de_call, qso.dx_call])
+            c['busteds'] += 1
+            c['busted_calls'].append([qso.de_call, qso.dx_call])
+            qso.valid = False
+            s.out_files['busteds'].write(f'''BUSTED from-to {qso.de_call}-{qso.dx_call} exchs:{qso.de_exch[1]}-{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H%M")}Z\n''')
+            result["errors"].append(f'''BUSTED QSO to {qso.dx_call} exchs:{qso.de_exch[1]}-{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H%M")}Z\n''')
+            return False 
 const pizza = {topping: "cheese",sauce: "marinara",size: "small"};
 
   SELECT callsign, final_score, cw_qsos, ph_qsos, qso_points, total_multipliers, score_wo_bonus, mtb_bonus_points, exchange, cat FROM contest_results  WHERE year = ?' AND cat = ?ORDER BY final_score DESC 

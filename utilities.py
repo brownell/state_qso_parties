@@ -8,6 +8,7 @@ from pyhamtools import LookupLib, Callinfo
 from pprint import pprint
 from datetime import datetime, timedelta
 from cabrillo import QSO
+from share import SHARED as s
 from cabrillo.qso import frequency_to_band_m
 
 # to get country name and ADIF number from callsign
@@ -16,7 +17,7 @@ my_callinfo = Callinfo(my_lookup_lib)
 
 def get_dxcc(s, location, callsign):
     ## check if this log is from a DX station, and save the dxcc_entity which will be used for cross-checking
-    if (location not in s.states and location not in s.provinces and location not in s.counties):
+    if location == 'DX' or (location not in s.states and location not in s.provinces and location not in s.counties):
         # it's not in US or Canada
         try:
             callinfo = my_callinfo.get_all(callsign)
@@ -26,10 +27,16 @@ def get_dxcc(s, location, callsign):
             except:
                 return 0, callsign
 
-        if (callinfo and callinfo['country'] in ['United States', 'Canada']):
+        if len(callinfo) > 0 and (callinfo['country'] not in ['United States', 'Canada', 'Alaska', 'Hawaii']):
             return callinfo['adif'], callinfo['country']
             
     return 0, callsign
+
+def writefile(s, result, qso, file_to_write, intro, errors = True, warning = False):
+    temp = f"{intro}"
+    s.out_files[file_to_write].write(f"{temp}:")
+    if errors:
+        result['errors'].append([f"{temp}:"])
 
 def generate_index_key(s, qso, call_to_use, mirror):
     # to generate the index key for the qso_index_dict
@@ -77,31 +84,46 @@ def is_fuzzy_match(x: str, y: str, max_missing: int = 2) -> bool:
                 dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
                 
     lcs_length = dp[m][n]
-    
-    # Check if the length of the matching sequence satisfies the condition
-    # print(f"is fuzzy match: {lcs_length >= len(x) - max_missing} lcs_length: {lcs_length}, len(x): {len(x)}")
     return lcs_length >= len(x) - max_missing
 
-def get_fuzzy_match(qso: QSO, dx_qsos: list[QSO], time_key: str = 'date', within: int = 1) -> bool:
-    # find qsos in dx_qsos that are within "within" minuites
-    # of time in de_qso
-    target_time = getattr(qso, time_key)
+def is_exchange_match(qso, dx_qso, min_time, max_time) -> bool:
+    # frequency, mode, and the sender's callsign must match
+    # and the time must be a near match
+    if (frequency_to_band_m(qso.freq) == frequency_to_band_m(dx_qso.freq) and
+        qso.mo == dx_qso.mo and
+        qso.de_call == dx_qso.dx_call and
+        min_time <= getattr(dx_qso, 'date') <= max_time):
+        return True
+    else: return False
+    
+def get_near_match(qso, dx_qsos, within: int = 1):
+    '''return one and only one match.
+        the preferred one is where everything matches EXCEPT the 
+        receiver's dx_call. But if the two callsigns are a fuzzy
+        match, then we return this match.
+        The other type of match is whereeverything matches
+        EXCEPT the receiver's dx_exch. Again if the two 
+        exchanges are a fuzzy match, we consider it a match '''
+    target_time = getattr(qso, 'date')
     delta = timedelta(minutes=within)
     min_time = target_time - delta
     max_time = target_time + delta
-    # Single linear scan (fastest if dx_qsos is unsorted and you only search once)
-    matches = []
+    match = None
+    secondary = None
     for q in dx_qsos:
-        # eliminate dx qsos that are not near the de time
-        fuzz = is_fuzzy_match(qso.de_call, q.dx_call)
-        if (q.valid and fuzz and
-            frequency_to_band_m(q.freq) == frequency_to_band_m(qso.freq) and
-            q.mo == qso.mo and q.dx_exch[1] == qso.de_exch[1] and 
-            q.de_exch[1] == qso.dx_exch[1] and 
-            min_time <= getattr(q, time_key) <= max_time):
-            matches.append(q)
-    
-    return (len(matches) > 0)
+        if not (frequency_to_band_m(qso.freq) == frequency_to_band_m(q.freq) and qso.mo == q.mo and (min_time <= getattr(q, 'date') <= max_time)):
+            return
+        # get dx_qsos that are within the time window and are either type of match
+        if is_fuzzy_match(qso.de_call, q.dx_call):
+            return q
+        if is_exchange_match(qso, q):
+            return q
+    return None
+
+def get_qsos_withintimespan(qso, within):
+    target_time = getattr(qso, 'date')
+    delta = timedelta(minutes=within)
+    return (target_time - delta), (target_time + delta)
 
 def test():
     fuzzies = [['AD4EB', 'AB4EB']]
@@ -184,6 +206,46 @@ def lcs_length(a: str, b: str) -> int:
                 curr[j] = max(prev[j], curr[j - 1])
         prev = curr
     return prev[m]
+
+def capture_mobile(s, result, dx_result, qso, match):
+    if not (qso.de_call in s.mobile_callsigns or match.de_call in s.mobile_callsigns):
+        return
+    # for the mobile users, save the county  they are activating
+    if qso.de_call in s.mobile_callsigns:
+        capture_exches(s, result, dx_result, qso, match)
+        # give the oposite op credit for getting you  
+        # looking  
+    if match.de_call in s.mobile_callsigns:
+        if match.de_exch in list(dx_result['mobile_counties_activated'].keys()):
+            dx_result['mobile_counties_activated'] += 1
+        else:
+            dx_result['mobile_counties_activated'] = 1
+
+        result['mobile_counties_activated']
+        if q.de_call in s.counties:
+        result
+
+   
+
+def capture_exches(qso1, result1, qso2, result2):
+
+    if qso1.de_exch[1] in s.counties:
+        result1['counties_activated'].add(qso1.de_exch[1])
+    # mobile operators - record their activations separately
+    if qso.de_call in s.mobile_callsigns:
+        if qso.de_exch[1] in list(r['mobile_activation_counts'].keys()):
+            r['mobile_activation_counts'][qso.de_exch[1]] += 1
+        else:
+            r['mobile_activation_counts'][qso.de_exch[1]] = 1
+
+                    
+            # mobile operators - record their activations separately
+            if qso.de_call in s.mobile_callsigns:
+                if qso.de_exch[1] in list(r['mobile_activation_counts'].keys()):
+                    r['mobile_activation_counts'][qso.de_exch[1]] += 1
+                else:
+                    r['mobile_activation_counts'][qso.de_exch[1]] = 1
+
 
 def diff_count(a: str, b: str) -> int:
     """Number of characters different or missing between a and b."""

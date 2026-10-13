@@ -19,7 +19,7 @@ try:
     if env_path.exists():
         load_dotenv(env_path)
 except ImportError:
-    # dotenv not installed (production), that's OK
+    print(f"dotenv not installed (production), that's OK")
     pass
 
 
@@ -28,7 +28,7 @@ except ImportError:
 # ============================================================================
 
 DEBUG = False
-DB_DROP = True
+DB_DROP = False
 REPORTS_ONLY = False
 SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:

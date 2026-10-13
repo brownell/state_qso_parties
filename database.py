@@ -25,14 +25,15 @@ from share import SHARED as s
 from config.config import DATABASE_FILE, DB_DROP
 from config.config_txqp import RANKINGS
 
-def create_tables():
+def create_tables(s):
     """Create database tables if they don't exist"""
     with sqlite3.connect(DATABASE_FILE) as conn:
         cursor = conn.cursor()
         
         # Main results table - keyed by year and callsign
         # While debugging
-        if DB_DROP:
+        if DB_DROP and s.db_drop:
+            s.db_drop = False
             cursor.execute('''DROP TABLE IF EXISTS contest_results''')
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS contest_results (
@@ -78,6 +79,7 @@ def create_tables():
                 special_station_contacts INTEGER,
                 score_wo_bonus INTEGER,
                 mobile_activation_counts TEXT,
+                mobile_worked_counties TEXT,
                 cab_mobile_points INTEGER,
                 mtb_mobile_points INTEGER,
                 mobile_counties_worked TEXT,
@@ -157,7 +159,7 @@ def create_tables():
         
         conn.commit()
 
-create_tables()
+create_tables(s)
 
 class ContestDatabase:
     """Manages contest results in SQLite database"""
@@ -181,9 +183,8 @@ class ContestDatabase:
                     ]
          # dict fields require different aproach from above fields
         self.dict_fields = [
-            'qsos_by_band', 'qsos_by_mode','mobile_activation_counts'
+            'qsos_by_band', 'qsos_by_mode','mobile_activation_counts', 'mobile_worked_counties'_
         ]
-        
         self.types_of_fields = {'integer': 0, 'string': '',
                             'set': set(), 'list': []}
         self.fields = {'integer': [
@@ -274,16 +275,16 @@ class ContestDatabase:
                 for typ in list([ 'set', 'list']):
                                     for fld in self.fields[typ]:
                                         display_result[fld] = json.loads(result.get(fld, self.types_of_fields[typ]))
-                # LISTS
+                # DICT_FIELDS
                 for field in self.dict_fields:
                     if field in result and result[field]:
                         display_result[field] = json.loads(result[field])
                             
                 # Convert lists back to sets where appropriate
-                if field in ['counties_worked', 'states_worked', 
-                        'provinces_worked', 'dx_worked', 
-                        'counties_activated', 'bands_worked']:
-                    display_result[field] = set(json.loads(result[field]))
+                # if field in ['counties_worked', 'states_worked', 
+                #         'provinces_worked', 'dx_worked', 
+                #         'counties_activated', 'bands_worked']:
+                #     display_result[field] = set(json.loads(result[field]))
 
             except Exception as e:
                 s.out_files['errors'].write(f"could not deserialize {result}")
@@ -293,7 +294,6 @@ class ContestDatabase:
     def save_result(self, contest_year: str, result: Dict) -> bool:
         """
         Save or update a contest result.
-        
         If a record exists for (year, callsign), it will be replaced.
         
         Args:
@@ -303,11 +303,14 @@ class ContestDatabase:
             True if saved successfully
         """
         # Ensure year is present
-        if 'year' not in result or (not result['year']) or result['year'] != contest_year:
-            raise ValueError("Result must include 'year' field")
-        
-        if 'callsign' not in result or not result['callsign']:
-            raise ValueError("Result must include 'callsign' field")
+        try:
+            if 'year' not in result or result['year'] != contest_year:
+                raise ValueError("Result must include 'year' field")
+            
+            if 'callsign' not in result or not result['callsign']:
+                raise ValueError("Result must include 'callsign' field")
+        except ValueError as e:
+            print(f"ValueError {e}")
         
         # Serialize result
         db_result = self._serialize_result(result, contest_year)
@@ -386,7 +389,7 @@ class ContestDatabase:
                 try:
                     with sqlite3.connect(self.db_path) as conn:
                         cursor = conn.cursor()
-                        cursor.execute(sql, [cat])
+                        cursor.execute(sql, cat)
                         print(f"SAVED cat: {cat}")
                     continue
                 except Exception as e:

@@ -51,6 +51,7 @@ class SHARED:
                 self.dxcc_entities[int(row[0])] = row[1].split('  ')[0]
         self.out_files = {
             'errors': open(SCRIPT_DIR / "ERROR_FILE.txt", "w"),
+            'warnings': open(SCRIPT_DIR / "WARNING_FILE.txt", "w"),
             'uniques': open(SCRIPT_DIR / "UNIQUES_FILE.txt", "w"),
             'busteds': open(SCRIPT_DIR / "BUSTEDS_FILE.txt", "w"),
             'nils': open(SCRIPT_DIR / "NILS_FILE.txt", "w"),
@@ -59,6 +60,7 @@ class SHARED:
             'invalid_qsos': open(SCRIPT_DIR / "INVALID_QSOS_FILE.txt", "w")
         }
         self.out_files['errors'].seek(0)
+        self.out_files['warnings'].seek(0)
         self.out_files['uniques'].seek(0)
         self.out_files['busteds'].seek(0)
         self.out_files['nils'].seek(0)
@@ -117,6 +119,7 @@ class SHARED:
                               "West Texas ARC": 0, "West Texas Pemian Network": 0, "Williamson County ARC": 0}
         # non-TX stations working TX mobile stations need to be tracked for bonus points
         self.ntx_bonus = {}
+        self.db_drop = True
 
     # One of these is created for each log file
     # Each of the objects in self.results is a python with the following structure:      
@@ -150,7 +153,7 @@ class SHARED:
             'dx_exch_sent': set(),
             'score_wo_bonus': 0,
             'mobile_activation_counts': {}, # keys are counties activated, value is QSO count.
-            'mobile_worked_counties': set(), # counties where any op worked at least one mobile op
+            'worked_counties_mobile': {}, # counties where anyone has worked a mobile
             'cab_mobile_points': 0,
             'mtb_mobile_points': 0,
             'special_station_contacts': 0,

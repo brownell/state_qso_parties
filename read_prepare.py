@@ -33,7 +33,7 @@ from datetime import datetime
 from unittest import result
 from cabrillo.parser import parse_log_file
 from cabrillo.qso import frequency_to_band_m
-from utilities import generate_index_key, get_dxcc
+from utilities import generate_index_key, get_dxcc, writefile
 
 # Import your existing modules
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -46,7 +46,6 @@ def read_prepare(s):
     """
     Main loop to read, parse, and validate log files in the incoming directory.
     This function is called by batch.py and processes all logs for the specified contest year.
-
     For each log file:
     - parse file
     - save cab Cabrillo object both as object and dict of vars
@@ -54,9 +53,7 @@ def read_prepare(s):
     dir_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR).resolve()
     filenames = [p.name for p in dir_path.iterdir() if p.is_file()]
     result_index = 0
-    cats = set()
     for file in filenames:
-        # print(f"READING {file}")
         s.stats["total_logs"] += 1
         try:
             file_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR / file).resolve()
@@ -116,35 +113,23 @@ def update_qso_index_dict(s, result, cab):
         result['total_qsos'] += 1
         # remove non-TX to non-TX
         if qso.de_exch[1] not in s.counties and  qso.dx_exch[1] not in s.counties:
-            s.out_files['invalid_qsos'].write(f"Invalid: No exchange in Texas: from-to {qso.de_call}-{qso.dx_call} exchs:{qso.de_exch[1]}-{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
-            result['errors'].append(f"Invalid: No exchange in Texas: from-to {qso.de_call}-{qso.dx_call} exchs:{qso.de_exch[1]}-{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
             qso.valid = False
+            writefile(s, result, qso, 'invalid_qsos', 'Invalid: No TX county exchange')
             result['invalid_exchange_qsos'] += 1
-            # print(f"NOT VALID TX EXCH: valid qsos: total: {result['total_qsos']} valid: {result['valid_qsos']} de: {qso.de_exch[1]} dx: {qso.dx_exch[1]}")
             continue
         elif qso.de_exch[1] == 'TX' or  qso.dx_exch[1] == 'TX':
             qso.valid = False
-            s.out_files['invalid_qsos'].write(f"Invalid:'TX' invalid exchange: from-to {qso.de_call}-{qso.dx_call} exchs:{qso.de_exch[1]}-{qso.dx_exch[1]} mode:{qso.mo} band:      {frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
-            result['errors'].append(f"Invalid: 'TX' invalid exchange: from-to {qso.de_call}-{qso.dx_call} exchs:{qso.de_exch[1]}-{qso.dx_exch[1]} mode:{qso.mo} band:{frequency_to_band_m(qso.freq)} Sept {qso.date.strftime("%d")}th {qso.date.strftime("%H:%M")}Z\n")
-            qso.valid = False
+            writefile(s, result, qso, 'invalid_qsos', '')
             result['invalid_exchange_qsos'] += 1
 
         # This is now a VALID  qso
         s.stats['valid_qsos'] += 1
         result['valid_qsos'] += 1
-        # fix de_exch for foreign station
-        if result['dxcc_entity'] != result['callsign']:
-            qso.de_call = qso.de_call + "-DX"
-        # fix dx_exch if receiver if for foreigh station
-        x, dxcc = get_dxcc(s, cab.location, cab.callsign)
-        if dxcc != cab.callsign:
-            qso.dx_call = qso.dx_call + "-DX"
         if qso.de_exch[1] == 'DC': qso.de_exch[1] = 'MD'
         if qso.dx_exch[1] == 'DC': qso.dx_exch[1] = 'MD'
         qso.de_call = qso.de_call.split('/')[0].upper()
         qso.dx_call = qso.dx_call.split('/')[0].upper()
         k = generate_index_key(s, qso, result['callsign'], False) # FALSE = key from de POV
-        # print(f"END index_dict: qso_count: {qso_count} total:{result['total_qsos']} valid:{result['valid_qsos']} dx:{qso.dx_call}")
         s.qso_index_dict[k].append(qso)
 
 def process_hq_keys(s, cab):
