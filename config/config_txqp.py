@@ -124,8 +124,7 @@ RANK_TABLES = [
                 ['qso_points', 'QSOPts'],
                 ['total_multipliers', 'Mults'],
                 ['score_wo_bonus', 'No Bonus'],
-                ['mtb_mobile_points', 'MTBPts'],
-                ['claimed_score', 'Claimed']
+                ['mtb_mobile_points', 'MTBPts']
             ],
             'discussion': f"This is an area where discussion can be added",
         },
@@ -154,8 +153,7 @@ RANK_TABLES = [
                 ['total_multipliers', 'Mults'],
                 ['score_wo_bonus', 'No Bonus'],
                 ['cab_mobile_points', 'CABPts'],
-                ['mtb_mobile_points', 'MTBPts'],
-                ['claimed_score', 'Claimed']
+                ['mtb_mobile_points', 'MTBPts']
             ],
         },
         {'title': 'TMS', 'category': 'TXM SO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
@@ -175,8 +173,7 @@ RANK_TABLES = [
                 ['qso_points', 'QSOPts'],
                 ['total_multipliers', 'Mults'],
                 ['score_wo_bonus', 'No Bonus'],
-                ['mtb_mobile_points', 'MTBPts'],
-                ['claimed_score', 'Claimed']
+                ['mtb_mobile_points', 'MTBPts']
             ],
         },
         {'title': 'NS', 'category': 'NTX SO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
@@ -197,8 +194,7 @@ RANK_TABLES = [
                 ['qso_points', 'QSOPts'],
                 ['total_multipliers', 'Mults'],
                 ['score_wo_bonus', 'QSO Score'],
-                ['mtb_mobile_points', 'MTBPts'],
-                ['claimed_score', 'Claimed']
+                ['mtb_mobile_points', 'MTBPts']
             ],
         },
         {'title': 'DS', 'category': 'DX SO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]}
@@ -216,8 +212,7 @@ RANK_TABLES = [
                 ['qso_points', 'QSOPts'],
                 ['total_multipliers', 'Mults'],
                 ['score_wo_bonus', 'No Bonus'],
-                ['mtb_mobile_points', 'MTBPts'],
-                ['claimed_score', 'Claimed']
+                ['mtb_mobile_points', 'MTBPts']
             ],
         },
         {'title': 'C', 'category': 'CHK', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]}

@@ -111,12 +111,12 @@ def get_near_match(qso, dx_qsos, within: int = 1):
     match = None
     secondary = None
     for q in dx_qsos:
-        if not (frequency_to_band_m(qso.freq) == frequency_to_band_m(q.freq) and qso.mo == q.mo and (min_time <= getattr(q, 'date') <= max_time)):
+        if not (frequency_to_band_m(q.freq) == frequency_to_band_m(q.freq) and q.mo == q.mo and (min_time <= getattr(q, 'date') <= max_time)):
             return
         # get dx_qsos that are within the time window and are either type of match
         if is_fuzzy_match(qso.de_call, q.dx_call):
             return q
-        if is_exchange_match(qso, q):
+        if is_exchange_match(qso, q, min_time, max_time):
             return q
     return None
 
@@ -208,44 +208,32 @@ def lcs_length(a: str, b: str) -> int:
     return prev[m]
 
 def capture_mobile(s, result, dx_result, qso, match):
+    '''mobile_activation counts = {'county': # activations}
+        worked_counties_mobile = {mobile call:  set(counties mobile contacted in)}
+        call capture_qsos twice, reversing the order of the arguments
+        to account for either of the ops being modile'''
     if not (qso.de_call in s.mobile_callsigns or match.de_call in s.mobile_callsigns):
         return
-    # for the mobile users, save the county  they are activating
+    # for the mobile users, save the county they are activating
     if qso.de_call in s.mobile_callsigns:
-        capture_exches(s, result, dx_result, qso, match)
-        # give the oposite op credit for getting you  
-        # looking  
+        capture_contacts(s, result, dx_result, qso)
     if match.de_call in s.mobile_callsigns:
-        if match.de_exch in list(dx_result['mobile_counties_activated'].keys()):
-            dx_result['mobile_counties_activated'] += 1
-        else:
-            dx_result['mobile_counties_activated'] = 1
+        capture_contacts(s, dx_result, result, match)
 
-        result['mobile_counties_activated']
-        if q.de_call in s.counties:
-        result
+def capture_contacts(s, result1, result2, qso):
+    if len(qso.dx_exch[1]) < 2 and qso.de_exch[1] != "F" :
+        print(f"in capture_contacts bad dx_exch for {str(qso)}")
+        print('break')
+        return
+    if qso.de_exch[1] in list(result1['mobile_activation_counts'].keys()):
+        result1['mobile_activation_counts'][qso.de_exch[1]] += 1
+    else:
+        result1['mobile_activation_counts'][qso.de_exch[1]] = 1
 
-   
-
-def capture_exches(qso1, result1, qso2, result2):
-
-    if qso1.de_exch[1] in s.counties:
-        result1['counties_activated'].add(qso1.de_exch[1])
-    # mobile operators - record their activations separately
-    if qso.de_call in s.mobile_callsigns:
-        if qso.de_exch[1] in list(r['mobile_activation_counts'].keys()):
-            r['mobile_activation_counts'][qso.de_exch[1]] += 1
-        else:
-            r['mobile_activation_counts'][qso.de_exch[1]] = 1
-
-                    
-            # mobile operators - record their activations separately
-            if qso.de_call in s.mobile_callsigns:
-                if qso.de_exch[1] in list(r['mobile_activation_counts'].keys()):
-                    r['mobile_activation_counts'][qso.de_exch[1]] += 1
-                else:
-                    r['mobile_activation_counts'][qso.de_exch[1]] = 1
-
+    if qso.de_call in list(result2['worked_counties_mobile'].keys()):
+        result2['worked_counties_mobile'][qso.de_call].add(qso.de_exch[1])
+    else:
+        result2['worked_counties_mobile'][qso.de_call] = {qso.de_exch[1]}
 
 def diff_count(a: str, b: str) -> int:
     """Number of characters different or missing between a and b."""

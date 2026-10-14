@@ -25,16 +25,16 @@ from share import SHARED as s
 from config.config import DATABASE_FILE, DB_DROP
 from config.config_txqp import RANKINGS
 
-def create_tables(s):
+def create_tables():
     """Create database tables if they don't exist"""
     with sqlite3.connect(DATABASE_FILE) as conn:
         cursor = conn.cursor()
         
         # Main results table - keyed by year and callsign
         # While debugging
-        if DB_DROP and s.db_drop:
-            s.db_drop = False
-            cursor.execute('''DROP TABLE IF EXISTS contest_results''')
+        # if DB_DROP and s.drop_db:
+        #     s.db_drop = False
+        #     cursor.execute('''DROP TABLE IF EXISTS contest_results''')
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS contest_results (
                 callsign TEXT NOT NULL,
@@ -79,7 +79,7 @@ def create_tables(s):
                 special_station_contacts INTEGER,
                 score_wo_bonus INTEGER,
                 mobile_activation_counts TEXT,
-                mobile_worked_counties TEXT,
+                worked_counties_mobile TEXT,
                 cab_mobile_points INTEGER,
                 mtb_mobile_points INTEGER,
                 mobile_counties_worked TEXT,
@@ -159,7 +159,7 @@ def create_tables(s):
         
         conn.commit()
 
-create_tables(s)
+create_tables()
 
 class ContestDatabase:
     """Manages contest results in SQLite database"""
@@ -183,7 +183,7 @@ class ContestDatabase:
                     ]
          # dict fields require different aproach from above fields
         self.dict_fields = [
-            'qsos_by_band', 'qsos_by_mode','mobile_activation_counts', 'mobile_worked_counties'_
+            'qsos_by_band', 'qsos_by_mode','mobile_activation_counts', 'mobile_worked_counties'
         ]
         self.types_of_fields = {'integer': 0, 'string': '',
                             'set': set(), 'list': []}
@@ -279,13 +279,8 @@ class ContestDatabase:
                 for field in self.dict_fields:
                     if field in result and result[field]:
                         display_result[field] = json.loads(result[field])
-                            
-                # Convert lists back to sets where appropriate
-                # if field in ['counties_worked', 'states_worked', 
-                #         'provinces_worked', 'dx_worked', 
-                #         'counties_activated', 'bands_worked']:
-                #     display_result[field] = set(json.loads(result[field]))
 
+                display_result['cat'] = RANKINGS[display_result['cat']]
             except Exception as e:
                 s.out_files['errors'].write(f"could not deserialize {result}")
         
@@ -373,32 +368,31 @@ class ContestDatabase:
         """
         with sqlite3.connect(self.db_path, timeout=20.0) as conn:
             cursor = conn.cursor()
-            for cat in list(RANKINGS.keys()):
-                sql = f'''
-                    WITH ranked AS (
-                        SELECT year, callsign, ROW_NUMBER() OVER (ORDER BY final_score DESC) AS calculated_rank
-                        FROM contest_results
-                        WHERE year = 2026 AND cat = (?)
-                    )
-                    UPDATE contest_results
-                    SET category_rank = ranked.calculated_rank
-                    FROM ranked
-                    WHERE contest_results.year = ranked.year
-                    AND contest_results.callsign = ranked.callsign;
-                '''
+            sql = f'''
+                WITH ranked AS (
+                    SELECT year, callsign, ROW_NUMBER() OVER (ORDER BY final_score DESC) AS calculated_rank
+                    FROM contest_results
+                    WHERE year = ? AND cat = ?
+                )
+                UPDATE contest_results
+                SET category_rank = ranked.calculated_rank
+                FROM ranked
+                WHERE contest_results.year = ranked.year
+                AND contest_results.callsign = ranked.callsign;
+            '''
+            for c in list(RANKINGS.keys()):
+                print(f" doing ranks for cat {c}")
                 try:
-                    with sqlite3.connect(self.db_path) as conn:
-                        cursor = conn.cursor()
-                        cursor.execute(sql, cat)
-                        print(f"SAVED cat: {cat}")
+                    cursor = conn.cursor()
+                    cursor.execute(sql, [year, c])
+                    print(f"SAVED cat: {c}")
+                    conn.commit
                     continue
                 except Exception as e:
-                    print(f"***** ERROR could not set category for cat {cat}")
+                    print(f"***** ERROR could not set category for cat {c}")
                     print(f"***** EXCEPTION saving result: {e}")
                     return False
-                
-                conn.commit()
-    
+
     def get_statistics(self, year: str) -> Dict:
         """
         Get contest statistics for a year.
@@ -454,6 +448,39 @@ class ContestDatabase:
 
 
 # Convenience functions
+
+def get_clubs_section(year):
+    db_path = Path(DATABASE_FILE)
+    with sqlite3.connect(db_path, timeout=20.0) as conn:
+
+        sql = '''SELECT
+                cat,
+                COUNT(*) AS person_count,
+                SUM(final_score) AS total_score
+                FROM contest_results
+                GROUP BY cat
+                ORDER BY total_score DESC;'''
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        print(f"getting clubs table")
+        conn.commit
+        rows = cursor.fetchall()
+        rows = rows[:-1]
+        for i, row in enumerate(rows):
+            rows[i] = list(row)
+            rows[i][0] = RANKINGS[rows[i][0]]
+            rows[i] = [str(i + 1)] + list(row)
+    temp = {
+        'section_title': 'Club Summary Results',
+        'tables': [
+            {
+                'title': '',
+                'headers': ['Rank', 'Club', 'Entries', 'Total Score'],
+                'rows': rows
+            }
+        ]
+    }
+    return temp
 
 def save_result(result: Dict, contest_year: str, db_path: str = DATABASE_FILE) -> bool:
     """

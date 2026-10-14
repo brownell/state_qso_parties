@@ -12,6 +12,7 @@ import sys
 import os
 from pathlib import Path
 from datetime import datetime
+from pprint import pprint
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -19,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from config.config_txqp import RANKINGS, RANK_TABLES, FINAL_REPORT_TXT
 from config.config import FINAL_REPORTS_DIR, CONTEST_YEAR
 from ranking_tables import get_section
-
+from database import get_clubs_section
 try:
     from reportlab.lib import colors
     from reportlab.lib.pagesizes import letter
@@ -33,7 +34,9 @@ except ImportError:
 output_path = Path(FINAL_REPORTS_DIR)
 output_path.mkdir(parents=True, exist_ok=True)
 # Define output file path
-output_file = (output_path / f"final_report_{CONTEST_YEAR}.pdf")
+when = datetime.now().strftime('%Y-%m-%d-%H-%M')
+print(f"Texas QSO Party - Generate Final Report PDF ({CONTEST_YEAR} {when}))")
+output_file = (output_path / f"final_report_{CONTEST_YEAR}_{when}.pdf")
 
 # make these "global" since they are being used in two different functions
 doc = SimpleDocTemplate(
@@ -114,17 +117,20 @@ def generate_final_report_pdf(year: str):
         year: Contest year
     """
     print("=" * 60)
-    print(f"Texas QSO Party - Generate Final Report PDF ({year})")
+    print(f"Texas QSO Party - Generate Final Report PDF ({year} {when}))")
     print("=" * 60)
     
     print("Set up PDF...")
     _set_up_pdf_document(year)
 
-    for section_config in RANK_TABLES:
-        section = get_section(year, section_config)
-        # print(f"doing section with title: {section_config['section_title']}")
-        _add_section(section, year)
+    # for section_config in RANK_TABLES:
+    #     section = get_section(year, section_config)
+    #     _add_section(section, year)
 
+    # get the section for the club results
+    section = get_clubs_section(year)
+    _add_section(section, year)
+    
     print(f"finish PDF document")
     _finish_pdf_document()
 
@@ -148,7 +154,6 @@ def _set_up_pdf_document(year):
     story.append(Paragraph(intro_text, intro_style))
 
 def _add_section(section, year):
-    story.append(PageBreak())
     story.append(Paragraph(section['section_title'], section_title_style))
     
     for table in section['tables']:

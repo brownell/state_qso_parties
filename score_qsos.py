@@ -16,12 +16,18 @@ qso_type_names = ['cw_qsos', 'ph_qsos', 'dg_qsos', 'dg_qsos']
 def score_all_qsos(s):
     print(f"starting score_all_qsos: # results = {len(s.results)}")
     for result in s.results:
+        if result['callsign'] == 'AD4EB':
+            print('AE4DB')
+            print('break')
         dup = {
             'qsos': [],
             'num_qso': 0,
             'mults': [],
             'num_mult': 0
         }
+        if result['callsign'] == 'AD4EB':
+            print('AE4DB')
+            print('break')
         for qso in result['cab'].qso:
             qso.valid = True
             if not qso.valid:
@@ -41,48 +47,41 @@ def score_all_qsos(s):
                 continue
             if not qso.valid:
                 continue
-            try:
-                saved = save_result(result, CONTEST_YEAR)
-                if not saved:
-                    temp = f"Failed to save result for {result['callsign']}"
-                    writefile(s, result, qso, 'errors', temp, errors = True, warning = False)
-                    print (f"could not save result for {result['callsign']}\n {str(qso)}")
-            except Exception as e:
-                qso.valid = False
-                result['valid_qsos'] -= 1
-                temp = f"Exception {e} when trying to save QSO"
-                writefile(s, result, qso, 'errors', temp, errors = True, warning = False)
-                result['errors'].append(f"Exception {e} when trying to save QSO {str(qso)}")
-                print(f"Exception {e} when trying to save QSO {str(qso)}")
 
-        print(f"BEFORE score {result['callsign']}")
+
+        if result['callsign'] == 'AD4EB':
+            print('AE4DB')
+            print('break')
         score_an_operator(s, result)
+
+        # save this operator and move on to the next
+        try:
+            saved = save_result(result, CONTEST_YEAR)
+            if not saved:
+                temp = f"Failed to save result for {result['callsign']}"
+                writefile(s, result, qso, 'errors', temp, errors = True, warning = False)
+                print (f"could not save result for {result['callsign']}\n {str(qso)}")
+        except Exception as e:
+            qso.valid = False
+            result['valid_qsos'] -= 1
+            temp = f"Exception {e} when trying to save QSO"
+            writefile(s, result, qso, 'errors', temp, errors = True, warning = False)
+            result['errors'].append(f"Exception {e} when trying to save QSO {str(qso)}")
+            print(f"Exception {e} when trying to save QSO {str(qso)}")
 
 def score_a_qso(s, r, q, dup):
     if not q.valid:
-        if 'busted' in str(q):
-            # was matked busted previously so need to record this
+        if 'busted' in list(vars(q).keys()):
+            # was marked busted previously so need to record this
             # in this op's result
-            r['busteds'] += 1
             writefile(s, r, q, 'busteds', 'Busted QSO')
-            r['busted_calls'].append([q.de_call, q.dx_call])
-            c['busteds'] += 1
             writefile(s, r, q, 'errors', 'Busted QSO')
+            r['busteds'] += 1
+            r['busted_calls'].append([q.de_call, q.dx_call])
+            s.stats['busteds'] += 1
         return False
-    qso_dup = make_dup(s, r, q)
     try:
-        # who method in a try so we don't do a partial scoring
-        if qso_dup in dup['qsos']:
-            q.valid = False
-            r['valid_qsos'] -= 1
-            r['dup_qsos'] += 1
-            dup['num_qso'] += 1
-            temp = f"Duplicate QSO from-to: {q.de_call}-{q.dx_call}"
-            writefile(s, r, q, temp)
-            raise Exception
-        dup['qsos'].append(qso_dup)
-
-        if q.dx_exch not in dup['mults']:
+        if q.dx_exch[1] not in dup['mults']:
             dup['mults'].append(q.dx_exch[1])
         else:
             dup['num_mult'] += 1
@@ -90,7 +89,7 @@ def score_a_qso(s, r, q, dup):
         # increment qsos count for each mode
         if q.mo.upper() not in list(s.mode_points.keys()):
             temp = f"BAD mode {q.mo}"
-            writefile(s, r, 'errors', temp)
+            writefile(s, r, q, 'errors', temp)
             raise Exception
 
         # add 1 to qso type (CW, PH, etc)
@@ -101,12 +100,8 @@ def score_a_qso(s, r, q, dup):
         if q.de_exch[1] in s.counties:
             r['counties_activated'].add(q.de_exch[1])
 
-        # for ALL operators, record each county where mobile op worked
         if q.dx_exch[1] in s.counties:
             r['counties_worked'].add(q.dx_exch[1])
-            if q.dx_call in s.mobile_callsigns and q.dx_exch[1] in s.counties:
-                r['worked_counties_mobile'].add(q.dx_exch[1])
-
         elif q.dx_exch[1] in s.states:
             r['states_worked'].add(q.dx_exch[1])
         elif q.dx_exch[1] in s.provinces:
@@ -118,11 +113,13 @@ def score_a_qso(s, r, q, dup):
             r['valid_qsos'] -= 1
             r['other_bad_qsos'] += 1
             temp = "Receiver's exch invalid:"
-            writefile(s, r, q, temp)
+            writefile(s, r, q, 'invalid_qsos', temp)
         if q.freq[:2] == '50':
             band = '6'
-        if q.freq[:2] == '1':
+        elif q.freq == '114':
             band = '2'
+        elif '.' in q.freq:
+            q.freq = q.freq.split('.')[0]
         elif len(q.freq) in [4, 5]:
             band = frequency_to_band_m(q.freq)
         else:
@@ -154,6 +151,9 @@ def score_a_qso(s, r, q, dup):
 def score_an_operator(s, r):
     # accumulate all the points from qsos and mults for this one operator and score
     # See if operator is disqualified for multiple activated counties when not mobile
+    if r['callsign'] == 'AD4EB':
+        print('AE4DB')
+        print('break')
     try:
         if r['callsign'] not in s.mobile_callsigns and len(r['counties_activated']) > 1:
             s.out_files['errors'].write(f"{r['callsign']} log disqualified: not mobile but activated multiple counties\n")
@@ -166,12 +166,11 @@ def score_an_operator(s, r):
         r['score_wo_bonus'] = r['qso_points'] * r['total_multipliers'] 
 
         ''' bonus points for MOBILE OPERATORS for activations in counties
-            mobile operator gets 500 for each county activated with
-            at least 5 qsos.'''
+            mobile operator gets 500 for every five activations in a
+            single county'''
         if r['callsign'] in s.mobile_callsigns:
-            counties = 0
             for key in list(r['mobile_activation_counts'].keys()):
-                r['cab_mobile_points'] += int(r['mobile_activation_counts'][key]) * COUNTIES_ACTIVATED_POINTS
+                r['cab_mobile_points'] += int(r['mobile_activation_counts'][key] / MOBILE_REQUIRED_QSOS)  * COUNTIES_ACTIVATED_POINTS
 
         ''' Bonus points for ALL operators for each county in which
             they worked a mobile operator'''
@@ -179,12 +178,6 @@ def score_an_operator(s, r):
         r['final_score'] = r['score_wo_bonus'] + r['mtb_mobile_points'] +  r['cab_mobile_points']
     except Exception as e:
         temp = f"Exception {e} scoring operator {r['callsign']}"
-        writefile(s, r, None, temp)
+        writefile(s, r, None, 'errors', temp)
         print(f"could not score {r['callsign']}")
-    return True, 0
-
-def make_dup(s, r, qso):
-    de = get_dxcc(s, r['cab'].location, r['callsign'])[1]
-    dx = get_dxcc(s, qso.dx_exch[1].upper(), qso.dx_call.upper())[1]
-    temp = "_".join([de, dx, qso.de_exch[1].upper(), qso.dx_exch[1].upper(), frequency_to_band_m(qso.freq), qso.mo.upper()])
-    return temp
+    return True

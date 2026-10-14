@@ -35,7 +35,7 @@ class SHARED:
         """Initialize with reference data files"""
         # Load counties, states, and provinces
         with open(SCRIPT_DIR / COUNTIES_FILE, 'r') as f:
-            self.counties = set(line.strip().upper() for line in f if line.strip())
+            self.counties = {line.strip().upper() for line in f if line.strip()}
 
         with open(SCRIPT_DIR / STATES_FILE, 'r') as f:
             self.states = set(line.strip().upper() for line in f if line.strip())
@@ -67,7 +67,7 @@ class SHARED:
         self.out_files['debug'].seek(0)
         self.out_files['dups'].seek(0)
         self.out_files['invalid_qsos'].seek(0)
-
+        self.drop_db = True
         self.script_dir = Path(__file__).resolve().parent
         self.first_call_qth = None  # To track the sent QTH in a log for checking other QSOs against it
         self.mode_points = {
@@ -119,7 +119,6 @@ class SHARED:
                               "West Texas ARC": 0, "West Texas Pemian Network": 0, "Williamson County ARC": 0}
         # non-TX stations working TX mobile stations need to be tracked for bonus points
         self.ntx_bonus = {}
-        self.db_drop = True
 
     # One of these is created for each log file
     # Each of the objects in self.results is a python with the following structure:      

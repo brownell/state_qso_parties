@@ -33,7 +33,7 @@
         "category_mode": "MIX",
         "category_power": "LP",
         "category_station": "FIX",
-        "zzzcat": "NS",
+        "cat": "NS",
         "counties_worked": [
             "AUST",
             "BAST",

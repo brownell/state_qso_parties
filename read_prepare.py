@@ -108,20 +108,25 @@ def update_qso_index_dict(s, result, cab):
     qso_count = 0
     # print(f"BEGIN index_dict: qso_count: {qso_count} total: {result['total_qsos']} valid: {result['valid_qsos']} call: {result['callsign']}")
     for qso in cab.qso:
+        bad_qso = False
         qso_count += 1
         s.stats['total_qsos'] += 1
         result['total_qsos'] += 1
-        # remove non-TX to non-TX
-        if qso.de_exch[1] not in s.counties and  qso.dx_exch[1] not in s.counties:
+        # remove non-TX to non-TX or invalid exchanges
+        if (qso.de_exch[1] not in s.counties and  qso.dx_exch[1] not in s.counties):
             qso.valid = False
             writefile(s, result, qso, 'invalid_qsos', 'Invalid: No TX county exchange')
             result['invalid_exchange_qsos'] += 1
-            continue
-        elif qso.de_exch[1] == 'TX' or  qso.dx_exch[1] == 'TX':
+        if qso.de_exch[1] == 'TX' or  qso.dx_exch[1] == 'TX':
             qso.valid = False
-            writefile(s, result, qso, 'invalid_qsos', '')
+            writefile(s, result, qso, 'invalid_qsos', 'has exchange of TX')
             result['invalid_exchange_qsos'] += 1
-
+        if not (len(qso.dx_exch[1]) > 1 or qso.dx_exch[1] == 'F') or not (len(qso.de_exch[1]) > 1 or qso.de_exch[1] == 'F'):
+            qso.valid = False
+            writefile(s, result, qso, 'invalid_qsos', 'one character exchange and not F (for France)')
+            result['invalid_exchange_qsos'] += 1
+        if not qso.valid:
+            continue
         # This is now a VALID  qso
         s.stats['valid_qsos'] += 1
         result['valid_qsos'] += 1

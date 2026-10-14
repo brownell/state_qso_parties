@@ -369,7 +369,6 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
         }
 
-
         // Bands Worked
         if (result.bands_worked && result.bands_worked.length > 0) {
             html += '<div class="result-group">';

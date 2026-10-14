@@ -50,12 +50,26 @@ def get_section(year: str, section_config: List[Dict]) -> Dict:
         table = generate_table(year, table_config, table_fields)
         if table['rows']:  # Only include tables with data (skip empty tables)
             tables.append(table)
-    
     return {
         'section_title': section_title,
         'table_fields': table_fields,
         'tables': tables
     }
+
+# def get_club_section(year):
+#     section = {
+#         'title': 'Club Results',
+#         'tables': [
+#             {
+#                 'title': '',
+#                 'header': ,
+#                 'rows': [
+
+#                 ]
+
+#             }
+#         ]
+#     }
     
 def generate_table(year: str, table_config: Dict, table_fields: List) -> Dict:
     """

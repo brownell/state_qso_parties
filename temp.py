@@ -1,6 +1,32 @@
 import trace
 trace
 
+foo = {'title': 'Single Operator Mixed Mode High-Power (>150 watts power)', 'category': 'TSH', 'headers': ['Rank', 'Call', 'Score', 'CWQs', 'PHQs', 'QSOPts', 'Mults', 'No Bonus', 'MTBPts', 'Claimed'], 'rows': [[...], [...], [...], [...], [...], [...]]}
+
+
+foo = [
+        {
+            'section_title': 'Texas - Mobile Stations',
+            'show': [
+                ['callsign', 'CallSign'],
+                ['final_score', 'Score'],
+                ['qso_points', 'QSOPts'],
+                ['total_multipliers', 'Mults'],
+                ['score_wo_bonus', 'No Bonus'],
+                ['cab_mobile_points', 'CABPts'],
+                ['mtb_mobile_points', 'MTBPts'],
+                ['claimed_score', 'Claimed']
+            ],
+        },
+        {'title': 'TMS', 'category': 'TXM SO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
+        {'title': 'TMM', 'category': 'TXM MO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
+        {'title': 'TMSC', 'category': 'TXM SO CWO', 'show': [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
+        {'title': 'TMSP', 'category': 'TXM SO PHO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]}
+    ]
+
+{'title': 'Single Operator Mixed Mode (150 watts power limit)', 'category': 'TSL', 'headers': ['Rank', 'Call', 'Score', 'CWQs', 'PHQs', 'QSOPts', 'Mults', 'No Bonus', 'MTBPts', 'Claimed'], 'rows': [[...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...]]}
+
+
 
 # from pathlib import Path
 # import sqlite3

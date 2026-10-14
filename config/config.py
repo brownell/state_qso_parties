@@ -29,7 +29,7 @@ except ImportError:
 
 DEBUG = False
 DB_DROP = False
-REPORTS_ONLY = False
+REPORTS_ONLY = True
 SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY not set in environment!")
@@ -68,7 +68,7 @@ FINAL_REPORTS_DIR = os.environ.get('FINAL_REPORTS_DIR', '/data/final_reports')
 # ============================================================================
 
 # Available years for results lookup
-CONTEST_YEARS = os.environ.get('CONTEST_YEARS', '2025').split(',')
+CONTEST_YEARS = os.environ.get('CONTEST_YEARS', '2026').split(',')
 CONTEST_YEAR = os.environ.get('CONTEST_YEAR', '2026')
 
 COUNTIES_ACTIVATED_POINTS = 1000 # each county

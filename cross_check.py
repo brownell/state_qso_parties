@@ -20,7 +20,7 @@ from collections import defaultdict
 from pathlib import Path
 from cabrillo import QSO
 from cabrillo.qso import frequency_to_band_m
-from utilities import generate_index_key, debug_print, get_near_match, writefile, capture_mobile
+from utilities import generate_index_key, debug_print, get_near_match, writefile, capture_mobile, get_dxcc
 from config.config_txqp import CONTEST_TIMES
 
 def cross_check(s):
@@ -31,7 +31,22 @@ def cross_check(s):
     print(f"START cross-check")
     c = s.stats
     for result in s.results:
+        dup = {
+            'qsos': [],
+            'num_qso': 0,
+        }
         for qso in result['cab'].qso:
+            qso_dup = make_dup(s, result, qso)
+            if qso_dup in dup['qsos']:
+                qso.valid = False
+                result['valid_qsos'] -= 1
+                result['dup_qsos'] += 1
+                dup['num_qso'] += 1
+                temp = f"Duplicate QSO from-to: {qso.de_call}-{qso.dx_call}"
+                writefile(s, result, qso, 'errors', temp)
+                continue
+            else:
+                dup['qsos'].append(qso_dup)
             if qso.dx_call not in list(s.all_callsigns.keys()):
                 # this is a UNIQUE - he gets the points
                 result['uniques'] += 1
@@ -105,3 +120,9 @@ def check_it(s, result, dx_result, qso):
     s.stats['nil_calls'].append([qso.de_call, qso.dx_call])
     writefile(s, result, qso, 'nils', "No match found in receiver's log")
     return False
+
+def make_dup(s, r, qso):
+    # de = get_dxcc(s, r['cab'].location, r['callsign'])[1]
+    # dx = get_dxcc(s, qso.dx_exch[1].upper(), qso.dx_call.upper())[1]
+    temp = "_".join([qso.de_call, qso.dx_call, qso.de_exch[1].upper(), qso.dx_exch[1].upper(), frequency_to_band_m(qso.freq), qso.mo.upper()])
+    return temp

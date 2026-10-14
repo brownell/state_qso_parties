@@ -74,7 +74,7 @@ def main(contest_year):
     if not REPORTS_ONLY:
         for f in list(context.out_files.keys()):
             context.out_files[f].close()
-
+        store_rankings(contest_year)
     generate_final_report_pdf(contest_year)
 
 
