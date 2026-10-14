@@ -151,13 +151,16 @@ def process_hq_keys(s, cab):
                         cab.cat += 'TM'
                     else:
                         cab.cat += t[:1]
-            if "HQ_CLUB" in list(cab.hq_anything.keys()):
-                cab.club = cab.hq_anything['HQ-CLUB']
-                # if the operator specified a club NOT in the dropdown
-                if cab.club not in list(s.contest_clubs.keys()):
-                    s.contest_clubs.setdefault(cab.club, 0)
+            if "HQ-CLUB" in list(cab.hq_anything.keys()): 
+                if cab.hq_anything['HQ-CLUB'] != 'None':
+                    cab.club = cab.hq_anything['HQ-CLUB']
+
+            if cab.club in list(s.contest_clubs.keys()):
+                s.contest_clubs[cab.club] += 1
             else:
-                cab.club = ""
+                s.contest_clubs[cab.club] = 1
+
+            # process the HQ_FIELDS
             temp = {
                 key.strip(): value.strip()
                 for item in cab.hq_anything['HQ-QUESTIONS'].split(",")

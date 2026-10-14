@@ -26,6 +26,8 @@ try:
     from reportlab.lib.pagesizes import letter
     from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, KeepTogether, PageBreak
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.pdfgen import canvas
+
 except ImportError:
     print("Error: reportlab is not installed. Please install it with: pip install reportlab")
     sys.exit(1)
@@ -34,11 +36,14 @@ except ImportError:
 output_path = Path(FINAL_REPORTS_DIR)
 output_path.mkdir(parents=True, exist_ok=True)
 # Define output file path
-when = datetime.now().strftime('%Y-%m-%d-%H-%M')
+when = datetime.now().strftime('%m-%d-%H-%M')
 print(f"Texas QSO Party - Generate Final Report PDF ({CONTEST_YEAR} {when}))")
 output_file = (output_path / f"final_report_{CONTEST_YEAR}_{when}.pdf")
 
 # make these "global" since they are being used in two different functions
+c = canvas.Canvas("final_report.pdf")
+c.setTitle("TXQP Report")
+
 doc = SimpleDocTemplate(
     str(output_file),
     pagesize=letter,
@@ -109,38 +114,28 @@ table_title_style = ParagraphStyle(
 
 story = []
 
-def generate_final_report_pdf(year: str):
+def generate_final_report_pdf(s, year: str):
     """
     Generate final report PDF for a year using ReportLab.
     
     Args:
         year: Contest year
     """
-    print("=" * 60)
     print(f"Texas QSO Party - Generate Final Report PDF ({year} {when}))")
-    print("=" * 60)
-    
-    print("Set up PDF...")
+ 
+  
     _set_up_pdf_document(year)
 
-    # for section_config in RANK_TABLES:
-    #     section = get_section(year, section_config)
-    #     _add_section(section, year)
+    for section_config in RANK_TABLES:
+        section = get_section(year, section_config)
+        _add_section(section, year)
 
     # get the section for the club results
-    section = get_clubs_section(year)
+    section = get_clubs_section(s, year)
     _add_section(section, year)
     
     print(f"finish PDF document")
     _finish_pdf_document()
-
-    # Summary
-    print()
-    print("=" * 60)
-    print("Summary")
-    print("=" * 60)
-    print(f"Saved to: {output_file}")
-    print()
 
 def _set_up_pdf_document(year):
     """Set up the PDF document natively using ReportLab"""

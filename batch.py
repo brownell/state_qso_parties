@@ -43,6 +43,13 @@ def main(contest_year):
         read_prepare(context)
         print(f"after read_prepare")
 
+        # we have added to the contest_clubs, but now time to prune
+        for c in list(context.contest_clubs.keys()):
+            if c in list(context.contest_clubs_original.keys()) and  context.contest_clubs[c] > 0:
+                continue
+            elif context.contest_clubs[c] < 3:
+                del context.contest_clubs[c]
+
     '''
     Do the cross-checking, marking qsos that fail the match test.
     Warning messages are generated when qso fails match
@@ -62,9 +69,7 @@ def main(contest_year):
     #     r = context.results[i]
     #     print(f"results[{i}]: {r['callsign']} {r['final_score']} {r['mtb_mobile_points']} {r['score_wo_bonus']} {r['total_multipliers']} {r['qso_points']} {r['ph_qsos']} {r['cw_qsos']}")
 
-    print("BREAK")
     if not REPORTS_ONLY:
-        print("BREAK")
         score_all_qsos(context)
         # store_rankings(contest_year)
         print('all QSOs scored and stored AND rankings stored')
@@ -75,7 +80,7 @@ def main(contest_year):
         for f in list(context.out_files.keys()):
             context.out_files[f].close()
         store_rankings(contest_year)
-    generate_final_report_pdf(contest_year)
+    generate_final_report_pdf(context, contest_year)
 
 
     

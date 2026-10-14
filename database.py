@@ -20,7 +20,7 @@ import sqlite3
 import json
 from pathlib import Path
 from typing import Dict, List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from share import SHARED as s
 from config.config import DATABASE_FILE, DB_DROP
 from config.config_txqp import RANKINGS
@@ -32,8 +32,8 @@ def create_tables():
         
         # Main results table - keyed by year and callsign
         # While debugging
-        # if DB_DROP and s.drop_db:
-        #     s.db_drop = False
+        # if DB_DROP and db.drop_db:
+        #     db.drop_db = False
         #     cursor.execute('''DROP TABLE IF EXISTS contest_results''')
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS contest_results (
@@ -107,13 +107,13 @@ def create_tables():
         ''')
         
         cursor.execute('''
-            CREATE INDEX IF NOT EXISTS idx_location_type 
-            ON contest_results(year, location)
+            CREATE INDEX IF NOT EXISTS idx_cat 
+            ON contest_results(year, cat)
         ''')
         
         cursor.execute('''
-            CREATE INDEX IF NOT EXISTS idx_mode_category 
-            ON contest_results(year, category_mode)
+            CREATE INDEX IF NOT EXISTS idx_club 
+            ON contest_results(year, club)
         ''')
         
         cursor.execute('''
@@ -159,8 +159,6 @@ def create_tables():
         
         conn.commit()
 
-create_tables()
-
 class ContestDatabase:
     """Manages contest results in SQLite database"""
     
@@ -175,15 +173,17 @@ class ContestDatabase:
         # Ensure directory exists
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
+        self.drop_db = True
+
         # attributes of the Cabrillo object need different approach
         self.cab_attributes = [
             'club', 'name', 'location', 'name', 'category_band', 'email',
             'category_mode', 'category_power', 'category_station', 
-            'cat', 'claimed_score'
+            'cat', 'claimed_score', 'category_power', 'category_station', 'callsign',
                     ]
          # dict fields require different aproach from above fields
         self.dict_fields = [
-            'qsos_by_band', 'qsos_by_mode','mobile_activation_counts', 'mobile_worked_counties'
+            'qsos_by_band', 'qsos_by_mode','mobile_activation_counts', 'worked_counties_mobile', 'mobile_counties_worked'
         ]
         self.types_of_fields = {'integer': 0, 'string': '',
                             'set': set(), 'list': []}
@@ -197,14 +197,11 @@ class ContestDatabase:
             'other_bad_qsos'
         ],
         'string': [  # from the result object
-            'year', 'callsign',  'dxcc_entity', 'club', 'name', 'location', 'name', 'category_band', 'email', 'category_mode', 'category_power', 'category_station', 
-                'cat', 'claimed_score'
+            'year',   'dxcc_entity'
         ],
-        'set': [
-            'counties_worked', 'states_worked', 'provinces_worked',
-            'dx_worked', 'counties_activated', 'bands_worked',
-            'de_exch_rcvd', 'dx_exch_sent', 'mobile_counties_worked',
-            'mobile_activation_counts'
+        'set': [ 'states_worked', 'provinces_worked',
+            'de_exch_rcvd', 'dx_exch_sent', 'bands_worked', 
+            'counties_worked', 'dx_worked', 'counties_activated'
         ],
         'list': ['errors', 'warnings', 'qsos_by_hour', 'busted_calls', 'nil_calls']
         }
@@ -238,6 +235,9 @@ class ContestDatabase:
             for field in self.dict_fields:
                 value = result.get(field, {})
                 # Convert sets in dict values to lists
+                for k in list(value.keys()):
+                    if isinstance(value[k], set):
+                        value[k] = list(value[k])
                 db_result[field] = json.dumps(value)
                 # print(f"field: {field} value: {value}")
 
@@ -245,13 +245,12 @@ class ContestDatabase:
                 db_result[atr] = getattr(cab, atr, '')
             
             # Timestamps
-            now = datetime.utcnow().isoformat()
+            now =  datetime.now(timezone.utc).isoformat()
             db_result['created_at'] = now
             db_result['updated_at'] = now
         except Exception as e:
-            print(f"exception in creating db_result")
+            print(f"exception {e} in creating db_result")
             # print('BREAK')
-        
         return db_result
     
     def _deserialize_result(self, result: Dict) -> Dict:
@@ -305,7 +304,7 @@ class ContestDatabase:
             if 'callsign' not in result or not result['callsign']:
                 raise ValueError("Result must include 'callsign' field")
         except ValueError as e:
-            print(f"ValueError {e}")
+            print(f"ValueError {e} in save_result")
         
         # Serialize result
         db_result = self._serialize_result(result, contest_year)
@@ -381,11 +380,9 @@ class ContestDatabase:
                 AND contest_results.callsign = ranked.callsign;
             '''
             for c in list(RANKINGS.keys()):
-                print(f" doing ranks for cat {c}")
                 try:
                     cursor = conn.cursor()
                     cursor.execute(sql, [year, c])
-                    print(f"SAVED cat: {c}")
                     conn.commit
                     continue
                 except Exception as e:
@@ -447,29 +444,33 @@ class ContestDatabase:
             }
 
 
+db = ContestDatabase(Path(DATABASE_FILE))
+create_tables()
 # Convenience functions
 
-def get_clubs_section(year):
+def get_clubs_section(s, year):
     db_path = Path(DATABASE_FILE)
     with sqlite3.connect(db_path, timeout=20.0) as conn:
 
         sql = '''SELECT
-                cat,
+                club,
                 COUNT(*) AS person_count,
                 SUM(final_score) AS total_score
                 FROM contest_results
-                GROUP BY cat
+                WHERE club IS NOT NULL
+                GROUP BY club
                 ORDER BY total_score DESC;'''
         cursor = conn.cursor()
         cursor.execute(sql)
-        print(f"getting clubs table")
         conn.commit
-        rows = cursor.fetchall()
-        rows = rows[:-1]
-        for i, row in enumerate(rows):
-            rows[i] = list(row)
-            rows[i][0] = RANKINGS[rows[i][0]]
-            rows[i] = [str(i + 1)] + list(row)
+        temp = cursor.fetchall()
+        rows = []
+        j = 0
+        for i, t in enumerate(temp):
+            temp[i] = list(temp[i])
+            if temp[i][1] >= 3 or temp[i][2] > 20000 or temp[i][0] in s.contest_clubs_original:
+                rows.append([j + 1] + temp[i])
+                j += 1
     temp = {
         'section_title': 'Club Summary Results',
         'tables': [
@@ -494,6 +495,7 @@ def save_result(result: Dict, contest_year: str, db_path: str = DATABASE_FILE) -
         True if saved successfully
     """
     db = ContestDatabase(db_path)
+    db.drop_db = False
     return db.save_result(contest_year, result)
 
 
@@ -510,10 +512,12 @@ def get_result(year: str, callsign: str, db_path: str = DATABASE_FILE) -> Option
         Result dict or None if not found
     """
     db = ContestDatabase(db_path)
+    db.drop_db = False
     return db.get_result(year, callsign)
 
 def store_rankings(year: str):
     db = ContestDatabase(DATABASE_FILE)
+    db.drop_db = False
     return db.store_rankings(year)
 
 

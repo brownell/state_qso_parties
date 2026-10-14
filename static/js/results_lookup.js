@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Show individual results
     showIndividualBtn.addEventListener('click', async function() {
-        const year = yearSelect.value.trim();
+        year = 2026;
         const callsign = callsignInput.value.trim().toUpperCase();
         // statsH3.innerText = `Score & Statistics for ${year} Texas QSO Party`;
         if (!year) {
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show final report
     // TODO PDF final reort
     showFinalReportBtn.addEventListener('click', async function() {
-        const year = yearSelect.value.trim();
+        const year = 2026;
 
         if (!year) {
             showMessage('Please select a contest year', 'error');
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showLoading();
 
         try {
-            const response = await fetch(`/api/final_report/${year}`);
+            const response = await fetch(`/api/final_report/2026.pdf`);
             const data = await response.json();
 
             hideLoading();
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Generate statistics (reuse existing format function from upload.js)
         const statisticsHTML = generateStatisticsHTML(result);
         document.getElementById('statisticsContent').innerHTML = statisticsHTML;
-        year = result.year;
+        year = 2026;
         document.getElementById('statsH3').innerHTML = `Your Statistics for ${year} Texas QSO Party`;
 
 

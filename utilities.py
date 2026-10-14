@@ -34,9 +34,14 @@ def get_dxcc(s, location, callsign):
 
 def writefile(s, result, qso, file_to_write, intro, errors = True, warning = False):
     temp = f"{intro}"
-    s.out_files[file_to_write].write(f"{temp}:")
-    if errors:
-        result['errors'].append([f"{temp}:"])
+    if qso == None:
+        s.out_files[file_to_write].write(f"{temp}:")
+        if errors:
+            result['errors'].append([f"{temp}:"])
+    else:
+        s.out_files[file_to_write].write(f"{temp}: {str(qso)}")
+        if errors:
+            result['errors'].append([f"{temp}: {str(qso)}"])
 
 def generate_index_key(s, qso, call_to_use, mirror):
     # to generate the index key for the qso_index_dict
@@ -124,11 +129,6 @@ def get_qsos_withintimespan(qso, within):
     target_time = getattr(qso, 'date')
     delta = timedelta(minutes=within)
     return (target_time - delta), (target_time + delta)
-
-def test():
-    fuzzies = [['AD4EB', 'AB4EB']]
-    for f in fuzzies:
-       print(f"call {f}  True? { is_fuzzy_match(f[0], f[1])}")
 
 def debug_print(s, r, title, p=True):
     # x = {}
@@ -222,8 +222,6 @@ def capture_mobile(s, result, dx_result, qso, match):
 
 def capture_contacts(s, result1, result2, qso):
     if len(qso.dx_exch[1]) < 2 and qso.de_exch[1] != "F" :
-        print(f"in capture_contacts bad dx_exch for {str(qso)}")
-        print('break')
         return
     if qso.de_exch[1] in list(result1['mobile_activation_counts'].keys()):
         result1['mobile_activation_counts'][qso.de_exch[1]] += 1

@@ -34,11 +34,9 @@ def generate_final_report_pdf(year: str, output_dir: str = FINAL_REPORTS_DIR):
         year: Contest year
         output_dir: Directory to save PDF file
     """
-    print("=" * 60)
+  
     print(f"Texas QSO Party - Generate Final Report PDF ({year})")
-    print("=" * 60)
-    print()
-    
+  
     # Ensure output directory exists
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -61,15 +59,8 @@ def generate_final_report_pdf(year: str, output_dir: str = FINAL_REPORTS_DIR):
         for table in section['tables']
     )
     
-    print()
-    print("=" * 60)
-    print("Summary")
-    print("=" * 60)
-    print(f"Sections: {len(sections)}")
-    print(f"Tables: {total_tables}")
-    print(f"Total entries: {total_entries}")
+   
     print(f"Saved to: {output_file}")
-    print()
 
 
 def _create_pdf_document(year: str, sections: list, output_filename: str):
