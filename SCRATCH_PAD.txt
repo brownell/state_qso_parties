@@ -1,3 +1,13 @@
+
+- errors terminology
+- stats
+- clubs
+- formatting of individual
+- add more facts to individual
+- fonts bigger on final 
+- historical data
+
+
             elif "Mobile" in result['cab'].category:
                 # we have to capture both mobile_activated_counties and counties_worked_mobile
                 if "/" in qso.de_exch[1]:

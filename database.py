@@ -270,10 +270,15 @@ class ContestDatabase:
                     for fld in self.fields[typ]:
                         display_result[fld] = result.get(fld, self.types_of_fields[typ])
 
+                # the cab fields saved in the DB are all strings. We are not going to
+                # reconstitute the cab object, but just storing the fiels in display_result
+                for fld in self.cab_attributes:
+                    display_result[fld] = result.get(fld, '')
+
                 # SETS AND LISTS
                 for typ in list([ 'set', 'list']):
-                                    for fld in self.fields[typ]:
-                                        display_result[fld] = json.loads(result.get(fld, self.types_of_fields[typ]))
+                    for fld in self.fields[typ]:
+                        display_result[fld] = json.loads(result.get(fld, self.types_of_fields[typ]))
                 # DICT_FIELDS
                 for field in self.dict_fields:
                     if field in result and result[field]:
