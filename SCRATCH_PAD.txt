@@ -1,12 +1,50 @@
+VI=KP2
+PR=KP4
+QC=VE2
+ON=VE3
+MB=VE4
+AB=VE5
+SK=VE6
+BC=VE7
+NB=VE9
+NS=VE1
+NT=VY0
+NF=VO1
+YT=VY8
+QSO: 14026 CW 2026-09-19 1751 KT3X 599 VICT KA6BIM 599 OR
+
 
 - errors terminology
 - stats
+- convert abbreviations
 - clubs
 - formatting of individual
 - add more facts to individual
 - fonts bigger on final 
 - historical data
+- location: if nothing, TX
+- international exchanges (DL for Slovak?)
 
+F france, G england, I Italy
+
+clubs to fix:
+null
+Alabama contest group
+BAY AREA DXERS  "Bay Area DXers
+"Bristol (TN) ARC"  "Bristol (TN/VA) ARC"
+"CCO"  "CONTEST CLUB ONTARIO"  "Contest Club Ontario"
+"dfw cONTEST GROUP" 
+ "yankee clipper contest club"  "Yankee Clipper Contest Club" "YCCC" "YANKEE CLIPPER CONTEST CLUB"
+ "West Allis Radio Amateur Club"   "West Allis RAC"
+ "The Houston ECHO Society, W5ECO"
+ "Tennesse Contest Club"     "Tennessee Contest Group"    "TENNESSEE CONTEST GROUP"  "TCG"
+ "Sterling Park ARC"  "Sterling Park Amateur Radio Club"
+ "SOCIETY OF MID-WEST CONTESTERS"  "SOCIETY OF MIDWEST CONTESTERS"
+ "PVRC"  "Potomac Valley Radio CLub"  "Potomac Valley Radio Club"
+ "Metrocrest Amateur Radio Society"  "Metrocrest Amateur Radio Society KB5A"
+ "n/a"
+ "None"
+ "NONE"
 
             elif "Mobile" in result['cab'].category:
                 # we have to capture both mobile_activated_counties and counties_worked_mobile

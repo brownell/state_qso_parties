@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Show final report
-    // TODO PDF final reort
     showFinalReportBtn.addEventListener('click', async function() {
         const year = 2026;
 
@@ -467,11 +466,4 @@ function printStatistics() {
     document.body.classList.add('print-statistics');
     window.print();
     document.body.classList.remove('print-statistics');
-}
-
-// TODO pdf final report
-function printFinalReport() {
-    document.body.classList.add('print-final-report');
-    window.print();
-    document.body.classList.remove('print-final-report');
 }

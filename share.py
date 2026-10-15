@@ -97,6 +97,7 @@ class SHARED:
             'nil_calls': [],
             'busteds': 0,
             'busted_calls': [],
+            'invalid_qsos': 0,
             'uniques': 0,
             'dx_log_de_missing': 0,
             'duplicate_qsos': 0,
@@ -111,12 +112,6 @@ class SHARED:
         self.all_callsigns = {}  # To track the indices of all callsigns that submitted logs for 
         self.mobile_callsigns = set() # Track callsigns that have location "mobile"
         self.qso_index_dict = defaultdict(list)
-        self.contest_clubs_original = {"Austin QRP Club": 0, "Baytown Area ARC": 0, "Central Texas DX and Contest Club": 0, "Dallas ARC": 0, "DCT ARC": 0, 
-                              "Denton County ARC": 0, "DFW Contest Group": 0, "Ellis County ARC": 0, "Irving ARC": 0, "Lake Area Amateur Radio Club": 0, 
-                              "Las Moras ARC": 0, "Longview/East Texas ARC": 0, "McKinney ARC": 0, "Medina County ARC": 0, "Midland ARC": 0,
-                              "Naturist ARC": 0, "North Texas ARS": 0, "Panhandle ARC": 0, "Red River Valley ARC": 0, "Road Runners Microwave Group": 0,
-                              "Saginaw Haslet ARC": 0, "South Texas DX and Contest Club": 0, "Texas DX Society": 0, "University of Texas ARC": 0, 
-                              "West Texas ARC": 0, "West Texas Pemian Network": 0, "Williamson County ARC": 0}
         self.contest_clubs = {"Austin QRP Club": 0, "Baytown Area ARC": 0, "Central Texas DX and Contest Club": 0, "Dallas ARC": 0, "DCT ARC": 0, 
                               "Denton County ARC": 0, "DFW Contest Group": 0, "Ellis County ARC": 0, "Irving ARC": 0, "Lake Area Amateur Radio Club": 0, 
                               "Las Moras ARC": 0, "Longview/East Texas ARC": 0, "McKinney ARC": 0, "Medina County ARC": 0, "Midland ARC": 0,

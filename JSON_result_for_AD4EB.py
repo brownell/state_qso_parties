@@ -2562,7 +2562,7 @@
                 "WEBB"
             ]
         },
-        "mobile_counties_worked": {}  # TODO
+        "mobile_counties_worked": {}
     },
     "rank": 1
 }

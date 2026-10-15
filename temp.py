@@ -1,30 +1,489 @@
-import trace
-trace
 
-foo = {'title': 'Single Operator Mixed Mode High-Power (>150 watts power)', 'category': 'TSH', 'headers': ['Rank', 'Call', 'Score', 'CWQs', 'PHQs', 'QSOPts', 'Mults', 'No Bonus', 'MTBPts', 'Claimed'], 'rows': [[...], [...], [...], [...], [...], [...]]}
+from pprint import pprint
+import sys
+from pathlib import Path
+from typing import Dict, List, Set, Optional
+from datetime import datetime
+from unittest import result
+from cabrillo.parser import parse_log_file
+from cabrillo.qso import frequency_to_band_m
+from utilities import generate_index_key, get_dxcc, writefile
+from share import SHARED
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from config.config import (
+    CONTEST_YEAR, BATCH_INPUT_DIR, HQ_FIELDS
+)
+SCRIPT_DIR = Path(__file__).resolve().parent
+
+dir_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR).resolve()
+filenames = [p.name for p in dir_path.iterdir() if p.is_file()]
+result_index = 0
+hq_clubs = set()
+added_clubs = set()
+cab_clubs = set()
+s = SHARED()
+for file in filenames:
+    try:
+        file_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR / file).resolve()
+        cab = parse_log_file(file_path, ignore_unknown_key=True, check_categories=False, ignore_order=True, check_mode=False)
+        cab.callsign = cab.callsign.split('/')[0]
+        try:
+            if 'hq_anything' in list(cab.__dict__.keys()):
+                if "HQ-CLUB" in list(cab.hq_anything.keys()):
+                    hq_club = cab.hq_anything['HQ-CLUB']
+                    if hq_club not in ['None', None]:
+                        hq_clubs.add(hq_club)
+                        if hq_club not in s.contest_clubs_original:
+                            added_clubs.add(hq_club)
+                    else:
+                        club = cab.club
+                        if (cab.club not in ['None', None, 'NONE']) and (cab.club not in list(hq_clubs) and cab.club not in (added_clubs)):
+                            print(f"{cab.club}")
+                            cab_clubs.add(cab.club)
+        except Exception as e:
+            print(f"error getting HQ-CLUB {cab.callsign}  {e}")
+            continue
+    except Exception as e:
+        if file:
+            s.stats["rejected_logs"] += 1
+            s.stats["rejected_logs_filenames"].append(file)
+            print(f"ERROR - REJECTED: log file {file} was rejected by the parser")
+            s.out_files['errors'].write(f"REJECTED log file {file} was rejected by the parser\n")
+            continue
+print(f"# of clubs in HQ-CLUB: that were Bruce's dropdown: {len(hq_clubs)}\n dropdown clubs:\n\n {hq_clubs}\n\n# in HQ-CLUB: that were NOT in Bruce's dropdown: {len(added_clubs)}\nclubs added: {added_clubs} {cab_clubs}\n\n# in Cabrillo CLUB: when HQ-CLUB was NULL\nThese are not in the other two lists: {len(cab_clubs)}\nclubs added: {cab_clubs}")
 
 
-foo = [
-        {
-            'section_title': 'Texas - Mobile Stations',
-            'show': [
-                ['callsign', 'CallSign'],
-                ['final_score', 'Score'],
-                ['qso_points', 'QSOPts'],
-                ['total_multipliers', 'Mults'],
-                ['score_wo_bonus', 'No Bonus'],
-                ['cab_mobile_points', 'CABPts'],
-                ['mtb_mobile_points', 'MTBPts'],
-                ['claimed_score', 'Claimed']
-            ],
-        },
-        {'title': 'TMS', 'category': 'TXM SO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
-        {'title': 'TMM', 'category': 'TXM MO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
-        {'title': 'TMSC', 'category': 'TXM SO CWO', 'show': [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
-        {'title': 'TMSP', 'category': 'TXM SO PHO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]}
-    ]
 
-{'title': 'Single Operator Mixed Mode (150 watts power limit)', 'category': 'TSL', 'headers': ['Rank', 'Call', 'Score', 'CWQs', 'PHQs', 'QSOPts', 'Mults', 'No Bonus', 'MTBPts', 'Claimed'], 'rows': [[...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...]]}
+[
+    {
+        "club": null
+    },
+    {
+        "club": "Alabama Contest Group"
+    },
+    {
+        "club": "Alabama contest group"
+    },
+    {
+        "club": "Alexandria Radio Club"
+    },
+    {
+        "club": "Amateur Radio Club of Parker County"
+    },
+    {
+        "club": "Arizona Outlaws Contest Club"
+    },
+    {
+        "club": "Arkansas DX Assn"
+    },
+    {
+        "club": "Atlantic Coast DX & Contest Group"
+    },
+    {
+        "club": "Austin Amateur Radio Club"
+    },
+    {
+        "club": "Austin QRP Club"
+    },
+    {
+        "club": "BAY AREA DXERS"
+    },
+    {
+        "club": "Bavarian Contest Club"
+    },
+    {
+        "club": "Bay Area DXers"
+    },
+    {
+        "club": "Big Sky Contesters"
+    },
+    {
+        "club": "Bloomington Amature Radio Club --- K9DIY"
+    },
+    {
+        "club": "Bristol (TN) ARC"
+    },
+    {
+        "club": "Bristol (TN/VA) ARC"
+    },
+    {
+        "club": "CARESS - Coquitlam Amateur Radio Club"
+    },
+    {
+        "club": "CCO"
+    },
+    {
+        "club": "CONTEST CLUB ONTARIO"
+    },
+    {
+        "club": "CW Contest Club"
+    },
+    {
+        "club": "Candlewood ARA"
+    },
+    {
+        "club": "Central Texas DX and Contest Club"
+    },
+    {
+        "club": "Central Virginia Contest Club"
+    },
+    {
+        "club": "Contest Club Ontario"
+    },
+    {
+        "club": "Contest Group du Quebec"
+    },
+    {
+        "club": "Cuyahoga ARS"
+    },
+    {
+        "club": "DCT ARC"
+    },
+    {
+        "club": "DEEP DIXIE CONTEST CLUB"
+    },
+    {
+        "club": "DFW Contest Group"
+    },
+    {
+        "club": "DICKSON COUNTY ARC"
+    },
+    {
+        "club": "DX"
+    },
+    {
+        "club": "Dawn Patrol Surf Club"
+    },
+    {
+        "club": "Dupage ARC"
+    },
+    {
+        "club": "East Lansing DX Club"
+    },
+    {
+        "club": "Ellis County ARC"
+    },
+    {
+        "club": "FCG"
+    },
+    {
+        "club": "FLORIDA CONTEST GROUP"
+    },
+    {
+        "club": "FRANKFORD RADIO CLUB"
+    },
+    {
+        "club": "Fayette County DX Club"
+    },
+    {
+        "club": "Florida Contest Group"
+    },
+    {
+        "club": "Frankford Radio Club"
+    },
+    {
+        "club": "Ft. Smith ARC"
+    },
+    {
+        "club": "Garland Amateur Radio Club"
+    },
+    {
+        "club": "Grayson County ARC"
+    },
+    {
+        "club": "Great Places Contest Club"
+    },
+    {
+        "club": "Houston ECHO Society"
+    },
+    {
+        "club": "Hudson Valley Contesters and DXers"
+    },
+    {
+        "club": "Irving ARC"
+    },
+    {
+        "club": "Jefferson ARC"
+    },
+    {
+        "club": "KANSAS CITY CONTEST CLUB"
+    },
+    {
+        "club": "KARO ECHO"
+    },
+    {
+        "club": "KCCC"
+    },
+    {
+        "club": "Kansas City Contest Cliub"
+    },
+    {
+        "club": "Kansas City Contest Club"
+    },
+    {
+        "club": "Kansas city contest club"
+    },
+    {
+        "club": "Kentucky Contest Group"
+    },
+    {
+        "club": "Lake Area Amateur Radio Club"
+    },
+    {
+        "club": "Lake Area Amateur Radio Klub"
+    },
+    {
+        "club": "MINNESOTA  WIRELESS  ASSN"
+    },
+    {
+        "club": "MINNESOTA WIRELESS ASSN"
+    },
+    {
+        "club": "Mad River Radio Club"
+    },
+    {
+        "club": "Maritime Contest Club"
+    },
+    {
+        "club": "Medina County ARC"
+    },
+    {
+        "club": "Metrocrest Amateur Radio Society"
+    },
+    {
+        "club": "Metrocrest Amateur Radio Society KB5A"
+    },
+    {
+        "club": "Midland ARC"
+    },
+    {
+        "club": "Minnesota Wireless Assn"
+    },
+    {
+        "club": "NAQCC"
+    },
+    {
+        "club": "NASA JSC W5RRR Amateur Radio Club"
+    },
+    {
+        "club": "NCARC"
+    },
+    {
+        "club": "NIAGARA FRONTIER RADIOSPORT"
+    },
+    {
+        "club": "NONE"
+    },
+    {
+        "club": "New Providence ARC"
+    },
+    {
+        "club": "Niagara Frontier Radiosport"
+    },
+    {
+        "club": "None"
+    },
+    {
+        "club": "North Coast Contesters"
+    },
+    {
+        "club": "North Texas ARS"
+    },
+    {
+        "club": "Northwest Amateur Radio Society"
+    },
+    {
+        "club": "ORANGE COUNTY AMATEUR RADIO CLUB"
+    },
+    {
+        "club": "Orca DX and Contest"
+    },
+    {
+        "club": "PART of Westford"
+    },
+    {
+        "club": "POTOMAC VALLEY RADIO CLUB"
+    },
+    {
+        "club": "PVRC"
+    },
+    {
+        "club": "Potomac Valley Radio CLub"
+    },
+    {
+        "club": "Potomac Valley Radio Club"
+    },
+    {
+        "club": "RIOARC"
+    },
+    {
+        "club": "Radio Amateurs of Northern Vermont"
+    },
+    {
+        "club": "Randolph County"
+    },
+    {
+        "club": "Red River Valley ARC"
+    },
+    {
+        "club": "Redwood Empire DX Assn"
+    },
+    {
+        "club": "River Bend Wireless Operators Club"
+    },
+    {
+        "club": "Rushmore Radio Amateurs"
+    },
+    {
+        "club": "SCCC"
+    },
+    {
+        "club": "SOCIETY OF MID-WEST CONTESTERS"
+    },
+    {
+        "club": "SOCIETY OF MIDWEST CONTESTERS"
+    },
+    {
+        "club": "SP DX CLUB"
+    },
+    {
+        "club": "SWAMP FOX CONTEST GROUP"
+    },
+    {
+        "club": "Shenandoah Valley Amateur Radio Cllub"
+    },
+    {
+        "club": "Slovak Contest Group"
+    },
+    {
+        "club": "Snohomish County Hams Club"
+    },
+    {
+        "club": "Society of Midwest Contesters"
+    },
+    {
+        "club": "Soth East Contest Club"
+    },
+    {
+        "club": "South East Contest Club"
+    },
+    {
+        "club": "South Texas Amatuer Radio Club"
+    },
+    {
+        "club": "South Texas DX and Contest Club"
+    },
+    {
+        "club": "Southern California Contest Club"
+    },
+    {
+        "club": "Sterling Park ARC"
+    },
+    {
+        "club": "Sterling Park Amateur Radio Club"
+    },
+    {
+        "club": "Swamp Fox Contest Group"
+    },
+    {
+        "club": "TCG"
+    },
+    {
+        "club": "TDXS"
+    },
+    {
+        "club": "TENNESSEE CONTEST GROUP"
+    },
+    {
+        "club": "Tennesse Contest Club"
+    },
+    {
+        "club": "Tennessee Contest Group"
+    },
+    {
+        "club": "Texas DX Society"
+    },
+    {
+        "club": "The 67 Ham Radio Group"
+    },
+    {
+        "club": "The American Legion Post 42 ARC"
+    },
+    {
+        "club": "The Houston ECHO Society, W5ECO"
+    },
+    {
+        "club": "Tri-County Amateur Radio Club"
+    },
+    {
+        "club": "WVDXC"
+    },
+    {
+        "club": "West Allis RAC"
+    },
+    {
+        "club": "West Allis Radio Amateur Club"
+    },
+    {
+        "club": "Western Washington DX Club"
+    },
+    {
+        "club": "Willamette Valley DX Club"
+    },
+    {
+        "club": "YANKEE CLIPPER CONTEST CLUB"
+    },
+    {
+        "club": "YCCC"
+    },
+    {
+        "club": "Yankee Clipper Contest Club"
+    },
+    {
+        "club": "dfw cONTEST GROUP"
+    },
+    {
+        "club": "n/a"
+    },
+    {
+        "club": "none"
+    },
+    {
+        "club": "saint paul radio club"
+    },
+    {
+        "club": "yankee clipper contest club"
+    }
+]
+
+# import trace
+# trace
+
+# foo = {'title': 'Single Operator Mixed Mode High-Power (>150 watts power)', 'category': 'TSH', 'headers': ['Rank', 'Call', 'Score', 'CWQs', 'PHQs', 'QSOPts', 'Mults', 'No Bonus', 'MTBPts', 'Claimed'], 'rows': [[...], [...], [...], [...], [...], [...]]}
+
+
+# foo = [
+#         {
+#             'section_title': 'Texas - Mobile Stations',
+#             'show': [
+#                 ['callsign', 'CallSign'],
+#                 ['final_score', 'Score'],
+#                 ['qso_points', 'QSOPts'],
+#                 ['total_multipliers', 'Mults'],
+#                 ['score_wo_bonus', 'No Bonus'],
+#                 ['cab_mobile_points', 'CABPts'],
+#                 ['mtb_mobile_points', 'MTBPts'],
+#                 ['claimed_score', 'Claimed']
+#             ],
+#         },
+#         {'title': 'TMS', 'category': 'TXM SO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
+#         {'title': 'TMM', 'category': 'TXM MO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
+#         {'title': 'TMSC', 'category': 'TXM SO CWO', 'show': [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
+#         {'title': 'TMSP', 'category': 'TXM SO PHO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]}
+#     ]
+
+# {'title': 'Single Operator Mixed Mode (150 watts power limit)', 'category': 'TSL', 'headers': ['Rank', 'Call', 'Score', 'CWQs', 'PHQs', 'QSOPts', 'Mults', 'No Bonus', 'MTBPts', 'Claimed'], 'rows': [[...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...]]}
 
 
 

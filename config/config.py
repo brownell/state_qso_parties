@@ -112,10 +112,20 @@ ENABLE_FUZZY_MATCHING = False  # Check for callsign errors
 MAX_EDIT_DISTANCE = 2  # Maximum character differences for fuzzy matching (e.g.,
 
 # ============================================================
-# MAPPING of HQ fields added to log by Bruce Horn's uploader
+# CONVERSION of abbreviationS to English
 # ============================================================
 
-
+convert = {
+    'LO': 'Low Power <= 150 Watts',
+    'HI': 'High Power > 150 Watts',
+    'QRP': '<Very Low Power < 10 Watts',
+    'MIX': 'Any mode: CW, PH, DG, RY',
+    'PH': 'Phone (SSB)',
+    'FIX': 'Fixed',
+    'MOB': 'Mobile',
+    'PH QSOs': 'Phone QSOS',
+    'DG QSOs': 'Other Digital Modes',
+    'RY QSOs': 'Radio Teletype'}
 
 # ============================================================
 # BAND AND MODE DEFINITIONS

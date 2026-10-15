@@ -13,6 +13,7 @@ from cabrillo.parser import parse_log_file
 from cabrillo.qso import frequency_to_band_m
 from collections import defaultdict
 from database import store_rankings
+from share import SHARED as s
 
 from config.config import (
     CONTEST_YEAR
@@ -29,6 +30,7 @@ from share import SHARED
 from config.config import DATABASE_FILE, REPORTS_ONLY, DEBUG
 
 def main(contest_year):
+    s = context
     db_path = Path(DATABASE_FILE)
      # Ensure directory exists
     db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -42,13 +44,6 @@ def main(contest_year):
     if not REPORTS_ONLY:
         read_prepare(context)
         print(f"after read_prepare")
-
-        # we have added to the contest_clubs, but now time to prune
-        for c in list(context.contest_clubs.keys()):
-            if c in list(context.contest_clubs_original.keys()) and  context.contest_clubs[c] > 0:
-                continue
-            elif context.contest_clubs[c] < 3:
-                del context.contest_clubs[c]
 
     '''
     Do the cross-checking, marking qsos that fail the match test.

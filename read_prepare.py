@@ -87,8 +87,7 @@ def read_prepare(s):
         
         # update result if a DX station
         result['dxcc_code'], result['dxcc_entity'] = get_dxcc(s, cab.location, cab.callsign)
-        if result['dxcc_entity'] != cab.callsign:
-            cab.location = result['dxcc_entity']
+        cab.location = result['dxcc_entity']
         # Add MOBILE stations to that set
         if 'MOBILE' in cab.category:
             s.mobile_callsigns.add(cab.callsign)
@@ -112,28 +111,39 @@ def update_qso_index_dict(s, result, cab):
         qso_count += 1
         s.stats['total_qsos'] += 1
         result['total_qsos'] += 1
+        qso.de_call = qso.de_call.split('/')[0].upper()
+        qso.dx_call = qso.dx_call.split('/')[0].upper()
+        if qso.de_exch[1] == 'DC': qso.de_exch[1] = 'MD'
+        if qso.dx_exch[1] == 'DC': qso.dx_exch[1] = 'MD'
         # remove non-TX to non-TX or invalid exchanges
         if (qso.de_exch[1] not in s.counties and  qso.dx_exch[1] not in s.counties):
-            qso.valid = False
-            writefile(s, result, qso, 'invalid_qsos', 'Invalid: No TX county exchange')
-            result['invalid_exchange_qsos'] += 1
+            bad_qso = True
         if qso.de_exch[1] == 'TX' or  qso.dx_exch[1] == 'TX':
+            bad_qso = True
+        # both de and dx exch must be a state, county, province, or a valid DX
+        # if de_exch CAN be a DX, fix the exchange
+        if qso.de_exch[1] not in s.counties and qso.de_exch[1] not in  s.provinces:
+            if result['dxcc_entity'] != cab.callsign and not qso.de_exch[1].isalpha():
+                # fix it by adding its dxcc_code (a number)
+                qso.de_exch[1] = qso.de_exch[1] + str(result['dxcc_code'])
+            elif qso.de_exch[1] not in s.states :
+                bad_qso = True
+        # if dx_exch CAN be a DX, fix the exchange
+        if qso.dx_exch[1] not in s.counties and qso.dx_exch[1] not in  s.provinces:
+            code, entity = get_dxcc(s, 'DX', qso.dx_call)
+            if entity != qso.dx_call and not qso.dx_exch[1].isalpha():
+                qso.dx_exch[1] = qso.dx_exch[1] + str(code)
+            elif qso.dx_exch[1] not in s.states:
+                bad_qso = True
+
+        if bad_qso:
             qso.valid = False
-            writefile(s, result, qso, 'invalid_qsos', 'has exchange of TX')
+            writefile(s, result, qso, 'errors', 'Invalid QSO: one or both exchanges invalid')
             result['invalid_exchange_qsos'] += 1
-        if not (len(qso.dx_exch[1]) > 1 or qso.dx_exch[1] == 'F') or not (len(qso.de_exch[1]) > 1 or qso.de_exch[1] == 'F'):
-            qso.valid = False
-            writefile(s, result, qso, 'invalid_qsos', 'one character exchange and not F (for France)')
-            result['invalid_exchange_qsos'] += 1
-        if not qso.valid:
             continue
         # This is now a VALID  qso
         s.stats['valid_qsos'] += 1
         result['valid_qsos'] += 1
-        if qso.de_exch[1] == 'DC': qso.de_exch[1] = 'MD'
-        if qso.dx_exch[1] == 'DC': qso.dx_exch[1] = 'MD'
-        qso.de_call = qso.de_call.split('/')[0].upper()
-        qso.dx_call = qso.dx_call.split('/')[0].upper()
         k = generate_index_key(s, qso, result['callsign'], False) # FALSE = key from de POV
         s.qso_index_dict[k].append(qso)
 
@@ -151,14 +161,17 @@ def process_hq_keys(s, cab):
                         cab.cat += 'TM'
                     else:
                         cab.cat += t[:1]
-            if "HQ-CLUB" in list(cab.hq_anything.keys()): 
-                if cab.hq_anything['HQ-CLUB'] != 'None':
-                    cab.club = cab.hq_anything['HQ-CLUB']
-
-            if cab.club in list(s.contest_clubs.keys()):
-                s.contest_clubs[cab.club] += 1
+            if "HQ-CLUB" in list(cab.hq_anything.keys()) and cab.hq_anything['HQ-CLUB'] != 'None' and cab.hq_anything['HQ-CLUB'] in s.contest_clubs: 
+                cab.club = cab.hq_anything['HQ-CLUB']
+                if not cab.club.isupper():
+                    cab.club.lower().title()
+                if cab.club in list(s.contest_clubs.keys()):
+                    s.contest_clubs[cab.club] += 1
+                else:
+                    s.contest_clubs[cab.club] = 1
             else:
-                s.contest_clubs[cab.club] = 1
+                cab.club = None
+
 
             # process the HQ_FIELDS
             temp = {
