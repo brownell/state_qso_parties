@@ -87,7 +87,6 @@ def read_prepare(s):
         
         # update result if a DX station
         result['dxcc_code'], result['dxcc_entity'] = get_dxcc(s, cab.location, cab.callsign)
-        cab.location = result['dxcc_entity']
         # Add MOBILE stations to that set
         if 'MOBILE' in cab.category:
             s.mobile_callsigns.add(cab.callsign)

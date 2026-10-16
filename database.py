@@ -446,7 +446,6 @@ class ContestDatabase:
                 'top_score': top_result[1] if top_result else 0
             }
 
-
 db = ContestDatabase(Path(DATABASE_FILE))
 create_tables()
 # Convenience functions
@@ -466,58 +465,64 @@ def get_clubs_section(s, year):
         cursor.execute(sql)
         conn.commit
         temp = cursor.fetchall()
+        clubs = len(temp)
         rows = []
         j = 0
         for i, t in enumerate(temp):
             rows.append([j + 1] + list(temp[i]))
             j += 1
-    temp = {
-    'section_title': 'Club Summary Results',
-    'tables': [
-        {
-            'title': '',
-                'headers': ['Rank', 'Club', 'Entries', 'Total Score'],
-                'rows': rows
-            }
-        ]
-    }
+            if j == 0:
+                tables = [
+                    [
+                        {
+                            'title': temp[i],
+                            'headers': ['Rank', 'Club', 'Entries', 'Total Score'],
+                            'rows': rows
+                        }
+                    ]
+                ]
+                sections = [
+                    {
+                        'section_title': 'Club Summary Results',
+                        'tables': tables
+                    }
+                ]
+        
+        for t in range(1, clubs):
+            sql = '''
+                    select callsign, COUNT(*) AS entries, total_score
+                        from contest_results
+                        where club = t[0]
+                        order by total_score
 
-    #         title = f"{rows[i]}"
-    #         table = [
-    #             {
-    #                 'title': title,
-    #                 'headers': ['Rank', 'Score', ]
+                    '''
+
+            else:
+                tables = [
+                    [
+                        {
+                            'title': temp[i],
+                            'headers': ['Callsign', 'Entries', 'Total Score'],
+                            'rows': rows
+                        }
+                    ]
+                ]
+
+                    {
+                        'section_title': 'Club Summary Results',
+                        'tables': tables
+                    }
+
+                ]
+            else:
+
+        
 
 
-    #             }
-    #         ]
-
-    #     # we have the summary table but it is the last
-    #     # build a table for each club
-    #     for i row in enumerate(rows)
+    
                 
 
-    #             sections = [
-                    
-    #                 {
-    #                     'title': '',
-    #                     'headers': ['Rank', 'Club Name', 'Entries', 'Total Score'],
-    #                     'rows': rows
-    #                 }
-    #             ]
-            
-    #             # {
-    #             #     'section_title': 'Club Summary Results',
-    #             #     'tables': [
-    #             #         {
-    #             #             'title': '',
-    #             #             'headers': ['Rank', 'Club', 'Entries', 'Total Score'],
-    #             #             'rows': rows,
-    #             #             'tables': tables
-    #             #         }
-    #             #     ]
-    #             # }
-
+#            ?
 
        
                
@@ -545,7 +550,7 @@ def get_clubs_section(s, year):
     #     }
     # ]
 
-    return temp
+                return
 
 def save_result(result: Dict, contest_year: str, db_path: str = DATABASE_FILE) -> bool:
     """
