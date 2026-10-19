@@ -497,35 +497,24 @@ def get_clubs_section(s, year):
 
                     '''
 
-            else:
-                tables = [
-                    [
-                        {
-                            'title': temp[i],
-                            'headers': ['Callsign', 'Entries', 'Total Score'],
-                            'rows': rows
-                        }
-                    ]
-                ]
+            # else:
+            #     tables = [
+            #         [
+            #             {
+            #                 'title': temp[i],
+            #                 'headers': ['Callsign', 'Entries', 'Total Score'],
+            #                 'rows': rows
+            #             }
+            #         ],
+            #         [
 
-                    {
-                        'section_title': 'Club Summary Results',
-                        'tables': tables
-                    }
+            #             {
+            #                 'section_title': 'Club Summary Results',
+            #                 'tables': tables
+            #             }
 
-                ]
-            else:
-
-        
-
-
-    
-                
-
-#            ?
-
-       
-               
+            #         ]
+            #     ]
     #     # make a section for each of the clubs
     #     for c in rows:
 
@@ -550,7 +539,7 @@ def get_clubs_section(s, year):
     #     }
     # ]
 
-                return
+    return
 
 def save_result(result: Dict, contest_year: str, db_path: str = DATABASE_FILE) -> bool:
     """

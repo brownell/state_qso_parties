@@ -1,3 +1,38 @@
+- errors terminology
+- stats
+- convert abbreviations
+- clubs
+- formatting of individual
+- add more facts to individual
+- fonts bigger on final 
+- historical data
+- location: if nothing, TX
+- international exchanges (DL for Slovak?)
+
+
+if a.de_call =f b.dx_call: b did not get a callsign
+        if a.de_exch == b.dx_exch - a points b busted
+        else both Busted
+elif a.dx_exch =f b.de_exch
+        if a.dx_call == b.de_call
+        a busted, b pts
+else
+       both busted
+        
+   match found in receiver's log: X-QSO: 7038 CW 2026-09-19 1408 AD4EB 599 LAMA N0TT 599 MO
+   BUG                              QSO: 7038 CW 2026-09-19 1408 N0TT 599 MO AD4EP 599 LAMA
+   NIL   found in receiver's log: X-QSO: 7038 CW 2026-09-19 1410 AD4EB 599 LAMA W5JK 599 DENT
+   BUG                              QSO: 7038 CW 2026-09-19 1410 W5JK 599 DENT AB4EB 599 LAMA
+No match found in receiver's log: X-QSO: 7038 CW 2026-09-19 1410 AD4EB 599 FANN W5JK 599 DENT
+No match found in receiver's log: X-QSO: 7042 CW 2026-09-19 1412 AD4EB 599 LAMA NX5M 599 BURL
+No match found in receiver's log: X-QSO: 7042 CW 2026-09-19 1412 AD4EB 599 FANN NX5M 599 BURL
+No match found in receiver's log: X-QSO: 14037 CW 2026-09-19 1416 AD4EB 599 LAMA DL3DXX 599 DL
+No match found in receiver's log: X-QSO: 14037 CW 2026-09-19 1416 AD4EB 599 FANN DL3DXX 599 DL
+No match found in receiver's log: X-QSO: 14037 CW 2026-09-19 1436 AD4EB 599 DELT OM2VL 599 OM
+No match found in receiver's log: X-QSO: 14037 CW 2026-09-19 1437 AD4EB 599 DELT DL3DXX 599 DL
+No match found in receiver's log: X-QSO: 7037 CW 2026-09-19 1444 AD4EB 599 DELT N0TT 599 MO
+No match found in receiver's log: X-QSO: 7037 CW 2026-09-19 1445 AD4EB 599 DELT N5XZ 599 FBEN
+
 VI=KP2
 PR=KP4
 QC=VE2
@@ -14,16 +49,7 @@ YT=VY8
 QSO: 14026 CW 2026-09-19 1751 KT3X 599 VICT KA6BIM 599 OR
 
 
-- errors terminology
-- stats
-- convert abbreviations
-- clubs
-- formatting of individual
-- add more facts to individual
-- fonts bigger on final 
-- historical data
-- location: if nothing, TX
-- international exchanges (DL for Slovak?)
+
 
 F france, G england, I Italy
 

@@ -31,19 +31,26 @@ def cross_check(s):
     print(f"START cross-check")
     c = s.stats
     for result in s.results:
+        if result['callsign'] == 'AD4EB':
+            print(f"{result['callsign']}")
+            print('AD4EB')
         dup = {
             'qsos': [],
             'num_qso': 0,
         }
         for qso in result['cab'].qso:
             qso_dup = make_dup(s, result, qso)
+            if qso.dx_call == 'WB5BKL':
+                print(f"{qso.dx_call}")
+                print('WB5BKL')
+
             if qso_dup in dup['qsos']:
-                qso.valid = False
                 result['valid_qsos'] -= 1
                 result['dup_qsos'] += 1
                 dup['num_qso'] += 1
-                temp = f"Duplicate QSO from-to: {qso.de_call}-{qso.dx_call}"
+                temp = f"Duplicate QSO: "
                 writefile(s, result, qso, 'errors', temp)
+                qso.valid = False
                 continue
             else:
                 dup['qsos'].append(qso_dup)
@@ -118,7 +125,7 @@ def check_it(s, result, dx_result, qso):
     result['nil_calls'].append([qso.de_call, qso.dx_call])
     s.stats['nils'] += 1
     s.stats['nil_calls'].append([qso.de_call, qso.dx_call])
-    writefile(s, result, qso, 'nils', "No match found in receiver's log")
+    writefile(s, result, qso, 'nils', "Not In Log: no match found in dx_call's log")
     return False
 
 def make_dup(s, r, qso):

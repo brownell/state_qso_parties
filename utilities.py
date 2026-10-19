@@ -117,10 +117,17 @@ def get_near_match(qso, dx_qsos, within: int = 1):
     secondary = None
     for q in dx_qsos:
         if not (frequency_to_band_m(q.freq) == frequency_to_band_m(q.freq) and q.mo == q.mo and (min_time <= getattr(q, 'date') <= max_time)):
-            return
-        # get dx_qsos that are within the time window and are either type of match
+            continue
+        # got a potential fuzzy match
+        # if exchanges are right, see if fuzzy match on callsign
         if is_fuzzy_match(qso.de_call, q.dx_call):
-            return q
+            # who was wrong?
+            if qso.dx_call == q.de_call:
+                if qso.de_exch[1] == q.dx_exch[1]:
+                    return q
+                else:
+                    qso.valid = False
+                    return False
         if is_exchange_match(qso, q, min_time, max_time):
             return q
     return None

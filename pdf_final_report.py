@@ -58,7 +58,7 @@ title_style = ParagraphStyle(
     'TitleStyle',
     parent=styles['Heading1'],
     fontName='Times-Bold',
-    fontSize=20,
+    fontSize=24,
     textColor=colors.HexColor('#8B0000'),
     alignment=1, # Center
     spaceAfter=6
@@ -77,7 +77,7 @@ date_style = ParagraphStyle(
     parent=styles['Normal'],
     fontName='Helvetica-Oblique',
     fontSize=9,
-    textColor=colors.HexColor('#666666'),
+    textColor=colors.HexColor("#262626"),
     alignment=1, # Center
     spaceAfter=14
 )
@@ -90,14 +90,14 @@ intro_style = ParagraphStyle(
     leftIndent=10,
     rightIndent=10,
     borderWidth=0,
-    borderColor=colors.HexColor('#8B0000'),
+    borderColor=colors.HexColor('#000000'),
     borderPadding=6
 )
 section_title_style = ParagraphStyle(
     'SectionTitleStyle',
     parent=styles['Heading2'],
     fontName='Times-Bold',
-    fontSize=18,
+    fontSize=24,
     textColor=colors.HexColor('#8B0000'),
     spaceBefore=14,
     spaceAfter=8

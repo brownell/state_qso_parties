@@ -122,9 +122,10 @@ def update_qso_index_dict(s, result, cab):
         # both de and dx exch must be a state, county, province, or a valid DX
         # if de_exch CAN be a DX, fix the exchange
         if qso.de_exch[1] not in s.counties and qso.de_exch[1] not in  s.provinces:
-            if result['dxcc_entity'] != cab.callsign and not qso.de_exch[1].isalpha():
+            if result['dxcc_entity'] != cab.callsign:
                 # fix it by adding its dxcc_code (a number)
                 qso.de_exch[1] = qso.de_exch[1] + str(result['dxcc_code'])
+                bad_qso = False
             elif qso.de_exch[1] not in s.states :
                 bad_qso = True
         # if dx_exch CAN be a DX, fix the exchange
@@ -132,6 +133,7 @@ def update_qso_index_dict(s, result, cab):
             code, entity = get_dxcc(s, 'DX', qso.dx_call)
             if entity != qso.dx_call and not qso.dx_exch[1].isalpha():
                 qso.dx_exch[1] = qso.dx_exch[1] + str(code)
+                bad_qso = bad_qso and True
             elif qso.dx_exch[1] not in s.states:
                 bad_qso = True
 
