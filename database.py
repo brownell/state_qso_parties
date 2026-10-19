@@ -286,7 +286,7 @@ class ContestDatabase:
 
                 display_result['cat'] = RANKINGS[display_result['cat']]
             except Exception as e:
-                s.out_files['errors'].write(f"could not deserialize {result}")
+                s.out_files['errors'].write(f"could not deserialize {result}\n")
         
         return display_result
     

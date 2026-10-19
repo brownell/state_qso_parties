@@ -20,7 +20,7 @@ from collections import defaultdict
 from pathlib import Path
 from cabrillo import QSO
 from cabrillo.qso import frequency_to_band_m
-from utilities import generate_index_key, debug_print, get_near_match, writefile, capture_mobile, get_dxcc
+from utilities import generate_index_key, debug_print, get_near_match, writefile, capture_mobile, get_dxcc, qso_nil, qso_busted
 from config.config_txqp import CONTEST_TIMES
 
 def cross_check(s):
@@ -31,18 +31,14 @@ def cross_check(s):
     print(f"START cross-check")
     c = s.stats
     for result in s.results:
-        if result['callsign'] == 'AD4EB':
-            print(f"{result['callsign']}")
-            print('AD4EB')
         dup = {
             'qsos': [],
             'num_qso': 0,
         }
         for qso in result['cab'].qso:
+            # this is to account for qsos that were already matched when they were the DX qso
+            # and it was observed they were valid and should be scored
             qso_dup = make_dup(s, result, qso)
-            if qso.dx_call == 'WB5BKL':
-                print(f"{qso.dx_call}")
-                print('WB5BKL')
 
             if qso_dup in dup['qsos']:
                 result['valid_qsos'] -= 1
@@ -54,12 +50,8 @@ def cross_check(s):
                 continue
             else:
                 dup['qsos'].append(qso_dup)
-            if qso.dx_call not in list(s.all_callsigns.keys()):
-                # this is a UNIQUE - he gets the points
-                result['uniques'] += 1
-                c['uniques'] += 1
-                writefile(s, result, qso, 'uniques', 'No log from receiver', False)
-                continue
+
+            
             if "Mobile" in result['cab'].category and "/" in qso.de_exch[1]:
                 # op should have made this two qsos but we do it for them
                 # mobile put multiple counties in the same QSO separated by "/"
@@ -70,6 +62,18 @@ def cross_check(s):
                     new_qso = qso
                     new_qso.de_call = c
                     result['cab'].qso.append(new_qso)
+            if qso.dx_call not in list(s.all_callsigns.keys()):
+                # this is a UNIQUE - he gets the points
+                result['uniques'] += 1
+                c['uniques'] += 1
+                writefile(s, result, qso, 'uniques', 'No log from receiver', False)
+                continue
+
+
+            # this is to account for qsos that were already matched when they were the DX qso
+            # and it was observed they were valid and should be scored
+            if getattr(qso, 'points', False):
+                continue
 
             dx_result = s.results[s.all_callsigns[qso.dx_call]]
             if not check_it(s, result, dx_result, qso):
@@ -87,19 +91,17 @@ def check_it(s, result, dx_result, qso):
        (qso.date <= CONTEST_TIMES[1]['end'] )
        ):
         qso.valid = False
-    dx_busted = False
+        writefile(s, result, qso, 'errors', 'BAD DATE/TIME: QSO time not within contest times:')
     k = generate_index_key(s, qso, qso.dx_call, True) # from the dx POV
 
     # see if there are any PERFECT matches (except time)
     potential_matches = s.qso_index_dict[k]
     if len(potential_matches) == 0:
-        match = get_near_match(qso,dx_result['cab'].qso )
+        match = get_near_match(s, qso, result, dx_result)
         if match != None:
             ''' the near_match (if one) is a receiver qso that does not
                 have all the correct information, so we give the points
                 to the sender, but mark the receiver's qso invalid'''
-            match.valid = False
-            match.dx_busted = True
             capture_mobile(s, result, dx_result, qso, match)
             return True
     else:
@@ -112,20 +114,14 @@ def check_it(s, result, dx_result, qso):
                 return True
             ''' Check whether it is "close enough"
             '''
-        match = get_near_match(qso, dx_result['cab'].qso)
+        match = get_near_match(s, qso, result, dx_result)
         if match != None:
             capture_mobile(s, result, dx_result, qso, p)
-            match.dx_busted = True
             return True
         
     '''There was not a full or near match in the qsos of the
         receiver, so this is a NIL'''
-    qso.valid = False
-    result['nils'] += 1
-    result['nil_calls'].append([qso.de_call, qso.dx_call])
-    s.stats['nils'] += 1
-    s.stats['nil_calls'].append([qso.de_call, qso.dx_call])
-    writefile(s, result, qso, 'nils', "Not In Log: no match found in dx_call's log")
+    qso_nil(s, qso, result)
     return False
 
 def make_dup(s, r, qso):

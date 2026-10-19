@@ -9,29 +9,126 @@
 - location: if nothing, TX
 - international exchanges (DL for Slovak?)
 
-
-if a.de_call =f b.dx_call: b did not get a callsign
-        if a.de_exch == b.dx_exch - a points b busted
-        else both Busted
-elif a.dx_exch =f b.de_exch
-        if a.dx_call == b.de_call
-        a busted, b pts
-else
-       both busted
-        
-   match found in receiver's log: X-QSO: 7038 CW 2026-09-19 1408 AD4EB 599 LAMA N0TT 599 MO
-   BUG                              QSO: 7038 CW 2026-09-19 1408 N0TT 599 MO AD4EP 599 LAMA
-   NIL   found in receiver's log: X-QSO: 7038 CW 2026-09-19 1410 AD4EB 599 LAMA W5JK 599 DENT
-   BUG                              QSO: 7038 CW 2026-09-19 1410 W5JK 599 DENT AB4EB 599 LAMA
-No match found in receiver's log: X-QSO: 7038 CW 2026-09-19 1410 AD4EB 599 FANN W5JK 599 DENT
-No match found in receiver's log: X-QSO: 7042 CW 2026-09-19 1412 AD4EB 599 LAMA NX5M 599 BURL
-No match found in receiver's log: X-QSO: 7042 CW 2026-09-19 1412 AD4EB 599 FANN NX5M 599 BURL
-No match found in receiver's log: X-QSO: 14037 CW 2026-09-19 1416 AD4EB 599 LAMA DL3DXX 599 DL
-No match found in receiver's log: X-QSO: 14037 CW 2026-09-19 1416 AD4EB 599 FANN DL3DXX 599 DL
-No match found in receiver's log: X-QSO: 14037 CW 2026-09-19 1436 AD4EB 599 DELT OM2VL 599 OM
-No match found in receiver's log: X-QSO: 14037 CW 2026-09-19 1437 AD4EB 599 DELT DL3DXX 599 DL
-No match found in receiver's log: X-QSO: 7037 CW 2026-09-19 1444 AD4EB 599 DELT N0TT 599 MO
-No match found in receiver's log: X-QSO: 7037 CW 2026-09-19 1445 AD4EB 599 DELT N5XZ 599 FBEN
+Fuzzy match must have exact match of freq, mo, and time within 1 minute, else a NIL, b NIL
+At least one of [call, exch] must be an exact match
+a.dx_call ALWAYS matches b.de_call, because we are only looking at b's log
+if a.de_call exact matches b.dx_call, and exchs fuzzy match and a.dx_exch == b.de_exch: a pts, b busted
+if a.de_call exact matches b.dx_cal, and exchs fuzzy match and a.dx_exch != b.de_exch: a busted, b pts
+if exch exact match, and calls fuzzy match: a pts, b busted
+else: a is NIL, b NIL
+******************        
+1 qsos considered to find fuzzy match
+QSO: 7031 CW 2026-09-20 0124 KA6BIM 599 OR KG5VK 599 DELT
+QSO: 7031 CW 2026-09-20 0124 KG5VK 599 DELT KA6BIM 599 CA
+RECEIVER Busted
+1 qsos considered to find fuzzy match
+X-QSO: 14039 CW 2026-09-20 1428 KA6BIM 599 OR KT3X 599 JHOG
+QSO: 14039 CW 2026-09-20 1428 KT3X 599 JHOG KA6BMZ 599 OR
+RECEIVER Busted
+1 qsos considered to find fuzzy match
+X-QSO: 14039 CW 2026-09-20 1428 KA6BIM 599 OR KT3X 599 ZAPA
+QSO: 14039 CW 2026-09-20 1428 KT3X 599 ZAPA KA6BMZ 599 OR
+RECEIVER Busted
+1 qsos considered to find fuzzy match
+X-QSO: 14039 CW 2026-09-20 1428 KA6BIM 599 OR KT3X 599 WEBB
+QSO: 14039 CW 2026-09-20 1428 KT3X 599 WEBB KA6BMZ 599 OR
+RECEIVER Busted
+1 qsos considered to find fuzzy match
+QSO: 7036 CW 2026-09-19 1431 KB0NES 599 MN K5T 599 PPIN
+X-QSO: 7036 CW 2026-09-19 1430 K5T 599 PPIN KB0NES 599 MT
+RECEIVER Busted
+1 qsos considered to find fuzzy match
+QSO: 7036 CW 2026-09-19 1431 KB0NES 599 MN K5T 599 STEP
+X-QSO: 7036 CW 2026-09-19 1430 K5T 599 STEP KB0NES 599 MT
+RECEIVER Busted
+0 qsos considered to find fuzzy match
+QSO: 14295 PH 2026-09-19 1543 KB0NES 59 MN K5B 59 COOK
+None
+NIL for SENDER after0 qsos considered with fuzzy match
+0 qsos considered to find fuzzy match
+QSO: 14295 PH 2026-09-19 1543 KB0NES 59 MN K5B 59 DENT
+None
+NIL for SENDER after0 qsos considered with fuzzy match
+0 qsos considered to find fuzzy match
+X-QSO: 14025 CW 2026-09-19 2140 KB4CG 599 VA N5KW 599 HOPK
+None
+NIL for SENDER after0 qsos considered with fuzzy match
+0 qsos considered to find fuzzy match
+QSO: 14025 CW 2026-09-19 2201 KB4CG 599 VA WA5DCT 599 KNOX
+None
+NIL for SENDER after0 qsos considered with fuzzy match
+1 qsos considered to find fuzzy match
+QSO: 14050 CW 2026-09-19 1848 KB4DE 599 SC K5TIA 599 HARR
+QSO: 14050 CW 2026-09-19 1847 K5TIA 599 HARR KB4BE 599 SC
+RECEIVER Busted
+1 qsos considered to find fuzzy match
+QSO: 7036 CW 2026-09-20 0137 KB4DE 599 SC N5XZ 599 FBEN
+QSO: 7036 CW 2026-09-20 0137 N5XZ 599 FBEN KB4DE 599 NC
+RECEIVER Busted
+WB5BKL
+WB5BKL
+0 qsos considered to find fuzzy match
+QSO: 7000 PH 2026-09-19 1547 KB5A 59 DALS NZ5X 59 OCHI
+None
+NIL for SENDER after0 qsos considered with fuzzy match
+1 qsos considered to find fuzzy match
+QSO: 14310 PH 2026-09-19 2243 KB9LGS 59 IN KC6UCN 59 DALM
+QSO: 14310 PH 2026-09-19 2243 KC6UCN 59 DALM KB9LJS 59 IN
+RECEIVER Busted
+1 qsos considered to find fuzzy match
+QSO: 14252 PH 2026-09-19 1800 KC0INP 59 MN WA5DCT 59 KNOX
+QSO: 14252 PH 2026-09-19 1800 WA5DCT 59 KNOX KC0NP 59 MN
+RECEIVER Busted
+0 qsos considered to find fuzzy match
+QSO: 14039 CW 2026-09-19 1907 KC3M 599 PA KK5TY 599 SMIT
+None
+NIL for SENDER after0 qsos considered with fuzzy match
+1 qsos considered to find fuzzy match
+QSO: 14036 CW 2026-09-19 1945 KC3M 599 PA KT3X 599 SPAT
+QSO: 14036 CW 2026-09-19 1945 KT3X 599 SPAT NC3M 599 PA
+RECEIVER Busted
+1 qsos considered to find fuzzy match
+QSO: 14036 CW 2026-09-19 1945 KC3M 599 PA KT3X 599 NUEC
+QSO: 14036 CW 2026-09-19 1945 KT3X 599 NUEC NC3M 599 PA
+RECEIVER Busted
+1 qsos considered to find fuzzy match
+QSO: 14047 CW 2026-09-19 2251 KC3M 599 PA K5K 599 DELT
+X-QSO: 14047 CW 2026-09-19 2252 K5K 599 DELT KC3M 599 GA
+RECEIVER Busted
+1 qsos considered to find fuzzy match
+QSO: 14047 CW 2026-09-19 2251 KC3M 599 PA K5K 599 HOPK
+X-QSO: 14047 CW 2026-09-19 2252 K5K 599 HOPK KC3M 599 GA
+RECEIVER Busted
+WB5BKL
+WB5BKL
+1 qsos considered to find fuzzy match
+QSO: 14000 PH 2026-09-19 1639 KC4EEL 59 DELT VA4JS 59 MB
+X-QSO: 14200 PH 2026-09-19 1640 VA4JS 59 MB KC4EEL 59 DEN
+RECEIVER Busted
+0 qsos considered to find fuzzy match
+QSO: 14000 PH 2026-09-19 1639 KC4EEL 59 HOPK VA4JS 59 MB
+None
+NIL for SENDER after0 qsos considered with fuzzy match
+0 qsos considered to find fuzzy match
+QSO: 14000 PH 2026-09-19 1652 KC4EEL 59 DELT K4IEW 59 VA
+None
+NIL for SENDER after0 qsos considered with fuzzy match
+1 qsos considered to find fuzzy match
+QSO: 144 PH 2026-09-19 1736 KC4EEL 59 DELT KE5OBS 59 HOPK
+QSO: 14338 PH 2026-09-19 1737 KE5OBS 59 HOPK KC4EEL 59 DELT
+RECEIVER Busted
+1 qsos considered to find fuzzy match
+QSO: 144 PH 2026-09-19 1736 KC4EEL 59 HOPK KE5OBS 59 DELT
+QSO: 14338 PH 2026-09-19 1736 KE5OBS 59 DELT KC4EEL 59 HOPK
+RECEIVER Busted
+1 qsos considered to find fuzzy match
+X-QSO: 14000 PH 2026-09-19 2150 KC4EEL 59 DELT K5K 59 HOPK
+QSO: 14238 CW 2026-09-19 2149 K5K 599 HOPK KC4EEL 599 DELT
+RECEIVER Busted
+1 qsos considered to find fuzzy match
+X-QSO: 14000 PH 2026-09-19 2150 KC4EEL 59 HOPK K5K 59 DELT
+QSO: 14238 CW 2026-09-19 2149 K5K 599 DELT KC4EEL 599 HOPK
+RECEIVER Busted
 
 VI=KP2
 PR=KP4

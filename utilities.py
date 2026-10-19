@@ -35,11 +35,11 @@ def get_dxcc(s, location, callsign):
 def writefile(s, result, qso, file_to_write, intro, errors = True, warning = False):
     temp = f"{intro}"
     if qso == None:
-        s.out_files[file_to_write].write(f"{temp}:")
+        s.out_files[file_to_write].write(f"{temp}\n")
         if errors:
-            result['errors'].append([f"{temp}:"])
+            result['errors'].append([f"{temp}"])
     else:
-        s.out_files[file_to_write].write(f"{temp}: {str(qso)}")
+        s.out_files[file_to_write].write(f"{temp}: {str(qso)}\n")
         if errors:
             result['errors'].append([f"{temp}: {str(qso)}"])
 
@@ -89,19 +89,20 @@ def is_fuzzy_match(x: str, y: str, max_missing: int = 2) -> bool:
                 dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
                 
     lcs_length = dp[m][n]
+    if lcs_length == 1 and len(x) == 2:
+        return True
     return lcs_length >= len(x) - max_missing
 
 def is_exchange_match(qso, dx_qso, min_time, max_time) -> bool:
     # frequency, mode, and the sender's callsign must match
     # and the time must be a near match
-    if (frequency_to_band_m(qso.freq) == frequency_to_band_m(dx_qso.freq) and
-        qso.mo == dx_qso.mo and
-        qso.de_call == dx_qso.dx_call and
-        min_time <= getattr(dx_qso, 'date') <= max_time):
-        return True
-    else: return False
+    if min_time <= getattr(dx_qso, 'date') <= max_time:
+        if is_fuzzy_match(qso.de_exch[1], dx_qso.dx_exch[1]) and is_fuzzy_match(qso.dx_exch[1], dx_qso.de_exch[1]) :
+            return True
+    else: 
+        return False
     
-def get_near_match(qso, dx_qsos, within: int = 1):
+def get_near_match(s, qso, result, dx_result, within: int = 1):
     '''return one and only one match.
         the preferred one is where everything matches EXCEPT the 
         receiver's dx_call. But if the two callsigns are a fuzzy
@@ -109,28 +110,69 @@ def get_near_match(qso, dx_qsos, within: int = 1):
         The other type of match is whereeverything matches
         EXCEPT the receiver's dx_exch. Again if the two 
         exchanges are a fuzzy match, we consider it a match '''
+    dx_qsos = dx_result['cab'].qso
     target_time = getattr(qso, 'date')
     delta = timedelta(minutes=within)
     min_time = target_time - delta
     max_time = target_time + delta
-    match = None
-    secondary = None
+    matched_q = None
     for q in dx_qsos:
+        matched_q = None
+        potential_fuzzies = 0
         if not (frequency_to_band_m(q.freq) == frequency_to_band_m(q.freq) and q.mo == q.mo and (min_time <= getattr(q, 'date') <= max_time)):
             continue
-        # got a potential fuzzy match
-        # if exchanges are right, see if fuzzy match on callsign
-        if is_fuzzy_match(qso.de_call, q.dx_call):
-            # who was wrong?
-            if qso.dx_call == q.de_call:
-                if qso.de_exch[1] == q.dx_exch[1]:
-                    return q
-                else:
-                    qso.valid = False
-                    return False
-        if is_exchange_match(qso, q, min_time, max_time):
-            return q
-    return None
+        potential_fuzzies += 1
+        # if callsigns exact match:
+        if qso.de_call == q.dx_call and qso.dx_call == q.de_call:
+            # then exchanges must be fuzzy match
+            if is_exchange_match(qso, q, min_time, max_time):
+                # no fuzzy match
+                    matched_q = q
+                    break
+        else:
+            # if exch exact, calls must fuzzy match
+            if qso.de_exch[1] == q.dx_exch[1] and qso.dx_exch[1] == q.de_exch[1]:
+                # qsos exact match, see if callsigns fuzzy match
+                if is_fuzzy_match(qso.de_call, q.dx_call):
+                    matched_q = q
+                    break
+        continue # matched on base values in qsos
+        
+    if matched_q != None:
+        # see if de gets points or is NIL
+        if qso.dx_exch[1] != matched_q.de_exch[1]:
+            # the de qso is busted 
+            s.out_files['debug'].write(f"*** SENDER Busted:{potential_fuzzies} qsos considered to find fuzzy match\n{qso}\n{matched_q}\n")
+            qso_busted(s, qso, result)
+            if matched_q.dx_exch[1] != qso.de_exch[1]:
+                matched_q.points = True
+        else:
+            s.out_files['debug'].write(f"*** RECEIVER Busted:{potential_fuzzies} qsos considered to find fuzzy match\n{qso}\n{matched_q}\n")
+            qso_busted(s, matched_q, dx_result)
+        return matched_q
+
+    else:
+        s.out_files['debug'].write(f"*** NIL for SENDER\n{str(qso)}\n")
+        qso_nil(s, qso, result)
+        return None
+
+def qso_busted(s, qso, result):
+    if result['dxcc_entity'] != result['callsign']:
+        print(f"busted with dxcc_entity {result['dxcc_entity']}\n{qso}")
+    qso.valid = False
+    result['busteds'] += 1
+    result['busted_calls'].append([qso.de_call, qso.dx_call])
+    s.stats['busteds'] += 1
+    s.stats['busted_calls'].append([qso.de_call, qso.dx_call])
+    writefile(s, result, qso, 'busteds', "Busted: error in sender log in fuzzy match")
+
+def qso_nil(s, qso, result):
+    qso.valid = False
+    result['nils'] += 1
+    result['nil_calls'].append([qso.de_call, qso.dx_call])
+    s.stats['nils'] += 1
+    s.stats['nil_calls'].append([qso.de_call, qso.dx_call])
+    writefile(s, result, qso, 'nils', "Not In Log: no match found in dx_call's log")
 
 def get_qsos_withintimespan(qso, within):
     target_time = getattr(qso, 'date')
