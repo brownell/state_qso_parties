@@ -131,8 +131,9 @@ def generate_final_report_pdf(s, year: str):
         _add_section(section, year)
 
     # get the section for the club results
-    section = get_clubs_section(s, year)
-    _add_section(section, year)
+    sections = get_clubs_section(s, year)
+    for section in sections:
+        _add_section(section, year)
     
     print(f"finish PDF document")
     _finish_pdf_document()

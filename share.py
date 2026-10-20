@@ -89,38 +89,54 @@ class SHARED:
             'valid_logs': 0,
             'rejected_logs': 0,
             'rejected_logs_filenames': [], # logs of PARSER not_valids
+            'qso_parser_not_valid': 0,
+            'dx_logs': 0,
+            'us_cdn_logs': 0,
+            'tx_logs': 0,
+            'unclassed_logs': 0,
             'total_qsos': 0,
             'valid_qsos': 0,
-            'qso_parser_not_valid': 0,
-            'calls_w_not_valid_qsos': set(),
+            'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
+            'qsos_by_mode': {'PH': 0, 'CW': 0, 'RY': 0, 'DG': 0},
+            'qsos_by_hour': [0] * 24,
+            'qsos_with_tx': 0,
+            'qsos_with_us_cdn': 0,
+            'qsos_with_dx': 0,
+            'duplicate_qsos': 0,
             'nils': 0,
             'nil_calls': [],
             'busteds': 0,
             'busted_calls': [],
             'invalid_qsos': 0,
             'uniques': 0,
+            'counties_worked': set(),
+            'states_worked': set(),
+            'provinces_worked': set(),
+            'dx_worked': set(),
+            'counties_activated': set(),
+            'counties_mobile_activated': set(),
+            'worked_counties_mobile': set(),
+
+
+            'calls_w_not_valid_qsos': set(),
             'dx_log_de_missing': 0,
-            'duplicate_qsos': 0,
             'total_multipliers': 0,
-            'counties_worked_names': set(),
-            'states_worked_names': set(),
-            'provinces_worked_names': set(),
-            'dx_worked_names': set()
         }
         ''' We need direct access to a single operators log. We are
             keeping record of each callsign's index in the self.results list'''
         self.all_callsigns = {}  # To track the indices of all callsigns that submitted logs for 
         self.mobile_callsigns = set() # Track callsigns that have location "mobile"
         self.qso_index_dict = defaultdict(list)
-        self.contest_clubs = {"Austin QRP Club": 0, "Baytown Area ARC": 0, "Central Texas DX and Contest Club": 0, "Dallas ARC": 0,
-                               "DCT ARC": 0, 
-                              "Denton County ARC": 0, "DFW Contest Group": 0, "Ellis County ARC": 0, "Irving ARC": 0,
-                                "Lake Area Amateur Radio Club": 0, 
-                              "Las Moras ARC": 0, "Longview/East Texas ARC": 0, "McKinney ARC": 0, "Medina County ARC": 0, 
-                              "Midland ARC": 0,
-                              "Naturist ARC": 0, "North Texas ARS": 0, "Panhandle ARC": 0, "Red River Valley ARC": 0, "Road Runners Microwave Group": 0,
-                              "Saginaw Haslet ARC": 0, "South Texas DX and Contest Club": 0, "Texas DX Society": 0, "University of Texas ARC": 0, 
-                              "West Texas ARC": 0, "West Texas Pemian Network": 0, "Williamson County ARC": 0}
+        self.contest_clubs = {
+            "Austin QRP Club": 0, "Baytown Area ARC": 0, "Central Texas DX and Contest Club": 0, "Dallas ARC": 0,
+            "DCT ARC": 0, 
+            "Denton County ARC": 0, "DFW Contest Group": 0, "Ellis County ARC": 0, "Irving ARC": 0,
+            "Lake Area Amateur Radio Club": 0, 
+            "Las Moras ARC": 0, "Longview/East Texas ARC": 0, "McKinney ARC": 0, "Medina County ARC": 0, 
+            "Midland ARC": 0,
+            "Naturist ARC": 0, "North Texas ARS": 0, "Panhandle ARC": 0, "Red River Valley ARC": 0, "Road Runners Microwave Group": 0,
+            "Saginaw Haslet ARC": 0, "South Texas DX and Contest Club": 0, "Texas DX Society": 0, "University of Texas ARC": 0, 
+            "West Texas ARC": 0, "West Texas Pemian Network": 0, "Williamson County ARC": 0}
         # non-TX stations working TX mobile stations need to be tracked for bonus points
         self.ntx_bonus = {}
 

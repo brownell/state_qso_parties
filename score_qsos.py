@@ -22,9 +22,8 @@ def score_all_qsos(s):
             'num_mult': 0
         }
         for qso in result['cab'].qso:
-            qso.valid = True
             if not qso.valid:
-                # already been marked as valid
+                # already been marked as invalid
                 result['other_bad_qsos'] += 1
                 temp = f"Failed to score QSO str(qso)"
                 writefile(s, result, qso, 'errors', temp, errors = True, warning = False)

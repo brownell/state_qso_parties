@@ -464,82 +464,59 @@ def get_clubs_section(s, year):
         cursor = conn.cursor()
         cursor.execute(sql)
         conn.commit
-        temp = cursor.fetchall()
-        clubs = len(temp)
+        all_clubs = cursor.fetchall()
         rows = []
-        j = 0
-        for i, t in enumerate(temp):
-            rows.append([j + 1] + list(temp[i]))
+        j = 1
+        for i, t in enumerate(all_clubs):
+            rows.append([j] + list(all_clubs[i]))
             j += 1
-            if j == 0:
-                tables = [
-                    [
-                        {
-                            'title': temp[i],
-                            'headers': ['Rank', 'Club', 'Entries', 'Total Score'],
-                            'rows': rows
-                        }
-                    ]
-                ]
-                sections = [
+
+        sections =  [
+            {
+                'section_title': 'Clubs Summary Results',
+                'tables': [
                     {
-                        'section_title': 'Club Summary Results',
-                        'tables': tables
+                    'title': '',
+                    'headers': ['Rank', 'Club', 'Entries', 'Score'],
+                    'rows': rows
                     }
                 ]
+            },
+            {
+                'section_title': 'Results By Club',
+                'tables': []
+            }
+        ]
+
         
-        for t in range(1, clubs):
+        for club in all_clubs:
             sql = '''
-                    select callsign, COUNT(*) AS entries, total_score
+                    select callsign,  final_score, club
                         from contest_results
-                        where club = t[0]
-                        order by total_score
+                        where club = ?
+                        order by final_score DESC; '''
+            val = list(club)[0]
+            cursor = conn.cursor()
+            cursor.execute(sql, [val])
+            conn.commit
+            temp = cursor.fetchall()
+            rows = []
+            j = 1
+            for i, t in enumerate(temp):
+                if int(list(temp[i])[0]) == 1:
+                    break
+                rows.append([j] + list(temp[i])[:-1])
+                j += 1
 
-                    '''
+            table = {
+                'title': f"Results for {club[0]}",
+                'headers': ['Rank',  'Entries', 'Total Score'],
+                'rows': rows
+                }
 
-            # else:
-            #     tables = [
-            #         [
-            #             {
-            #                 'title': temp[i],
-            #                 'headers': ['Callsign', 'Entries', 'Total Score'],
-            #                 'rows': rows
-            #             }
-            #         ],
-            #         [
+            sections[1]['tables'].append(table)
 
-            #             {
-            #                 'section_title': 'Club Summary Results',
-            #                 'tables': tables
-            #             }
-
-            #         ]
-            #     ]
-    #     # make a section for each of the clubs
-    #     for c in rows:
-
-    #         result = [
-    #             {
-    #                 'section_title': 'Club Summary Results',
-    #                 'tables': [
-    #                 ]
-    #             }
-    #         ]
-    # last_section = [
-        
-    #     {
-    #         'section_title': 'Club Summary Results',
-    #         'tables': [
-    #             {
-    #             'title': '',
-    #             'headers': ['Rank', 'Club', 'Entries', 'Total Score'],
-    #             'rows': rows
-    #             }
-    #         ]
-    #     }
-    # ]
-
-    return
+    return sections
 
 def save_result(result: Dict, contest_year: str, db_path: str = DATABASE_FILE) -> bool:
     """
