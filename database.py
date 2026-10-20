@@ -417,7 +417,7 @@ class ContestDatabase:
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            cursor.execute('''SELECT * FROM contest_results WHERE year = ? AND callsign = ?''', ('2026', callsign.upper()))
+            cursor.execute('''SELECT * FROM contest_stats WHERE year = ?''', (year))
             row = cursor.fetchone()
             if row:
                 columns = [desc[0] for desc in cursor.description]
@@ -517,6 +517,37 @@ def save_result(result: Dict, contest_year: str, db_path: str = DATABASE_FILE) -
 
 
 def get_result(year: str, callsign: str, db_path: str = DATABASE_FILE) -> Optional[Dict]:
+    """
+    Get a result from the database.
+    
+    Args:
+        year: Contest year
+        callsign: Station callsign
+        db_path: Path to database file
+        
+    Returns:
+        Result dict or None if not found
+    """
+    db = ContestDatabase(db_path)
+    db.drop_db = False
+    return db.get_result(year, callsign)
+
+def save_stats(contest_year: str, result: Dict, db_path: str = DATABASE_FILE) -> bool:
+    """
+    Save a result to the database.
+    
+    Args:
+        result: Result dictionary from processor
+        db_path: Path to database file
+        
+    Returns:
+        True if saved successfully
+    """
+    db = ContestDatabase(db_path)
+    db.drop_db = False
+    return db.save_result(contest_year, result)
+
+def get_stats(year: str, db_path: str = DATABASE_FILE) -> Dict:
     """
     Get a result from the database.
     

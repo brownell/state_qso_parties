@@ -9,6 +9,7 @@ from cabrillo.parser import parse_log_file
 from cabrillo.qso import frequency_to_band_m
 from utilities import generate_index_key, get_dxcc, writefile
 from share import SHARED
+from database import save_
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from config.config import (
