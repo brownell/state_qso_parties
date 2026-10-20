@@ -12,19 +12,14 @@ import sqlite3
 from cabrillo.parser import parse_log_file
 from cabrillo.qso import frequency_to_band_m
 from collections import defaultdict
-from database import store_rankings
 from share import SHARED as s
 
-from config.config import (
-    CONTEST_YEAR
-    )
-from database import save_result
+from config.config import CONTEST_YEAR
 from pathlib import Path
 from pdf_final_report import generate_final_report_pdf
 from read_prepare import read_prepare
 from cross_check import cross_check
 from utilities import debug_print
-from database import store_rankings
 from score_qsos import score_all_qsos
 from share import SHARED
 from config.config import DATABASE_FILE, REPORTS_ONLY, DEBUG
@@ -66,28 +61,15 @@ def main(contest_year):
 
     if not REPORTS_ONLY:
         score_all_qsos(context)
-        # store_rankings(contest_year)
-        print('all QSOs scored and stored AND rankings stored')
+        print('all QSOs scored and stored')
 
     
     # REMEMBER to close all the out_files
     if not REPORTS_ONLY:
         for f in list(context.out_files.keys()):
             context.out_files[f].close()
-        store_rankings(contest_year)
-    generate_final_report_pdf(context, contest_year)
-
-
     
-    # print()
-    # print("=" * 60)
-    # print("Summary")
-    # print("=" * 60)
-    # print(f"Total processed: {len(results)}")
-    # print(f"Valid logs: {valid_count}")
-    # print(f"Invalid logs: {invalid_count}")
-    # print(f"Saved to database: {saved_count}")
-    # print()
+    generate_final_report_pdf(context, contest_year)
     
 if __name__ == "__main__":
     import os, sys

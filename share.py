@@ -67,7 +67,6 @@ class SHARED:
         self.out_files['debug'].seek(0)
         self.out_files['dups'].seek(0)
         self.out_files['invalid_qsos'].seek(0)
-        self.drop_db = True
         self.script_dir = Path(__file__).resolve().parent
         self.first_call_qth = None  # To track the sent QTH in a log for checking other QSOs against it
         self.mode_points = {
@@ -76,6 +75,23 @@ class SHARED:
             'RY': 3,
             'DG': 3
             }
+        ''' We need direct access to a single operators log. We are
+            keeping record of each callsign's index in the self.results list'''
+        self.all_callsigns = {}  # To track the indices of all callsigns that submitted logs for 
+        self.mobile_callsigns = set() # Track callsigns that have location "mobile"
+        self.qso_index_dict = defaultdict(list)
+        self.contest_clubs = {
+            "Austin QRP Club": 0, "Baytown Area ARC": 0, "Central Texas DX and Contest Club": 0, "Dallas ARC": 0,
+            "DCT ARC": 0, 
+            "Denton County ARC": 0, "DFW Contest Group": 0, "Ellis County ARC": 0, "Irving ARC": 0,
+            "Lake Area Amateur Radio Club": 0, 
+            "Las Moras ARC": 0, "Longview/East Texas ARC": 0, "McKinney ARC": 0, "Medina County ARC": 0, 
+            "Midland ARC": 0,
+            "Naturist ARC": 0, "North Texas ARS": 0, "Panhandle ARC": 0, "Red River Valley ARC": 0, "Road Runners Microwave Group": 0,
+            "Saginaw Haslet ARC": 0, "South Texas DX and Contest Club": 0, "Texas DX Society": 0, "University of Texas ARC": 0, 
+            "West Texas ARC": 0, "West Texas Pemian Network": 0, "Williamson County ARC": 0}
+        # non-TX stations working TX mobile stations need to be tracked for bonus points
+        self.ntx_bonus = {}
         self.results = []  # List to hold results for all logs processed
         '''
             When cross checking, there are four results:
@@ -86,7 +102,6 @@ class SHARED:
         '''
         self.stats = {
             'total_logs': 0,
-            'valid_logs': 0,
             'rejected_logs': 0,
             'rejected_logs_filenames': [], # logs of PARSER not_valids
             'qso_parser_not_valid': 0,
@@ -114,31 +129,12 @@ class SHARED:
             'provinces_worked': set(),
             'dx_worked': set(),
             'counties_activated': set(),
-            'counties_mobile_activated': set(),
-            'worked_counties_mobile': set(),
-
-
+            'mobile_activation_counts': {},
+            'worked_counties_mobile': {},
             'calls_w_not_valid_qsos': set(),
             'dx_log_de_missing': 0,
             'total_multipliers': 0,
         }
-        ''' We need direct access to a single operators log. We are
-            keeping record of each callsign's index in the self.results list'''
-        self.all_callsigns = {}  # To track the indices of all callsigns that submitted logs for 
-        self.mobile_callsigns = set() # Track callsigns that have location "mobile"
-        self.qso_index_dict = defaultdict(list)
-        self.contest_clubs = {
-            "Austin QRP Club": 0, "Baytown Area ARC": 0, "Central Texas DX and Contest Club": 0, "Dallas ARC": 0,
-            "DCT ARC": 0, 
-            "Denton County ARC": 0, "DFW Contest Group": 0, "Ellis County ARC": 0, "Irving ARC": 0,
-            "Lake Area Amateur Radio Club": 0, 
-            "Las Moras ARC": 0, "Longview/East Texas ARC": 0, "McKinney ARC": 0, "Medina County ARC": 0, 
-            "Midland ARC": 0,
-            "Naturist ARC": 0, "North Texas ARS": 0, "Panhandle ARC": 0, "Red River Valley ARC": 0, "Road Runners Microwave Group": 0,
-            "Saginaw Haslet ARC": 0, "South Texas DX and Contest Club": 0, "Texas DX Society": 0, "University of Texas ARC": 0, 
-            "West Texas ARC": 0, "West Texas Pemian Network": 0, "Williamson County ARC": 0}
-        # non-TX stations working TX mobile stations need to be tracked for bonus points
-        self.ntx_bonus = {}
 
     # One of these is created for each log file
     # Each of the objects in self.results is a python with the following structure:      

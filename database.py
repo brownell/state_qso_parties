@@ -121,6 +121,14 @@ def create_tables():
             ON contest_results(year, final_score DESC)
         ''')
 
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS contest_stats (
+                year TEXT NOT NULL,
+                stats TEXT
+                PRIMARY KEY (year)
+            )
+        ''')
+
     #  # QSO  results table - keyed by year and callsign
     #     cursor.execute('''
     #         CREATE TABLE IF NOT EXISTS qsos (
@@ -175,19 +183,9 @@ class ContestDatabase:
 
         self.drop_db = True
 
-        # attributes of the Cabrillo object need different approach
-        self.cab_attributes = [
-            'club', 'name', 'location', 'name', 'category_band', 'email',
-            'category_mode', 'category_power', 'category_station', 
-            'cat', 'claimed_score', 'category_power', 'category_station', 'callsign',
-                    ]
-         # dict fields require different aproach from above fields
-        self.dict_fields = [
-            'qsos_by_band', 'qsos_by_mode','mobile_activation_counts', 'worked_counties_mobile', 'mobile_counties_worked'
-        ]
-        self.types_of_fields = {'integer': 0, 'string': '',
-                            'set': set(), 'list': []}
-        self.fields = {'integer': [
+        self.field_types = {'integer': 0, 'string': '',
+                            'set': set(), 'list': [], 'dict': {}, 'cab': ''}
+        self.result_fields = {'integer': [
             'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
             'total_multipliers', 'cab_mobile_points', 
             'mtb_mobile_points', 'cw_qsos',
@@ -203,10 +201,23 @@ class ContestDatabase:
             'de_exch_rcvd', 'dx_exch_sent', 'bands_worked', 
             'counties_worked', 'dx_worked', 'counties_activated'
         ],
-        'list': ['errors', 'warnings', 'qsos_by_hour', 'busted_calls', 'nil_calls']
+        'list': ['errors', 'warnings', 'qsos_by_hour', 'busted_calls', 'nil_calls'],
+        'cab_attributes': [
+            'club', 'name', 'location', 'name', 'category_band', 'email',
+            'category_mode', 'category_power', 'category_station', 
+            'cat', 'claimed_score', 'category_power', 'category_station', 'callsign',
+        ],
+        'dicts': ['qsos_by_band', 'qsos_by_mode','mobile_activation_counts', 'worked_counties_mobile', 'mobile_counties_worked']
+        }
+        self.stats_fields = {
+            'integers': ['total_logs', 'rejected_logs', 'dx__logs', 'us_cdn_logs', 'tx_logs', 'unclassed_logs', 'total_qsos', 'valid_qsos', 'qsos_with_tx', 'qsos_with_us_cdn', 'qsos_with_dx', 'duplicate_qsos', 'nils', 'busteds', 'invalid_qsos', 'uniques'],
+            'lists': ['rejected_logs_filenames', 'qsos_by_hour', 'nil_calls', 'busted_calls'],
+            'dicts': ['qsos_by_band', 'qsos_by_mode', 'mobile_activation_counts', 'worked_counties_mobile'],
+            'sets': ['counties_worked', 'states_worked', 'provinces_worked', 'dx_worked', 'counties_activated'],
+            'cab_attributes': []  # placeholder so serial deserial can do both types
         }
     
-    def _serialize_result(self, result: Dict, contest_year: str) -> Dict:
+    def _serialize_result(self, result: Dict, field_types: Dict, fields: Dict) -> Dict:
         """
         Adds simple fields from the "result" object
         Adds attributes of the "CAB" objext
@@ -215,34 +226,37 @@ class ContestDatabase:
         Converts sets to JSON lists, handles complex types.
         """
         db_result = {}
-        cab = result['cab']
+        cab = result.get('cab', None)
         try:
             # put values from the above listed fields into db_result
-            for typ in self.types_of_fields:
+            for typ in field_types:
                 if typ == 'set':
-                    for fld in self.fields[typ]:
-                        value = result.get(fld, self.types_of_fields[typ])
+                    for fld in fields[typ]:
+                        value = result.get(fld, field_types[typ])
                         db_result[fld] = json.dumps(sorted(list(value)))
+
                 elif typ == 'list':
-                    for fld in self.fields[typ]:
-                        value = result.get(fld, self.types_of_fields[typ])
+                    for fld in fields[typ]:
+                        value = result.get(fld, field_types[typ])
                         db_result[fld] = json.dumps(list(value))
 
-                else:
-                    for fld in self.fields[typ]:
-                        db_result[fld] = result.get(fld, self.types_of_fields[typ])
+                elif typ in ['integer', 'string']:
+                    for fld in fields[typ]:
+                        db_result[fld] = result.get(fld, field_types[typ])
            
-            for field in self.dict_fields:
-                value = result.get(field, {})
-                # Convert sets in dict values to lists
-                for k in list(value.keys()):
-                    if isinstance(value[k], set):
-                        value[k] = list(value[k])
-                db_result[field] = json.dumps(value)
-                # print(f"field: {field} value: {value}")
+                elif typ == 'dict':
+                    for fld in fields[typ]:
+                        value = result.get(fld, {})
+                        # Convert sets in dict values to lists
+                        for k in list(value.keys()):
+                            if isinstance(value[k], set):
+                                value[k] = list(value[k])
+                        db_result[fld] = json.dumps(value)
 
-            for atr in self.cab_attributes:
-                db_result[atr] = getattr(cab, atr, '')
+                elif typ == 'cab_attributes':
+                    flds = fields.get(typ, [])
+                    for fld in flds:
+                        db_result[fld] = getattr(cab, fld, '')
             
             # Timestamps
             now =  datetime.now(timezone.utc).isoformat()
@@ -253,7 +267,7 @@ class ContestDatabase:
             # print('BREAK')
         return db_result
     
-    def _deserialize_result(self, result: Dict) -> Dict:
+    def _deserialize_result(self, result: Dict, field_types: Dict, fields: Dict) -> Dict:
         """ The opposite of serialize_result
             Reads data from the databaser one operator record
             Adds simple fields from the "result" object
@@ -267,24 +281,28 @@ class ContestDatabase:
             try:
                 # INTEGERS AND STRINGS
                 for typ in list(['integer', 'string']):
-                    for fld in self.fields[typ]:
-                        display_result[fld] = result.get(fld, self.types_of_fields[typ])
-
-                # the cab fields saved in the DB are all strings. We are not going to
-                # reconstitute the cab object, but just storing the fiels in display_result
-                for fld in self.cab_attributes:
-                    display_result[fld] = result.get(fld, '')
+                    for fld in fields[typ]:
+                        display_result[fld] = result.get(fld, field_types[typ])
 
                 # SETS AND LISTS
                 for typ in list([ 'set', 'list']):
-                    for fld in self.fields[typ]:
-                        display_result[fld] = json.loads(result.get(fld, self.types_of_fields[typ]))
+                    for fld in fields[typ]:
+                        display_result[fld] = json.loads(result.get(fld, field_types[typ]))
+
                 # DICT_FIELDS
-                for field in self.dict_fields:
-                    if field in result and result[field]:
-                        display_result[field] = json.loads(result[field])
+                if typ == 'dict':
+                    for field in fields[typ]:
+                        if field in result and result[field]:
+                            display_result[field] = json.loads(result[field])
 
                 display_result['cat'] = RANKINGS[display_result['cat']]
+
+                # the cab fields saved in the DB are all strings. We are not going to
+                # reconstitute the cab object, but just storing the fiels in display_result
+                if typ == 'cab_attributes' and len(fields[typ]) > 0:
+                    for fld in fields[typ]:
+                        display_result[fld] = result.get(fld, '')
+
             except Exception as e:
                 s.out_files['errors'].write(f"could not deserialize {result}\n")
         
@@ -312,7 +330,7 @@ class ContestDatabase:
             print(f"ValueError {e} in save_result")
         
         # Serialize result
-        db_result = self._serialize_result(result, contest_year)
+        db_result = self._serialize_result(result, contest_year, self.field_types, self.result_fields)
         
         # Build SQL
         fields = list(db_result.keys())
@@ -357,94 +375,58 @@ class ContestDatabase:
                 result = {}
                 for i, col in enumerate(columns):
                     result[col] = row[i]
-                return self._deserialize_result(result)
+                return self._deserialize_result(result, self.field_types, self.result_fields)
                 
             return None
-    
-    def store_rankings(self, year):
-        """
-        Store rankings for all results in a year.
-        
-        Args:
-            year: Contest year
-        """
-        with sqlite3.connect(self.db_path, timeout=20.0) as conn:
-            cursor = conn.cursor()
-            sql = f'''
-                WITH ranked AS (
-                    SELECT year, callsign, ROW_NUMBER() OVER (ORDER BY final_score DESC) AS calculated_rank
-                    FROM contest_results
-                    WHERE year = ? AND cat = ?
-                )
-                UPDATE contest_results
-                SET category_rank = ranked.calculated_rank
-                FROM ranked
-                WHERE contest_results.year = ranked.year
-                AND contest_results.callsign = ranked.callsign;
-            '''
-            for c in list(RANKINGS.keys()):
-                try:
-                    cursor = conn.cursor()
-                    cursor.execute(sql, [year, c])
-                    conn.commit
-                    continue
-                except Exception as e:
-                    print(f"***** ERROR could not set category for cat {c}")
-                    print(f"***** EXCEPTION saving result: {e}")
-                    return False
 
-    def get_statistics(self, year: str) -> Dict:
-        """
-        Get contest statistics for a year.
+    def save_statistics(self, year, stats):
+        db_result = self._serialize_result(year, stats, self.field_types, self.stats_fields)
+        db_result['year'] = year
+                
+        # Build SQL
+        fields = list(db_result.keys())
+        placeholders = ','.join(['?' for _ in fields])
+        field_names = ','.join(fields)
         
-        Args:
-            year: Contest year
-            
-        Returns:
-            Dict with statistics
+        # Use INSERT OR REPLACE to overwrite existing records
+        sql = f'''
+            INSERT OR REPLACE INTO contest_stats ({field_names})
+            VALUES ({placeholders})
+        '''
+        
+        values = [db_result[field] for field in fields]
+        
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute(sql, values)
+                conn.commit()
+            return True
+        
+        except Exception as e:
+            print(f"Error saving statistics: {e}")
+            return False
+        
+        
+    def get_statistics(self, year: str) -> Dict:
+        """  Get contest statistics for a year.
+                Args:
+                    year: Contest year
+                Returns:
+                    Dict with statistics
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            
-            # Total logs
-            cursor.execute('''
-                SELECT COUNT(*) FROM contest_results
-                WHERE year = ? AND callsign IS NOT 'N5LCC
-            ''', (year,))
-            total_logs = cursor.fetchone()[0]
-            
-            # Valid logs
-            cursor.execute('''
-                SELECT COUNT(*) FROM contest_results
-                WHERE year = ? AND is_valid = 1 AND callsign IS NOT 'N5LCC
-            ''', (year,))
-            valid_logs = cursor.fetchone()[0]
-            
-            # Total QSOs
-            cursor.execute('''
-                SELECT SUM(total_qsos) FROM contest_results
-                WHERE year = ? AND is_valid = 1 AND callsign IS NOT 'N5LCC
-            ''', (year,))
-            total_qsos = cursor.fetchone()[0] or 0
-            
-            # Top score
-            cursor.execute('''
-                SELECT callsign, final_score FROM contest_results
-                WHERE year = ? AND is_valid = 1 AND callsign IS NOT 'N5LCC
-                ORDER BY final_score DESC
-                LIMIT 1
-            ''', (year,))
-            top_result = cursor.fetchone()
-            
-            return {
-                'year': year,
-                'total_logs': total_logs,
-                'valid_logs': valid_logs,
-                'invalid_logs': total_logs - valid_logs,
-                'total_qsos': total_qsos,
-                'top_callsign': top_result[0] if top_result else None,
-                'top_score': top_result[1] if top_result else 0
-            }
+            cursor.execute('''SELECT * FROM contest_results WHERE year = ? AND callsign = ?''', ('2026', callsign.upper()))
+            row = cursor.fetchone()
+            if row:
+                columns = [desc[0] for desc in cursor.description]
+                result = {}
+                for i, col in enumerate(columns):
+                    result[col] = row[i]
+                return self._deserialize_result(result, self.field_types, self.result_fields)
+                
+        return None
 
 db = ContestDatabase(Path(DATABASE_FILE))
 create_tables()
@@ -550,10 +532,45 @@ def get_result(year: str, callsign: str, db_path: str = DATABASE_FILE) -> Option
     db.drop_db = False
     return db.get_result(year, callsign)
 
-def store_rankings(year: str):
-    db = ContestDatabase(DATABASE_FILE)
-    db.drop_db = False
-    return db.store_rankings(year)
+# def store_rankings(year: str):
+#     db = ContestDatabase(DATABASE_FILE)
+#     db.drop_db = False
+#     return db.store_rankings(year)
+
+# def store_rankings(self, year):
+#     """
+#     Store rankings for all results in a year.
+    
+#     Args:
+#         year: Contest year
+#     """
+#     with sqlite3.connect(self.db_path, timeout=20.0) as conn:
+#         cursor = conn.cursor()
+#         sql = f'''
+#             WITH ranked AS (
+#                 SELECT year, callsign, ROW_NUMBER() OVER (ORDER BY final_score DESC) AS calculated_rank
+#                 FROM contest_results
+#                 WHERE year = ? AND cat = ?
+#             )
+#             UPDATE contest_results
+#             SET category_rank = ranked.calculated_rank
+#             FROM ranked
+#             WHERE contest_results.year = ranked.year
+#             AND contest_results.callsign = ranked.callsign;
+#         '''
+#         for c in list(RANKINGS.keys()):
+#             try:
+#                 cursor = conn.cursor()
+#                 cursor.execute(sql, [year, c])
+#                 conn.commit
+#                 continue
+#             except Exception as e:
+#                 print(f"***** ERROR could not set category for cat {c}")
+#                 print(f"***** EXCEPTION saving result: {e}")
+#                 return False
+# stats_fields = {
+#     ""
+# }
 
 
 if __name__ == "__main__":

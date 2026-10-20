@@ -18,6 +18,44 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 
 dir_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR).resolve()
 
+stats = {
+    'total_logs': 0,
+    'rejected_logs': 0,
+    'rejected_logs_filenames': [], # logs of PARSER not_valids
+    'qso_parser_not_valid': 0,
+    'dx_logs': 0,
+    'us_cdn_logs': 0,
+    'tx_logs': 0,
+    'unclassed_logs': 0,
+    'total_qsos': 0,
+    'valid_qsos': 0,
+    'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
+    'qsos_by_mode': {'PH': 0, 'CW': 0, 'RY': 0, 'DG': 0},
+    'qsos_by_hour': [0] * 24,
+    'qsos_with_tx': 0,
+    'qsos_with_us_cdn': 0,
+    'qsos_with_dx': 0,
+    'duplicate_qsos': 0,
+    'nils': 0,
+    'nil_calls': [],
+    'busteds': 0,
+    'busted_calls': [],
+    'invalid_qsos': 0,
+    'uniques': 0,
+    'counties_worked': set(),
+    'states_worked': set(),
+    'provinces_worked': set(),
+    'dx_worked': set(),
+    'counties_activated': set(),
+    'mobile_activation_counts': {},
+    'worked_counties_mobile': {},
+    'calls_w_not_valid_qsos': set(),
+    'dx_log_de_missing': 0,
+    'total_multipliers': 0,
+}
+print(f"stats keys {list(stats.keys())}, ")
+
+
 def is_fuzzy_match(x: str, y: str, max_missing: int = 2) -> bool:
     """
     Determines if callsign `y` could be a mistyping of callsign `x`.
@@ -51,9 +89,7 @@ def is_fuzzy_match(x: str, y: str, max_missing: int = 2) -> bool:
         return True
     return lcs_length >= len(x) - max_missing
 
-is_fuzzy_match('AI6G', 'AI6O')
-
-
+# is_fuzzy_match('AI6G', 'AI6O')
 
 section = {
     'section_title': 'Texas - Mobile Stations',
