@@ -78,6 +78,58 @@ Thank you for your participation and we look forward to seeing you next year!
 73,
 Texas DX Society</p>
 """
+STATISTICS_TEXT = {
+    # LOGS
+    'title_logs': 'LOGS',
+    'total_logs': 'Logs Received',
+    'rejected_logs': 'Logs Rejected',
+    'rejected_logs_filenames': 'Rejected Logs Filenames', # logs of PARSER not_valids
+    'title_log_sources': 'Sources of Logs',
+    'dx_logs': 'Outside North America',
+    'us_logs': 'US Non-Texas',
+    'cdn_logs': 'Canada',
+    'tx_fixed_logs': 'Texas Fixed Logs',
+    'tx_mobile_logs': 'Texax Mobile Logs',
+    'unclassed_logs': 'Unclassified Logs',
+    # QSOS
+    'title_qsos': 'QSOS',
+    'total_qsos': 'Total QSOs',
+    'valid_qsos': 'Scored QSOs',
+    # QSOS BY MODE
+    'title_mode': "QSOs by Mode",
+    'qsos_by_mode': {'PH': 0, 'CW': 0, 'RY': 0, 'DG': 0},
+    # QSOS BY bAND
+    'title_band': "QSOs by Band",
+    'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
+    # QSOS BY HOUR
+    'title_hour': 'QSOs by Hour',
+    'qsos_by_hour': [0] * 24,
+    # QSOS BY DESTINATION
+    'title_dest': 'From TX to Destination',
+    'qsos_with_tx': 'Texas',
+    'qsos_with_us': 'US Non Texas',
+    'states_worked': 'States Worked',
+    'qsos_with_canada': 'Provinces',
+    'provinces_worked': 'Provinces Worked',
+    'qsos_with_dx': 'Non North America',
+    'dx_worked': 'DXCC Worked',
+    # COUNTIES
+    'title_counties': 'Counties Activated and Worked',
+    'counties_activated': 'Counties Activated Non-Mobile',
+    'counties_worked': 'Counties Worked by Any Station',
+    'mobile_activation_counts': 'Number Mobile Activations by County',
+    'worked_counties_mobile': 'Number Mobiles Worked By County',
+    # QSO ERRORS
+    'title_qso_issues': 'QSO Issues',
+    'duplicate_qsos': 'Duplicate QSOs',
+    'nils': 'QSOs Invalid - NIL',
+    'busteds': 'QSOs Invalid - Busted',
+    'other_invalid_qsos': 'QSOs Invalid - Other',
+    'uniques': 'Unique QSOs',
+    'multi_county_exchanges': 'Exchanges with Multiple Counties',
+    'nil_calls': 'NIL QSOs',
+    'busted_calls': 'Busted QSOs',
+        }
 RANKINGS = {
 
     # Texas – Fixed Station

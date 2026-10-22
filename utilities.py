@@ -32,16 +32,29 @@ def get_dxcc(s, location, callsign):
             
     return 0, callsign
 
-def writefile(s, result, qso, file_to_write, intro, errors = True, warning = False):
-    temp = f"{intro}"
-    if qso == None:
-        s.out_files[file_to_write].write(f"{temp}\n")
-        if errors:
-            result['errors'].append([f"{temp}"])
-    else:
-        s.out_files[file_to_write].write(f"{temp}: {str(qso)}\n")
-        if errors:
-            result['errors'].append([f"{temp}: {str(qso)}"])
+def writefile(s, result, qso, intro, err_types = ['errors']):
+    if type(err_types) is not list:
+        err_types = [err_types]
+    for err in err_types:
+        temp = f"{intro}"
+        if qso == None:
+            try:
+                s.out_files[err].write(f"{temp}\n")
+            except:
+                pass
+            try:
+                result[err].append([f"{temp}"])
+            except:
+                pass
+        else:
+            try:
+                s.out_files[err].write(f"{temp}: {str(qso)}\n")
+            except:
+                pass
+            try:
+                result[err].append([f"{temp}: {str(qso)}"])
+            except:
+                pass
 
 def generate_index_key(s, qso, call_to_use, mirror):
     # to generate the index key for the qso_index_dict
@@ -142,29 +155,29 @@ def get_near_match(s, qso, result, dx_result, within: int = 1):
         # see if de gets points or is NIL
         if qso.dx_exch[1] != matched_q.de_exch[1]:
             # the de qso is busted 
-            s.out_files['debug'].write(f"*** SENDER Busted:{potential_fuzzies} qsos considered to find fuzzy match\n{qso}\n{matched_q}\n")
+            # s.out_files['debug'].write(f"*** SENDER Busted: {potential_fuzzies} qsos considered to find fuzzy match\n{qso}\n{matched_q}\n")
             qso_busted(s, qso, result)
             if matched_q.dx_exch[1] != qso.de_exch[1]:
                 matched_q.points = True
         else:
-            s.out_files['debug'].write(f"*** RECEIVER Busted:{potential_fuzzies} qsos considered to find fuzzy match\n{qso}\n{matched_q}\n")
+            # s.out_files['debug'].write(f"*** RECEIVER Busted: {potential_fuzzies} qsos considered to find fuzzy match\n{qso}\n{matched_q}\n")
             qso_busted(s, matched_q, dx_result)
         return matched_q
 
     else:
-        s.out_files['debug'].write(f"*** NIL for SENDER\n{str(qso)}\n")
+        # s.out_files['debug'].write(f"*** NIL for SENDER\n{str(qso)}\n")
         qso_nil(s, qso, result)
         return None
 
 def qso_busted(s, qso, result):
-    if result['dxcc_entity'] != result['callsign']:
-        print(f"busted with dxcc_entity {result['dxcc_entity']}\n{qso}")
+    # if result['dxcc_entity'] != result['callsign']:
+    #     print(f"busted with dxcc_entity {result['dxcc_entity']}\n{qso}")
     qso.valid = False
     result['busteds'] += 1
     result['busted_calls'].append([qso.de_call, qso.dx_call])
     s.stats['busteds'] += 1
     s.stats['busted_calls'].append([qso.de_call, qso.dx_call])
-    writefile(s, result, qso, 'busteds', "Busted: error in sender log in fuzzy match")
+    writefile(s, result, qso, "Busted: error in sender log in fuzzy match", ['busteds', 'errors'])
 
 def qso_nil(s, qso, result):
     qso.valid = False
@@ -172,7 +185,7 @@ def qso_nil(s, qso, result):
     result['nil_calls'].append([qso.de_call, qso.dx_call])
     s.stats['nils'] += 1
     s.stats['nil_calls'].append([qso.de_call, qso.dx_call])
-    writefile(s, result, qso, 'nils', "Not In Log: no match found in dx_call's log")
+    writefile(s, result, qso, "Not In Log: no match found in dx_call's log", ['nils'])
 
 def get_qsos_withintimespan(qso, within):
     target_time = getattr(qso, 'date')
@@ -192,7 +205,7 @@ def debug_print(s, r, title, p=True):
     # s.out_files['debug'].write(f"\n")   
     # for z in y:
     #      s.out_files['debug'].write(f"{len(z)}")
-    s.out_files['debug'].write(f"{r['final_score']} {r['mtb_mobile_points']} {r['score_wo_bonus']} {r['total_multipliers']} {r['qso_points']} {r['ph_qsos']} {r['cw_qsos']} {r['callsign']}\n")   
+    # s.out_files['debug'].write(f"{r['final_score']} {r['mtb_mobile_points']} {r['score_wo_bonus']} {r['total_multipliers']} {r['qso_points']} {r['ph_qsos']} {r['cw_qsos']} {r['callsign']}\n")   
     # counts: {y}  sets: {x} mobile {r['callsign'] in s.mobile_callsigns}\n")
     # if len(r['errors']) > 0:
     #      s.out_files['debug'].write(f"{r['errors']}\n")
@@ -202,35 +215,35 @@ def debug_print(s, r, title, p=True):
     #     if len(r['errors']) > 0:
     #         print(f"{r['errors']}")
 
-"""
-Fuzzy call-sign matcher. We may add this in later but it is not 
-being used now 2026-09-22
+    """
+    Fuzzy call-sign matcher. We may add this in later but it is not 
+    being used now 2026-09-22
 
-Finds the callsigns in a set that most closely match a given callsign,
-where "closely" means the two strings (ignoring anything after a "/")
-share the longest common subsequence (characters in common, in the
-same relative order).
+    Finds the callsigns in a set that most closely match a given callsign,
+    where "closely" means the two strings (ignoring anything after a "/")
+    share the longest common subsequence (characters in common, in the
+    same relative order).
 
-Matching rule
---------------
-1. Strip everything from the first "/" onward on both sides.
-2. Compute the Longest Common Subsequence (LCS) length between the
-   two stripped strings.
-3. diff_count = max(len(a), len(b)) - LCS(a, b)
-   -> this is the number of characters that are "different or missing"
-      between the two strings.
-4. A candidate qualifies as a close match only if diff_count <= MAX_DIFF
-   (default 2, per the problem statement: "no more than two letters
-   different or missing").
-5. Qualifying candidates are ranked by diff_count ascending (fewer
-   differences = higher on the list). Ties are broken alphabetically
-   for determinism.
-6. Return between MIN_RESULTS and MAX_RESULTS matches (defaults 3-5).
-   If fewer than MIN_RESULTS candidates pass the threshold, all that
-   passed are returned (there may be fewer than 3).
+    Matching rule
+    --------------
+    1. Strip everything from the first "/" onward on both sides.
+    2. Compute the Longest Common Subsequence (LCS) length between the
+    two stripped strings.
+    3. diff_count = max(len(a), len(b)) - LCS(a, b)
+    -> this is the number of characters that are "different or missing"
+        between the two strings.
+    4. A candidate qualifies as a close match only if diff_count <= MAX_DIFF
+    (default 2, per the problem statement: "no more than two letters
+    different or missing").
+    5. Qualifying candidates are ranked by diff_count ascending (fewer
+    differences = higher on the list). Ties are broken alphabetically
+    for determinism.
+    6. Return between MIN_RESULTS and MAX_RESULTS matches (defaults 3-5).
+    If fewer than MIN_RESULTS candidates pass the threshold, all that
+    passed are returned (there may be fewer than 3).
 
-Comparison is case-insensitive; call signs are conventionally uppercase.
-"""
+    Comparison is case-insensitive; call signs are conventionally uppercase.
+    """
 
 from functools import lru_cache
 
@@ -261,81 +274,32 @@ def capture_mobile(s, result, dx_result, qso, match):
         worked_counties_mobile = {mobile call:  set(counties mobile contacted in)}
         call capture_qsos twice, reversing the order of the arguments
         to account for either of the ops being modile'''
-    if not (qso.de_call in s.mobile_callsigns or match.de_call in s.mobile_callsigns):
+    if qso.de_call not in s.mobile_callsigns and match.de_call not in s.mobile_callsigns:
         return
     # for the mobile users, save the county they are activating
     if qso.de_call in s.mobile_callsigns:
         capture_contacts(s, result, dx_result, qso)
+    else:
+        s.stats['counties_activated'].add(qso.de_call)
     if match.de_call in s.mobile_callsigns:
         capture_contacts(s, dx_result, result, match)
 
 def capture_contacts(s, result1, result2, qso):
-    if len(qso.dx_exch[1]) < 2 and qso.de_exch[1] != "F" :
+    if len(qso.dx_exch[1]) < 2 and qso.de_exch[1] not in ['F', 'I', 'G'] :
         return
     if qso.de_exch[1] in list(result1['mobile_activation_counts'].keys()):
         result1['mobile_activation_counts'][qso.de_exch[1]] += 1
+        s.stats['mobile_activation_counts'][qso.de_exch[1]] += 1
     else:
         result1['mobile_activation_counts'][qso.de_exch[1]] = 1
+        s.stats['mobile_activation_counts'][qso.de_exch[1]] = 1
 
     if qso.de_call in list(result2['worked_counties_mobile'].keys()):
         result2['worked_counties_mobile'][qso.de_call].add(qso.de_exch[1])
+        s.stats['worked_counties_mobile'][qso.de_call].add(qso.de_exch[1])
     else:
         result2['worked_counties_mobile'][qso.de_call] = {qso.de_exch[1]}
-
-def diff_count(a: str, b: str) -> int:
-    """Number of characters different or missing between a and b."""
-    common = lcs_length(a, b)
-    return max(len(a), len(b)) - common
-
-
-def find_close_matches(target: str,
-                        candidates,
-                        max_diff: int = 2,
-                        min_results: int = 3,
-                        max_results: int = 5):
-    """
-    Find the closest-matching call signs to `target` within `candidates`.
-
-    Parameters
-    ----------
-    target : str
-        The call sign to match against (slash suffix ignored).
-    candidates : Iterable[str]
-        The set/collection of call signs to search.
-    max_diff : int
-        Maximum allowed "characters different or missing" (default 2).
-    min_results : int
-        Soft floor on how many results to try to return (3 by default).
-    max_results : int
-        Hard cap on how many results to return (5 by default).
-
-    Returns
-    -------
-    List[str]  (original, un-stripped candidate strings), best match first.
-    """
-    stripped_target = strip_slash(target)
-
-    scored = []
-    for original in candidates:
-        stripped_candidate = strip_slash(original)
-        if stripped_candidate == stripped_target:
-            continue  # skip identical / self matches
-        d = diff_count(stripped_target, stripped_candidate)
-        if d <= max_diff:
-            scored.append((d, original))
-
-    # Fewer differences first; alphabetical as a stable tiebreaker.
-    scored.sort(key=lambda pair: (pair[0], pair[1]))
-
-    results = [orig for _, orig in scored[:max_results]]
-
-    if len(results) < min_results:
-        # Not enough matches passed the strict threshold; that's fine,
-        # we simply return what we have (could be 0-2 items).
-        pass
-
-    return results
-
+        s.stats['worked_counties_mobile'][qso.de_call] = {qso.de_exch[1]}
 
 """
     From Chuck NO5W

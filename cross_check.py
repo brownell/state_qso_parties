@@ -18,6 +18,7 @@ from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 from collections import defaultdict
 from pathlib import Path
+import copy
 from cabrillo import QSO
 from cabrillo.qso import frequency_to_band_m
 from utilities import generate_index_key, debug_print, get_near_match, writefile, capture_mobile, get_dxcc, qso_nil, qso_busted
@@ -41,12 +42,15 @@ def cross_check(s):
             qso_dup = make_dup(s, result, qso)
 
             if qso_dup in dup['qsos']:
-                result['valid_qsos'] -= 1
+                if qso.valid:
+                    result['valid_qsos'] -= 1
+                    s.stats['valid_qsos'] -= 1
+                    s.stats['duplicate_qsos'] += 1
+                    temp = f"Duplicate QSO: "
+                    writefile(s, result, qso, temp, ['errors'])
+                    qso.valid = False
                 result['dup_qsos'] += 1
                 dup['num_qso'] += 1
-                temp = f"Duplicate QSO: "
-                writefile(s, result, qso, 'errors', temp)
-                qso.valid = False
                 continue
             else:
                 dup['qsos'].append(qso_dup)
@@ -55,18 +59,19 @@ def cross_check(s):
             if "Mobile" in result['cab'].category and "/" in qso.de_exch[1]:
                 # op should have made this two qsos but we do it for them
                 # mobile put multiple counties in the same QSO separated by "/"
-                writefile(s, result, qso, 'warnings', 'Multi-county exchange', False, True)
+                writefile(s, result, qso, 'Multi-county exchange', ['warnings'])
+                s.stats['multi_county_exchanges'] += 1
                 counties = qso.de_exch[1].split('/')
                 qso.de_exch[1] = counties[0]
                 for c in counties[1:]:
-                    new_qso = qso
+                    new_qso = copy.deepcopy(qso)
                     new_qso.de_call = c
                     result['cab'].qso.append(new_qso)
             if qso.dx_call not in list(s.all_callsigns.keys()):
                 # this is a UNIQUE - he gets the points
                 result['uniques'] += 1
                 c['uniques'] += 1
-                writefile(s, result, qso, 'uniques', 'No log from receiver', False)
+                writefile(s, result, qso, 'No log from receiver', ['uniques'])
                 continue
 
 
@@ -77,8 +82,9 @@ def cross_check(s):
 
             dx_result = s.results[s.all_callsigns[qso.dx_call]]
             if not check_it(s, result, dx_result, qso):
-                qso.valid = False
-                result['valid_qsos'] -= 1
+                if qso.valid:
+                    qso.valid = False
+                    result['valid_qsos'] -= 1
 
 
 def check_it(s, result, dx_result, qso):
@@ -91,7 +97,8 @@ def check_it(s, result, dx_result, qso):
        (qso.date <= CONTEST_TIMES[1]['end'] )
        ):
         qso.valid = False
-        writefile(s, result, qso, 'errors', 'BAD DATE/TIME: QSO time not within contest times:')
+        s.stats['valid_qsos'] -= 1
+        writefile(s, result, qso, 'BAD DATE/TIME: QSO time not within contest times:', ['errors'])
     k = generate_index_key(s, qso, qso.dx_call, True) # from the dx POV
 
     # see if there are any PERFECT matches (except time)

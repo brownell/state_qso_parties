@@ -250,8 +250,8 @@ document.addEventListener('DOMContentLoaded', function() {
         html += `<div class="result-item"><div class="result-label">QSOs With Invalid Exchange:</div><div class="result-value ">${result.invalid_exchange_qso.toLocaleString()}</div></div>`; }
         html += '</div>';
         
-        if (result.other_bad_qsos > 0) {
-        html += `<div class="result-item"><div class="result-label">Other Bad Qsos (no points):</div><div class="result-value ">${result.other_bad_qsos.toLocaleString()}</div></div>`; }
+        if (result.other_invalid_qsos > 0) {
+        html += `<div class="result-item"><div class="result-label">Other Bad Qsos (no points):</div><div class="result-value ">${result.other_invalid_qsos.toLocaleString()}</div></div>`; }
         html += '</div>';
 
         // // Multipliers

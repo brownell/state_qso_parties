@@ -27,6 +27,7 @@ Some of the processing of log files must wait until all the files are in hand, l
 
 from pprint import pprint
 import sys
+import copy
 from pathlib import Path
 from typing import Dict, List, Set, Optional
 from datetime import datetime
@@ -87,10 +88,6 @@ def read_prepare(s):
         
         # update result if a DX station
         result['dxcc_code'], result['dxcc_entity'] = get_dxcc(s, cab.location, cab.callsign)
-        # Add MOBILE stations to that set
-        if 'MOBILE' in cab.category:
-            s.mobile_callsigns.add(cab.callsign)
-
         result['cab'] = cab
         result['callsign'] = cab.callsign.upper().split('/')[0]
         update_qso_index_dict(s, result, cab)
@@ -116,31 +113,80 @@ def update_qso_index_dict(s, result, cab):
         if qso.dx_exch[1] == 'DC': qso.dx_exch[1] = 'MD'
         # remove non-TX to non-TX or invalid exchanges
         if (qso.de_exch[1] not in s.counties and  qso.dx_exch[1] not in s.counties):
+            writefile(s, result, 'Neither exchange is a TX county:', ['errors'])
             bad_qso = True
-        if qso.de_exch[1] == 'TX' or  qso.dx_exch[1] == 'TX':
+        elif qso.de_exch[1] == 'TX' or  qso.dx_exch[1] == 'TX':
+            writefile(s, result, 'One or both exchanges is "TX":', ['errors'])
             bad_qso = True
+        # record stats
+        elif qso.de_exch[1] in s.counties and qso_count == 1:
+            s.stats['us_logs'] += 1
+            # Add MOBILE stations to that set
+            if 'MOBILE' in cab.category:
+                s.mobile_callsigns.add(cab.callsign)
+                s.stats['tx_mobile_logs'] += 1
+            else:
+                s.stats['tx_fixed_logs'] += 1
+        elif qso.de_exch[1] in s.provinces and qso_count == 1: s.stats['cdn_logs'] += 1
         # both de and dx exch must be a state, county, province, or a valid DX
-        # if de_exch CAN be a DX, fix the exchange
-        if (qso.de_exch[1] not in s.counties and qso.de_exch[1] not in  s.provinces) or result['dxcc_entity'] != cab.callsign:
+        # if de_exch CAN be a country, fix the exchange
+        elif result['dxcc_entity'] != cab.callsign:
             if result['dxcc_entity'] != cab.callsign:
                 # fix it by adding its dxcc_code (a number)
                 qso.de_exch[1] = 'DX' + str(result['dxcc_code'])
                 bad_qso = False
-            elif qso.de_exch[1] not in s.states :
+                if qso_count == 1:
+                    s.stats['dx_logs'] += 1
+            elif qso.de_exch[1] in s.states and qso_count == 1:
+                s.stats['us_logs'] += 1
+            else:
                 bad_qso = True
-        # if dx_exch CAN be a DX, fix the exchange
-        if (qso.dx_exch[1] not in s.counties and qso.dx_exch[1] not in  s.provinces) or qso.dx_exch[1] == 'FRAN':
-            code, entity = get_dxcc(s, 'DX', qso.dx_call)
-            if entity != qso.dx_call and qso.dx_exch[1].isalpha():
-                qso.dx_exch[1] = 'DX' + str(code)
-                bad_qso = bad_qso and True
-            elif qso.dx_exch[1] not in s.states:
-                bad_qso = True
+        elif qso.de_exch[1] in s.states and qso_count == 1:
+            s.stats['us_logs'] += 1
+        elif qso_count == 1:
+            s.stats['unclassed_logs'] += 1
 
+        if '/' in qso.dx_exch[1]:
+            s.stats['multi_county_exchanges'] += 1
+            counties = qso.dx_exch[1].split('/')
+            qso.dx_exch[1] = counties[0]
+            for c in counties[1:]:
+                new_qso = copy.deepcopy(qso)
+                new_qso.dx_exch[1] = c
+                result['cab'].qso.append(new_qso)
+                
+        # if dx_exch CAN be a DX, fix the exchange
+        if qso.dx_exch[1] in s.counties:
+            s.stats['qsos_with_tx'] += 1
+            if qso.de_exch[1] in s.counties:
+                s.stats['counties_worked'].add(qso.dx_exch[1])
+        elif qso.dx_exch[1] in s.provinces:
+            s.stats['qsos_with_canada'] += 1
+            if qso.de_exch[1] in s.counties:
+                s.stats['provinces_worked'].add(qso.dx_exch[1])
+        else:
+            code, entity = get_dxcc(s, 'DX', qso.dx_call)
+            if entity != qso.dx_call and (qso.dx_exch[1].isalpha() or qso.dx_call[:2] == qso.dx_exch[1][:2] or len(qso.dx_exch[1]) == 3):
+                s.stats['qsos_with_dx'] += 1
+                qso.dx_exch[1] = 'DX' + str(code)
+                if qso.de_exch[1] in s.counties:
+                    s.stats['dx_worked'].add(entity)
+                bad_qso = bad_qso and True
+            elif qso.dx_exch[1] in s.states:
+                s.stats['qsos_with_us'] += 1
+                s.stats['states_worked'].add(qso.dx_exch[1])
+            else:
+                bad_qso = True
+        qso_count += 1
         if bad_qso:
-            qso.valid = False
-            writefile(s, result, qso, 'errors', 'Invalid QSO: one or both exchanges invalid')
-            result['invalid_exchange_qsos'] += 1
+            if qso.valid:
+                qso.valid = False
+                writefile(s, result, qso, 'Invalid QSO: one or both exchanges invalid', ['errors', 'other_invalid_qsos'])
+                result['other_invalid_qsos'] += 1
+                result['valid_qsos'] -= 1
+                s.stats['other_invalid_qsos'] += 1
+                s.stats['valid_qsos'] -= 1
+
             continue
         # This is now a VALID  qso
         s.stats['valid_qsos'] += 1

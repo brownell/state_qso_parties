@@ -12,15 +12,16 @@ import sqlite3
 from cabrillo.parser import parse_log_file
 from cabrillo.qso import frequency_to_band_m
 from collections import defaultdict
-from share import SHARED as s
 
 from config.config import CONTEST_YEAR
 from pathlib import Path
+from pprint import pprint
 from pdf_final_report import generate_final_report_pdf
 from read_prepare import read_prepare
 from cross_check import cross_check
 from utilities import debug_print
 from score_qsos import score_all_qsos
+from database import save_stats
 from share import SHARED
 from config.config import DATABASE_FILE, REPORTS_ONLY, DEBUG
 
@@ -62,6 +63,8 @@ def main(contest_year):
     if not REPORTS_ONLY:
         score_all_qsos(context)
         print('all QSOs scored and stored')
+        save_stats(context, contest_year, context.stats)
+        print('statistics')
 
     
     # REMEMBER to close all the out_files

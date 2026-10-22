@@ -50,14 +50,14 @@ class SHARED:
             for row in reader:
                 self.dxcc_entities[int(row[0])] = row[1].split('  ')[0]
         self.out_files = {
-            'errors': open(SCRIPT_DIR / "ERROR_FILE.txt", "w"),
-            'warnings': open(SCRIPT_DIR / "WARNING_FILE.txt", "w"),
-            'uniques': open(SCRIPT_DIR / "UNIQUES_FILE.txt", "w"),
-            'busteds': open(SCRIPT_DIR / "BUSTEDS_FILE.txt", "w"),
-            'nils': open(SCRIPT_DIR / "NILS_FILE.txt", "w"),
-            'debug': open(SCRIPT_DIR / "DEBUG_FILE.txt", "w"),
-            'dups': open(SCRIPT_DIR / "DUPS_FILE.txt", "w"),
-            'invalid_qsos': open(SCRIPT_DIR / "INVALID_QSOS_FILE.txt", "w")
+            'errors': open(SCRIPT_DIR /  "OUTPUT_FILES" / "ERROR_FILE.txt", "w"),
+            'warnings': open(SCRIPT_DIR /  "OUTPUT_FILES" / "WARNING_FILE.txt", "w"),
+            'uniques': open(SCRIPT_DIR /  "OUTPUT_FILES" / "UNIQUES_FILE.txt", "w"),
+            'busteds': open(SCRIPT_DIR /  "OUTPUT_FILES" / "BUSTEDS_FILE.txt", "w"),
+            'nils': open(SCRIPT_DIR /  "OUTPUT_FILES" / "NILS_FILE.txt", "w"),
+            'debug': open(SCRIPT_DIR /  "OUTPUT_FILES" / "DEBUG_FILE.txt", "w"),
+            'dups': open(SCRIPT_DIR /  "OUTPUT_FILES" / "DUPS_FILE.txt", "w"),
+            'other_invalid_qsos': open(SCRIPT_DIR /  "OUTPUT_FILES" / "OTHER_INVALID_QSOS_FILE.txt", "w")
         }
         self.out_files['errors'].seek(0)
         self.out_files['warnings'].seek(0)
@@ -66,7 +66,7 @@ class SHARED:
         self.out_files['nils'].seek(0)
         self.out_files['debug'].seek(0)
         self.out_files['dups'].seek(0)
-        self.out_files['invalid_qsos'].seek(0)
+        self.out_files['other_invalid_qsos'].seek(0)
         self.script_dir = Path(__file__).resolve().parent
         self.first_call_qth = None  # To track the sent QTH in a log for checking other QSOs against it
         self.mode_points = {
@@ -101,39 +101,48 @@ class SHARED:
             - UNIQUE(U) - claimed contact did not submit a log - points
         '''
         self.stats = {
+            'year': CONTEST_YEAR,
+            # LOGS
             'total_logs': 0,
             'rejected_logs': 0,
             'rejected_logs_filenames': [], # logs of PARSER not_valids
-            'qso_parser_not_valid': 0,
             'dx_logs': 0,
-            'us_cdn_logs': 0,
-            'tx_logs': 0,
+            'us_logs': 0,
+            'cdn_logs': 0,
+            'tx_mobile_logs': 0,
+            'tx_fixed_logs': 0,
             'unclassed_logs': 0,
+            # QSOS
             'total_qsos': 0,
             'valid_qsos': 0,
-            'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
+            # QSOS BY MODE
             'qsos_by_mode': {'PH': 0, 'CW': 0, 'RY': 0, 'DG': 0},
+            # QSOS BY bAND
+            'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
+            # QSOS BY HOUR
             'qsos_by_hour': [0] * 24,
+            # QSOS BY DESTINATION
             'qsos_with_tx': 0,
-            'qsos_with_us_cdn': 0,
+            'qsos_with_us': 0,
+            'states_worked': set(),
+            'qsos_with_canada': 0,
+            'provinces_worked': set(),
             'qsos_with_dx': 0,
+            'dx_worked': set(),
+            # COUNTIES
+            'counties_activated': set(),
+            'counties_worked': set(),
+            'mobile_activation_counts': {},
+            'worked_counties_mobile': {},
+            # QSO ERRORS
             'duplicate_qsos': 0,
             'nils': 0,
             'nil_calls': [],
             'busteds': 0,
             'busted_calls': [],
-            'invalid_qsos': 0,
+            'other_invalid_qsos': 0,
+            'multi_county_exchanges': 0,
             'uniques': 0,
-            'counties_worked': set(),
-            'states_worked': set(),
-            'provinces_worked': set(),
-            'dx_worked': set(),
-            'counties_activated': set(),
-            'mobile_activation_counts': {},
-            'worked_counties_mobile': {},
-            'calls_w_not_valid_qsos': set(),
-            'dx_log_de_missing': 0,
-            'total_multipliers': 0,
         }
 
     # One of these is created for each log file
@@ -183,10 +192,10 @@ class SHARED:
             'busteds': 0,
             'busted_calls': [],
             'dup_qsos': 0,
-            'invalid_exchange_qsos': 0,
-            'other_bad_qsos':0,
+            'other_invalid_qsos':0,
             'errors': [],
             'warnings': [],
+            'multi_county_exchanges': 28,
             'is_valid': True
         }
 #END of SHARED class

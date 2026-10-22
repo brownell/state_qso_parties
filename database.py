@@ -67,8 +67,7 @@ def create_tables():
                 busteds INTEGER,
                 busted_calls TEXT,
                 dup_qsos INTEGER,
-                invalid_exchange_qsos INTEGER,
-                other_bad_qsos  INTEGER,
+                other_invalid_qsos  INTEGER,
                 counties_worked TEXT,
                 states_worked TEXT,
                 provinces_worked TEXT,
@@ -124,7 +123,7 @@ def create_tables():
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS contest_stats (
                 year TEXT NOT NULL,
-                stats TEXT
+                stats TEXT,
                 PRIMARY KEY (year)
             )
         ''')
@@ -191,8 +190,8 @@ class ContestDatabase:
             'mtb_mobile_points', 'cw_qsos',
             'ph_qsos', 'dg_qsos', 'ry_qsos', 'score_wo_bonus',
             'special_station_contacts', 'claimed_score', 'uniques', 'nils',
-            'busteds', 'dup_qsos', 'category_rank', 'invalid_exchange_qsos',
-            'other_bad_qsos'
+            'busteds', 'dup_qsos', 'category_rank', 
+            'other_invalid_qsos'
         ],
         'string': [  # from the result object
             'year',   'dxcc_entity'
@@ -202,19 +201,21 @@ class ContestDatabase:
             'counties_worked', 'dx_worked', 'counties_activated'
         ],
         'list': ['errors', 'warnings', 'qsos_by_hour', 'busted_calls', 'nil_calls'],
-        'cab_attributes': [
-            'club', 'name', 'location', 'name', 'category_band', 'email',
+        'cab': [
+            'club', 'name', 'location', 'name', 'category_band', 'email', 'callsign',
             'category_mode', 'category_power', 'category_station', 
             'cat', 'claimed_score', 'category_power', 'category_station', 'callsign',
         ],
-        'dicts': ['qsos_by_band', 'qsos_by_mode','mobile_activation_counts', 'worked_counties_mobile', 'mobile_counties_worked']
+        'dict': ['qsos_by_band', 'qsos_by_mode','mobile_activation_counts', 'worked_counties_mobile', 'mobile_counties_worked']
         }
         self.stats_fields = {
-            'integers': ['total_logs', 'rejected_logs', 'dx__logs', 'us_cdn_logs', 'tx_logs', 'unclassed_logs', 'total_qsos', 'valid_qsos', 'qsos_with_tx', 'qsos_with_us_cdn', 'qsos_with_dx', 'duplicate_qsos', 'nils', 'busteds', 'invalid_qsos', 'uniques'],
-            'lists': ['rejected_logs_filenames', 'qsos_by_hour', 'nil_calls', 'busted_calls'],
-            'dicts': ['qsos_by_band', 'qsos_by_mode', 'mobile_activation_counts', 'worked_counties_mobile'],
-            'sets': ['counties_worked', 'states_worked', 'provinces_worked', 'dx_worked', 'counties_activated'],
-            'cab_attributes': []  # placeholder so serial deserial can do both types
+            'integer': ['total_logs', 'rejected_logs', 'dx_logs', 'us_logs', 'cdn_logs', 'tx_mobile_logs', 'tx_fixed_logs', 'unclassed_logs', 'total_qsos', 'valid_qsos', 'qsos_with_tx', 'qsos_with_us', 
+                        'qsos_with_canada', 'qsos_with_dx', 'duplicate_qsos', 'nils', 'busteds', 'other_invalid_qsos', 'uniques'],
+            'string': ['year'],  # from the result object 
+            'list': ['rejected_logs_filenames', 'qsos_by_hour', 'nil_calls', 'busted_calls'],
+            'dict': ['qsos_by_band', 'qsos_by_mode', 'mobile_activation_counts', 'worked_counties_mobile'],
+            'set': ['counties_worked', 'states_worked', 'provinces_worked', 'dx_worked', 'counties_activated'],
+            'cab': []  # placeholder so serial deserial can do both types
         }
     
     def _serialize_result(self, result: Dict, field_types: Dict, fields: Dict) -> Dict:
@@ -229,7 +230,7 @@ class ContestDatabase:
         cab = result.get('cab', None)
         try:
             # put values from the above listed fields into db_result
-            for typ in field_types:
+            for typ in list(field_types.keys()):
                 if typ == 'set':
                     for fld in fields[typ]:
                         value = result.get(fld, field_types[typ])
@@ -253,7 +254,7 @@ class ContestDatabase:
                                 value[k] = list(value[k])
                         db_result[fld] = json.dumps(value)
 
-                elif typ == 'cab_attributes':
+                elif typ == 'cab':
                     flds = fields.get(typ, [])
                     for fld in flds:
                         db_result[fld] = getattr(cab, fld, '')
@@ -279,29 +280,30 @@ class ContestDatabase:
         if result:
             display_result = {}
             try:
+                for typ in list(field_types.keys()):
                 # INTEGERS AND STRINGS
-                for typ in list(['integer', 'string']):
-                    for fld in fields[typ]:
-                        display_result[fld] = result.get(fld, field_types[typ])
+                    if typ in ['integer', 'string']:
+                        for fld in fields[typ]:
+                            display_result[fld] = result.get(fld, field_types[typ])
 
-                # SETS AND LISTS
-                for typ in list([ 'set', 'list']):
-                    for fld in fields[typ]:
-                        display_result[fld] = json.loads(result.get(fld, field_types[typ]))
+                    # SETS AND LISTS
+                    elif  typ in list([ 'set', 'list']):
+                        for fld in fields[typ]:
+                            display_result[fld] = json.loads(result.get(fld, field_types[typ]))
 
-                # DICT_FIELDS
-                if typ == 'dict':
-                    for field in fields[typ]:
-                        if field in result and result[field]:
-                            display_result[field] = json.loads(result[field])
+                    # DICT_FIELDS
+                    elif typ == 'dict':
+                        for field in fields[typ]:
+                            if field in result and result[field]:
+                                display_result[field] = json.loads(result[field])
+
+                    # the cab fields saved in the DB are all strings. We are not going to
+                    # reconstitute the cab object, but just storing the fiels in display_result
+                    elif typ == 'cab_attributes' and len(fields[typ]) > 0:
+                        for fld in fields[typ]:
+                            display_result[fld] = result.get(fld, '')
 
                 display_result['cat'] = RANKINGS[display_result['cat']]
-
-                # the cab fields saved in the DB are all strings. We are not going to
-                # reconstitute the cab object, but just storing the fiels in display_result
-                if typ == 'cab_attributes' and len(fields[typ]) > 0:
-                    for fld in fields[typ]:
-                        display_result[fld] = result.get(fld, '')
 
             except Exception as e:
                 s.out_files['errors'].write(f"could not deserialize {result}\n")
@@ -330,7 +332,7 @@ class ContestDatabase:
             print(f"ValueError {e} in save_result")
         
         # Serialize result
-        db_result = self._serialize_result(result, contest_year, self.field_types, self.result_fields)
+        db_result = self._serialize_result(result, self.field_types, self.result_fields)
         
         # Build SQL
         fields = list(db_result.keys())
@@ -379,22 +381,16 @@ class ContestDatabase:
                 
             return None
 
-    def save_statistics(self, year, stats):
-        db_result = self._serialize_result(year, stats, self.field_types, self.stats_fields)
-        db_result['year'] = year
+    def save_stats(self, s, year, stats):
+        db_result = self._serialize_result(stats, self.field_types, self.stats_fields)
                 
         # Build SQL
-        fields = list(db_result.keys())
-        placeholders = ','.join(['?' for _ in fields])
-        field_names = ','.join(fields)
         
         # Use INSERT OR REPLACE to overwrite existing records
-        sql = f'''
-            INSERT OR REPLACE INTO contest_stats ({field_names})
-            VALUES ({placeholders})
-        '''
+        sql = f'''INSERT OR REPLACE INTO contest_stats (year, stats) VALUES (?, ?);'''
         
-        values = [db_result[field] for field in fields]
+        values = [year, json.dumps(db_result)]
+        s.out_files['debug'].write(json.dumps(db_result))
         
         try:
             with sqlite3.connect(self.db_path) as conn:
@@ -406,9 +402,8 @@ class ContestDatabase:
         except Exception as e:
             print(f"Error saving statistics: {e}")
             return False
-        
-        
-    def get_statistics(self, year: str) -> Dict:
+           
+    def get_stats(self, year: str) -> Dict:
         """  Get contest statistics for a year.
                 Args:
                     year: Contest year
@@ -485,7 +480,7 @@ def get_clubs_section(s, year):
             rows = []
             j = 1
             for i, t in enumerate(temp):
-                if int(list(temp[i])[0]) == 1:
+                if int(list(temp[i])[2]) == 1:
                     break
                 rows.append([j] + list(temp[i])[:-1])
                 j += 1
@@ -532,7 +527,7 @@ def get_result(year: str, callsign: str, db_path: str = DATABASE_FILE) -> Option
     db.drop_db = False
     return db.get_result(year, callsign)
 
-def save_stats(contest_year: str, result: Dict, db_path: str = DATABASE_FILE) -> bool:
+def save_stats(s, contest_year: str, result: Dict, db_path: str = DATABASE_FILE) -> bool:
     """
     Save a result to the database.
     
@@ -545,7 +540,7 @@ def save_stats(contest_year: str, result: Dict, db_path: str = DATABASE_FILE) ->
     """
     db = ContestDatabase(db_path)
     db.drop_db = False
-    return db.save_result(contest_year, result)
+    return db.save_stats(s, contest_year, result)
 
 def get_stats(year: str, db_path: str = DATABASE_FILE) -> Dict:
     """
@@ -561,7 +556,7 @@ def get_stats(year: str, db_path: str = DATABASE_FILE) -> Dict:
     """
     db = ContestDatabase(db_path)
     db.drop_db = False
-    return db.get_result(year, callsign)
+    return db.get_stats(year)
 
 # def store_rankings(year: str):
 #     db = ContestDatabase(DATABASE_FILE)
