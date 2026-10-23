@@ -61,6 +61,7 @@ def read_prepare(s):
             cab = parse_log_file(file_path, ignore_unknown_key=True, check_categories=False, ignore_order=True, check_mode=False)
             cab.callsign = cab.callsign.split('/')[0]
         except Exception as e:
+            s.stats['check']['exceptions'].append(f"parse: {file_path}: {e}")
             if file:
                 s.stats["rejected_logs"] += 1
                 s.stats["rejected_logs_filenames"].append(file)
@@ -118,26 +119,27 @@ def update_qso_index_dict(s, result, cab):
         elif qso.de_exch[1] == 'TX' or  qso.dx_exch[1] == 'TX':
             writefile(s, result, 'One or both exchanges is "TX":', ['errors'])
             bad_qso = True
+
         # record stats
         elif qso.de_exch[1] in s.counties and qso_count == 1:
-            s.stats['us_logs'] += 1
             # Add MOBILE stations to that set
             if 'MOBILE' in cab.category:
                 s.mobile_callsigns.add(cab.callsign)
                 s.stats['tx_mobile_logs'] += 1
+                s.stats['check']['categorized_log'] += 1
             else:
                 s.stats['tx_fixed_logs'] += 1
+                s.stats['check']['categorized_log'] += 1
         elif qso.de_exch[1] in s.provinces and qso_count == 1: s.stats['cdn_logs'] += 1
         # both de and dx exch must be a state, county, province, or a valid DX
         # if de_exch CAN be a country, fix the exchange
         elif result['dxcc_entity'] != cab.callsign:
-            if result['dxcc_entity'] != cab.callsign:
-                # fix it by adding its dxcc_code (a number)
-                qso.de_exch[1] = 'DX' + str(result['dxcc_code'])
-                bad_qso = False
-                if qso_count == 1:
-                    s.stats['dx_logs'] += 1
-            elif qso.de_exch[1] in s.states and qso_count == 1:
+            # fix it by adding its dxcc_code (a number)
+            qso.de_exch[1] = 'DX' + str(result['dxcc_code'])
+            bad_qso = False
+            if qso_count == 1:
+                s.stats['dx_logs'] += 1
+            if qso.de_exch[1] in s.states and qso_count == 1:
                 s.stats['us_logs'] += 1
             else:
                 bad_qso = True
@@ -202,6 +204,7 @@ def process_hq_keys(s, cab):
             try:
                 x = len(cab.cat)
             except Exception as e:
+                s.stats['check']['exceptions'].append(f"cab.cat: {cab.callsign}: {e}")
                 cab.cat = ''
                 for t in temp:
                     if t == "TXM":
@@ -231,5 +234,7 @@ def process_hq_keys(s, cab):
                     setattr(cab, HQ_FIELDS[key], temp[key])
                 return True
     except Exception as e:
+        
+        s.stats['check']['exceptions'].append(f"process_hq_keys: {cab.callsign}: {e}")
         print(f"ERROR: Exception {e} getting hq_keys")
     return False

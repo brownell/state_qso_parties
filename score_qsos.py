@@ -4,7 +4,7 @@ This file will almost certainly be QSO-party-dependent.
 '''
 from datetime import datetime
 from cabrillo.qso import frequency_to_band_m
-from utilities import get_dxcc, debug_print
+from utilities import get_dxcc
 from database import save_result
 from utilities import writefile
 from config import COUNTIES_ACTIVATED_POINTS, COUNTIES_WORKED_POINTS, MOBILE_REQUIRED_QSOS, CONTEST_YEAR
@@ -32,6 +32,7 @@ def score_all_qsos(s):
             try:
                 score_a_qso(s, result, qso, dup)
             except Exception as e:
+                s.stats['check']['exceptions'].append(f"score qso: {str(qso)}: {e}")
                 if qso.valid:
                     # exception trying to score qso
                     qso.valid = False
@@ -53,6 +54,7 @@ def score_all_qsos(s):
                 writefile(s, result, qso, temp, ['errors'])
                 print (f"could not save result for {result['callsign']}\n {str(qso)}")
         except Exception as e:
+            s.stats['check']['exceptions'].append(f"save result 2: {result['callsign']}: {e}")
             if qso and qso.valid:
                 qso.valid = False
                 result['valid_qsos'] -= 1
@@ -63,22 +65,16 @@ def score_all_qsos(s):
 
 def score_a_qso(s, r, q, dup):
     if not q.valid:
-        # if 'busted' in list(vars(q).keys()):
-        #     # was marked busted previously so need to record this
-        #     # in this op's result
-        #     writefile(s, r, q, 'Busted QSO', ['errors', 'busteds'])
-        #     r['busteds'] += 1
-        #     r['busted_calls'].append([q.de_call, q.dx_call])
-        #     s.stats['busteds'] += 1
-        #     s.stats['busted_calls'].append([q.de_call, q.dx_call])
         return False
+    s.stats['check']['scored_qsos'] += 1
     try:
         if q.dx_exch[1] not in dup['mults']:
             dup['mults'].append(q.dx_exch[1])
         else:
             dup['num_mult'] += 1
-
         # increment qsos count for each mode
+        if q.mo.upper() == 'FM':
+            q.mo = 'PH'
         if q.mo.upper() not in list(s.mode_points.keys()):
             temp = f"BAD mode {q.mo}"
             writefile(s, r, q, temp, ['errors'])
@@ -86,8 +82,12 @@ def score_a_qso(s, r, q, dup):
 
         # add 1 to qso type (CW, PH, etc)
         r[f"{q.mo.lower()}_qsos"] += 1
-        r['qsos_by_mode'][q.mo] += 1
-        s.stats['qsos_by_mode'][q.mo] += 1
+        if q.mo.upper() in list(r.keys()) and q.mo.upper() in list(s.stats.keys()):        
+            r['qsos_by_mode'][q.mo.upper()] += 1
+            s.stats['qsos_by_mode'][q.mo.upper()] += 1
+        else:
+            temp = f"Bad mode in qso: "
+            writefile(s, r, q, temp, ['errors'])
 
         # for ALL operators, record all counties they work
         if q.de_exch[1] in s.counties:
@@ -103,9 +103,9 @@ def score_a_qso(s, r, q, dup):
         elif q.dx_exch[1] in s.provinces:
             r['provinces_worked'].add(q.dx_exch[1])
             s.stats['provinces_worked'].add(q.dx_exch[1])
-        elif r['cab'].location == "DX":
+        elif r['cab'].location == "DX" or ('dxcc_entity' in list(r.keys()) and  r['callsign'] != r['dccx_entity']):
             r['dx_worked'].add(r['dx_entity'])
-            s.stats['dx_worked'].add(r['dx_entity'])
+            s.stats['dx_worked'].add(r['dxcc_entity'])
         else:
             if q.valid:
                 q.valid = False
@@ -117,19 +117,22 @@ def score_a_qso(s, r, q, dup):
             writefile(s, r, q, temp, ['errors'])
         if q.freq[:2] == '50':
             band = '6'
-        # elif q.freq == '114':
-        #     band = '2'
+        elif q.freq == '144':
+            band = '2'
         elif '.' in q.freq:
             q.freq = q.freq.split('.')[0]
         elif len(q.freq) in [4, 5]:
             band = frequency_to_band_m(q.freq)
         else:
             band = frequency_to_band_m(q.freq[:2] + '000')
-        r['qsos_by_band'][str(band)] += 1
-        s.stats['qsos_by_band'][str(band)] += 1
+        if band in list(r['qsos_by_band'].keys()):
+            r['qsos_by_band'][str(band)] += 1
+        else:
+            temp = f"Frequency {q.freq} could not be converted to a band:"
+            writefile(s, r, q, temp, ['errors'])
 
         # qsos by hour
-        hour = int(q.date.strftime("%H"))
+        hour = int(q.date.strftime('%H'))
         if hour > 1:
             hour -= 14
         else:
@@ -138,6 +141,8 @@ def score_a_qso(s, r, q, dup):
         s.stats["qsos_by_hour"][hour + ((int(q.date.strftime("%d")) - 19) * 12)] += 1
 
     except Exception as e:
+        s.stats['check']['exceptions'].append(f"while scoring: {str(q)}: {q.valid}: {e}")
+        s.stats['check']['scored_qsos'] -= 1
         if q.valid:
             q.valid = False
             r['valid_qsos'] -= 1
@@ -179,6 +184,7 @@ def score_an_operator(s, r):
         r['mtb_mobile_points'] += (int(len(r['worked_counties_mobile'])  / ( MOBILE_REQUIRED_QSOS))) * COUNTIES_WORKED_POINTS
         r['final_score'] = r['score_wo_bonus'] + r['mtb_mobile_points'] +  r['cab_mobile_points']
     except Exception as e:
+        s.stats['check']['exceptions'].append(f"score op: {r['callsign']}: {e}")
         temp = f"Exception {e} scoring operator {r['callsign']}"
         writefile(s, r, None, temp, ['errors'])
         print(f"could not score {r['callsign']}")

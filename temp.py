@@ -21,287 +21,455 @@ from config.config import (
 SCRIPT_DIR = Path(__file__).resolve().parent
 
 dir_path = (SCRIPT_DIR / BATCH_INPUT_DIR / CONTEST_YEAR).resolve()
+foo['check']['scored_mode'] = 
 
-def create_tables():
-    """Create database tables if they don't exist"""
-    with sqlite3.connect(DATABASE_FILE) as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS contest_stats (
-                year TEXT NOT NULL,
-                stats TEXT,
-                PRIMARY KEY (year)
-                    )
-                ''')
 
-        conn.commit()
-
-class ContestDatabase:
-
-    def __init__(self, db_path: str = 'txqp.db'):
-        """
-        Initialize database connection.
-        
-        Args:
-            db_path: Path to SQLite database file
-        """
-        self.db_path = Path(db_path)
-        # Ensure directory exists
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
-
-        self.drop_db = True
-
-        self.field_types = {'integer': 0, 'string': '',
-                            'set': set(), 'list': [], 'dict': {}, 'cab': ''}
-        self.result_fields = {'integer': [
-            'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
-            'total_multipliers', 'cab_mobile_points', 
-            'mtb_mobile_points', 'cw_qsos',
-            'ph_qsos', 'dg_qsos', 'ry_qsos', 'score_wo_bonus',
-            'special_station_contacts', 'claimed_score', 'uniques', 'nils',
-            'busteds', 'dup_qsos', 'category_rank', 'invalid_exchange_qsos',
-            'other_bad_qsos'
-        ],
-        'string': [  # from the result object
-            'year',   'dxcc_entity'
-        ],
-        'set': [ 'states_worked', 'provinces_worked',
-            'de_exch_rcvd', 'dx_exch_sent', 'bands_worked', 
-            'counties_worked', 'dx_worked', 'counties_activated'
-        ],
-        'list': ['errors', 'warnings', 'qsos_by_hour', 'busted_calls', 'nil_calls'],
-        'cab_attributes': [
-            'club', 'name', 'location', 'name', 'category_band', 'email',
-            'category_mode', 'category_power', 'category_station', 
-            'cat', 'claimed_score', 'category_power', 'category_station', 'callsign',
-        ],
-        'dicts': ['qsos_by_band', 'qsos_by_mode','mobile_activation_counts', 'worked_counties_mobile', 'mobile_counties_worked']
-        }
-        self.stats_fields = {
-            'integer': ['total_logs', 'rejected_logs', 'dx__logs', 'us_cdn_logs', 'tx_logs', 'unclassed_logs', 'total_qsos', 'valid_qsos', 'qsos_with_tx', 'qsos_with_us_cdn', 'qsos_with_dx', 'duplicate_qsos', 'nils', 'busteds', 'invalid_qsos', 'uniques'],
-            'string': ['year'],  # from the result object 
-            'list': ['rejected_logs_filenames', 'qsos_by_hour', 'nil_calls', 'busted_calls'],
-            'dict': ['qsos_by_band', 'qsos_by_mode', 'mobile_activation_counts', 'worked_counties_mobile'],
-            'set': ['counties_worked', 'states_worked', 'provinces_worked', 'dx_worked', 'counties_activated'],
-            'cab_attribute': []  # placeholder so serial deserial can do both types
-        }
-        self.stats = {
-                'year': CONTEST_YEAR,
-                'total_logs': 200,
-                'rejected_logs': 10,
-                'rejected_logs_filenames': [], # logs of PARSER not_valids
-                'qso_parser_not_valid': 23,
-                'dx_logs': 10,
-                'us_cdn_logs': 150,
-                'tx_logs': 40,
-                'unclassed_logs': 10,
-                'total_qsos': 5000,
-                'valid_qsos': 4800,
-                'qsos_by_band': {'160': 0, '80': 0, '40': 34, '20': 140, '15':120, '10': 5, '6': 1, '2': 5},
-                'qsos_by_mode': {'PH': 200, 'CW': 50, 'RY': 23, 'DG': 23},
-                'qsos_by_hour': [0] * 24,
-                'qsos_with_tx': 23,
-                'qsos_with_us_cdn': 23,
-                'qsos_with_dx': 23,
-                'duplicate_qsos': 23,
-                'nils': 10,
-                'nil_calls': [],
-                'busteds': 10,
-                'busted_calls': [],
-                'invalid_qsos': 23,
-                'uniques': 23,
-                'counties_worked': set(),
-                'states_worked': set(),
-                'provinces_worked': set(),
-                'dx_worked': set(),
-                'counties_activated': set(),
-                'mobile_activation_counts': {},
-                'worked_counties_mobile': {},
-                'calls_w_not_valid_qsos': set(),
-                'dx_log_de_missing': 23,
-                'total_multipliers': 23,
-            }
+foo =  {
+    'year': '2026',
+    'check': {'categorized_log': 126, 
+            'scored_qsos': 0, 'scored_mode': 40111,
+            'scored_band': 0, 'scored_hour': 0, 'invalidated_qsos': 47446,
+            'with receiver': 0} ,
+    'total_logs': 413,
+    'rejected_logs': 0,
+    'dx_logs': 8,
+    'us_logs': 251,
+    'cdn_logs': 20,
+    'tx_mobile_logs': 18,
+    'tx_fixed_logs': 108,
+    'unclassed_logs': 1,
+    'total_qsos': 52779,
     
-    def _serialize_result(self, result: Dict, field_types: Dict, fields: Dict) -> Dict:
-        """
-        Adds simple fields from the "result" object
-        Adds attributes of the "CAB" objext
-        Convert result dict to database-storable format.
-        Convert lists to JSONF
-        Converts sets to JSON lists, handles complex types.
-        """
-        db_result = {}
-        cab = result.get('cab', None)
-        try:
-            # put values from the above listed fields into db_result
-            for typ in list(field_types.keys()):
-                if typ == 'set':
-                    for fld in fields[typ]:
-                        value = result.get(fld, field_types[typ])
-                        db_result[fld] = json.dumps(sorted(list(value)))
+'qsos_by_mode': {'PH': 16544, 'CW': 23303, 'RY': 39, 'DG': 225}
+'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0}
+'qsos_by_hour': 
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    'qsos_with_tx': 23794,
+    'qsos_with_us': 25964,
+    'qsos_with_canada': 1074,
+    'qsos_with_dx': 1768,
+    'duplicate_qsos': 933,
+    'nils': 3216,
+    'busteds': 972,
+    'other_invalid_qsos': 41353,
+    'multi_county_exchanges': 28,
+    'uniques': 18998,
+    'mobile_activation_counts': {
+    'MARI': 48,
+    'PPIN': 444,
+    'STEP': 465,
+    'EAST': 88,
+    'HRSN': 110,
+    'CHER': 101,
+    'DENT': 679,
+    'COOK': 304,
+    'CALL': 44,
+    'PANO': 96,
+    'RUSK': 81,
+    'DELT': 732,
+    'FANN': 360,
+    'HUNT': 410,
+    'HOPK': 718,
+    'RBSN': 118,
+    'MADI': 140,
+    'LEON': 140,
+    'FRAN': 357,
+    'WEBB': 128,
+    'JHOG': 104,
+    'ZAPA': 100,
+    'UPSH': 250,
+    'WOOD': 244,
+    'MONT': 156,
+    'ECTO': 122,
+    'CLAY': 131,
+    'WINK': 124,
+    'ARCH': 86,
+    'WICH': 194,
+    'HDMN': 124,
+    'CAMP': 154,
+    'CHIL': 88,
+    'WALK': 90,
+    'MIDL': 76,
+    'LAMA': 207,
+    'BOWI': 301,
+    'CASS': 376,
+    'DAWS': 82,
+    'LEE': 85,
+    'FAYE': 9,
+    'MART': 100,
+    'RAIN': 114,
+    'TRIN': 72,
+    'LAVA': 42,
+    'TITU': 260,
+    'RRIV': 145,
+    'MORR': 247,
+    'BZOS': 130,
+    'GREG': 86,
+    'SMIT': 104,
+    'VZAN': 98,
+    'COKE': 70,
+    'KAUF': 110,
+    'WILY': 84,
+    'STER': 90,
+    'ROCK': 142,
+    'GLAS': 106,
+    'DALS': 146,
+    'COLN': 130,
+    'NACO': 216,
+    'BROO': 76,
+    'TARR': 54,
+    'WISE': 246,
+    'ANDR': 66,
+    'WILB': 128,
+    'WARD': 92,
+    'PECO': 80,
+    'CRAN': 68,
+    'CROC': 70,
+    'HALL': 130,
+    'COLW': 84,
+    'UPTO': 88,
+    'DONL': 130,
+    'ARMS': 124,
+    'MGMY': 40,
+    'RAND': 155,
+    'CARS': 154,
+    'POTT': 158,
+    'REAG': 94,
+    'SJAC': 66,
+    'BORD': 84,
+    'FISH': 66,
+    'CMRN': 74,
+    'HIDA': 80,
+    'DUVA': 74,
+    'JWEL': 64,
+    'LIVO': 86,
+    'MMUL': 84,
+    'VICT': 52,
+    'JKSN': 24,
+    'HOUS': 70,
+    'LIBE': 28,
+    'PARK': 62,
+    'SHAC': 64,
+    'BEE': 78,
+    'GOLI': 78,
+    'SCUR': 48,
+    'RUNN': 66,
+    'WALL': 80,
+    'GRIM': 82,
+    'JONE': 50,
+    'REFU': 32,
+    'NUEC': 26,
+    'SPAT': 38,
+    'BROW': 40,
+    'KLEB': 64,
+    'KENY': 64,
+    'TAYL': 38,
+    'DEWI': 36,
+    'FREE': 14,
+    'BZIA': 12,
+    'WMSN': 4,
+    'LLAN': 4},
+    'worked_couunties_mobile': {
+    'AD4EB': ['RUSK', 'TITU', 'ARMS', 'SMIT', 'DONL', 'PANO', 'COLN', 'PARK', 'VZAN', 'GREG', 'CAMP', 'WICH', 'RAND', 'WISE', 'MONT', 'KAUF', 'HOPK', 'CARS', 'HALL', 'WILB', 'CHIL', 'CLAY', 'CASS', 'DENT', 'FANN', 'HDMN', 'ROCK', 'MARI', 'ARCH', 'TARR', 'RAIN', 'POTT', 'MORR', 'FRAN', 'WOOD', 'LAMA', 'DELT', 'DALS', 'HUNT', 'UPSH', 'HRSN', 'COLW'],
+    'K5T': ['STEP', 'PPIN', 'DENT'],
+    'N5NA': ['STER', 'EAST', 'ANDR', 'BROW', 'ECTO', 'FISH', 'MIDL', 'WINK', 'CRAN', 'REAG', 'SHAC', 'SCUR', 'CALL', 'RUNN', 'STEP', 'COKE', 'PECO', 'CROC', 'MART', 'BORD', 'WARD', 'DAWS', 'TAYL', 'JONE', 'GLAS', 'UPTO'],
+    'N5NU': ['TRIN', 'RUSK', 'WALK', 'NACO', 'MGMY', 'SJAC', 'HOUS', 'LIBE', 'CHER'],
+    'N5T': ['COOK', 'DENT'],
+    'K5CM': ['WOOD', 'TITU', 'CASS', 'FANN', 'LAMA', 'DELT', 'RRIV', 'HUNT', 'UPSH', 'HOPK', 'CAMP', 'BOWI', 'MORR', 'FRAN'],
+    'K5K': ['DELT', 'HOPK', 'DENT'],
+    'K5EC': ['LEON', 'GRIM', 'FREE', 'RBSN', 'MADI', 'WALL', 'BZOS'],
+    'KT3X': ['KLEB', 'LAVA', 'HIDA', 'DEWI', 'CMRN', 'LEE', 'GOLI', 'SPAT', 'KENY', 'LIVO', 'BEE', 'NUEC', 'ZAPA', 'DUVA', 'JWEL', 'JHOG', 'BROO', 'MMUL', 'REFU', 'VICT', 'FAYE', 'WEBB', 'JKSN', 'WILY'],
+    'N5KW': ['WOOD', 'TITU', 'CASS', 'FANN', 'LAMA', 'DELT', 'RRIV', 'HUNT', 'UPSH', 'HOPK', 'CAMP', 'BOWI', 'MORR', 'FRAN'],
+    'KE5OBS': ['DELT', 'HOPK'],
+    'KC4EEL': ['DELT', 'HOPK'],
+    'K5B': ['COOK', 'DENT'],
+    'KR1BBT': ['LEE'],
+    'KE5ZPP': ['BZIA'],
+    'KJ5GCH': ['TARR'],
+    'N5TTT': ['WMSN', 'LLAN']}
+}
 
-                elif typ == 'list':
-                    for fld in fields[typ]:
-                        value = result.get(fld, field_types[typ])
-                        db_result[fld] = json.dumps(list(value))
 
-                elif typ in ['integer', 'string']:
-                    for fld in fields[typ]:
-                        db_result[fld] = result.get(fld, field_types[typ])
+# def create_tables():
+#     """Create database tables if they don't exist"""
+#     with sqlite3.connect(DATABASE_FILE) as conn:
+#         cursor = conn.cursor()
+#         cursor.execute('''
+#             CREATE TABLE IF NOT EXISTS contest_stats (
+#                 year TEXT NOT NULL,
+#                 stats TEXT,
+#                 PRIMARY KEY (year)
+#                     )
+#                 ''')
+
+#         conn.commit()
+
+# class ContestDatabase:
+
+#     def __init__(self, db_path: str = 'txqp.db'):
+#         """
+#         Initialize database connection.
+        
+#         Args:
+#             db_path: Path to SQLite database file
+#         """
+#         self.db_path = Path(db_path)
+#         # Ensure directory exists
+#         self.db_path.parent.mkdir(parents=True, exist_ok=True)
+
+#         self.drop_db = True
+
+#         self.field_types = {'integer': 0, 'string': '',
+#                             'set': set(), 'list': [], 'dict': {}, 'cab': ''}
+#         self.result_fields = {'integer': [
+#             'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
+#             'total_multipliers', 'cab_mobile_points', 
+#             'mtb_mobile_points', 'cw_qsos',
+#             'ph_qsos', 'dg_qsos', 'ry_qsos', 'score_wo_bonus',
+#             'special_station_contacts', 'claimed_score', 'uniques', 'nils',
+#             'busteds', 'dup_qsos', 'category_rank', 'invalid_exchange_qsos',
+#             'other_bad_qsos'
+#         ],
+#         'string': [  # from the result object
+#             'year',   'dxcc_entity'
+#         ],
+#         'set': [ 'states_worked', 'provinces_worked',
+#             'de_exch_rcvd', 'dx_exch_sent', 'bands_worked', 
+#             'counties_worked', 'dx_worked', 'counties_activated'
+#         ],
+#         'list': ['errors', 'warnings', 'qsos_by_hour', 'busted_calls', 'nil_calls'],
+#         'cab_attributes': [
+#             'club', 'name', 'location', 'name', 'category_band', 'email',
+#             'category_mode', 'category_power', 'category_station', 
+#             'cat', 'claimed_score', 'category_power', 'category_station', 'callsign',
+#         ],
+#         'dicts': ['qsos_by_band', 'qsos_by_mode','mobile_activation_counts', 'worked_counties_mobile', 'mobile_counties_worked']
+#         }
+#         self.stats_fields = {
+#             'integer': ['total_logs', 'rejected_logs', 'dx__logs', 'us_cdn_logs', 'tx_logs', 'unclassed_logs', 'total_qsos', 'valid_qsos', 'qsos_with_tx', 'qsos_with_us_cdn', 'qsos_with_dx', 'duplicate_qsos', 'nils', 'busteds', 'invalid_qsos', 'uniques'],
+#             'string': ['year'],  # from the result object 
+#             'list': ['rejected_logs_filenames', 'qsos_by_hour', 'nil_calls', 'busted_calls'],
+#             'dict': ['qsos_by_band', 'qsos_by_mode', 'mobile_activation_counts', 'worked_counties_mobile'],
+#             'set': ['counties_worked', 'states_worked', 'provinces_worked', 'dx_worked', 'counties_activated'],
+#             'cab_attribute': []  # placeholder so serial deserial can do both types
+#         }
+#         self.stats = {
+#                 'year': CONTEST_YEAR,
+#                 'total_logs': 200,
+#                 'rejected_logs': 10,
+#                 'rejected_logs_filenames': [], # logs of PARSER not_valids
+#                 'qso_parser_not_valid': 23,
+#                 'dx_logs': 10,
+#                 'us_cdn_logs': 150,
+#                 'tx_logs': 40,
+#                 'unclassed_logs': 10,
+#                 'total_qsos': 5000,
+#                 'valid_qsos': 4800,
+#                 'qsos_by_band': {'160': 0, '80': 0, '40': 34, '20': 140, '15':120, '10': 5, '6': 1, '2': 5},
+#                 'qsos_by_mode': {'PH': 200, 'CW': 50, 'RY': 23, 'DG': 23},
+#                 'qsos_by_hour': [0] * 24,
+#                 'qsos_with_tx': 23,
+#                 'qsos_with_us_cdn': 23,
+#                 'qsos_with_dx': 23,
+#                 'duplicate_qsos': 23,
+#                 'nils': 10,
+#                 'nil_calls': [],
+#                 'busteds': 10,
+#                 'busted_calls': [],
+#                 'invalid_qsos': 23,
+#                 'uniques': 23,
+#                 'counties_worked': set(),
+#                 'states_worked': set(),
+#                 'provinces_worked': set(),
+#                 'dx_worked': set(),
+#                 'counties_activated': set(),
+#                 'mobile_activation_counts': {},
+#                 'worked_counties_mobile': {},
+#                 'calls_w_not_valid_qsos': set(),
+#                 'dx_log_de_missing': 23,
+#                 'total_multipliers': 23,
+#             }
+    
+#     def _serialize_result(self, result: Dict, field_types: Dict, fields: Dict) -> Dict:
+#         """
+#         Adds simple fields from the "result" object
+#         Adds attributes of the "CAB" objext
+#         Convert result dict to database-storable format.
+#         Convert lists to JSONF
+#         Converts sets to JSON lists, handles complex types.
+#         """
+#         db_result = {}
+#         cab = result.get('cab', None)
+#         try:
+#             # put values from the above listed fields into db_result
+#             for typ in list(field_types.keys()):
+#                 if typ == 'set':
+#                     for fld in fields[typ]:
+#                         value = result.get(fld, field_types[typ])
+#                         db_result[fld] = json.dumps(sorted(list(value)))
+
+#                 elif typ == 'list':
+#                     for fld in fields[typ]:
+#                         value = result.get(fld, field_types[typ])
+#                         db_result[fld] = json.dumps(list(value))
+
+#                 elif typ in ['integer', 'string']:
+#                     for fld in fields[typ]:
+#                         db_result[fld] = result.get(fld, field_types[typ])
            
-                elif typ == 'dict':
-                    for fld in fields[typ]:
-                        value = result.get(fld, {})
-                        # Convert sets in dict values to lists
-                        for k in list(value.keys()):
-                            if isinstance(value[k], set):
-                                value[k] = list(value[k])
-                        db_result[fld] = json.dumps(value)
+#                 elif typ == 'dict':
+#                     for fld in fields[typ]:
+#                         value = result.get(fld, {})
+#                         # Convert sets in dict values to lists
+#                         for k in list(value.keys()):
+#                             if isinstance(value[k], set):
+#                                 value[k] = list(value[k])
+#                         db_result[fld] = json.dumps(value)
 
-                elif typ == 'cab_attributes':
-                    flds = fields.get(typ, [])
-                    for fld in flds:
-                        db_result[fld] = getattr(cab, fld, '')
+#                 elif typ == 'cab_attributes':
+#                     flds = fields.get(typ, [])
+#                     for fld in flds:
+#                         db_result[fld] = getattr(cab, fld, '')
             
-            # Timestamps
-            now =  datetime.now(timezone.utc).isoformat()
-            db_result['created_at'] = now
-            db_result['updated_at'] = now
-        except Exception as e:
-            print(f"exception {e} in creating db_result")
-            # print('BREAK')
-        return db_result
+#             # Timestamps
+#             now =  datetime.now(timezone.utc).isoformat()
+#             db_result['created_at'] = now
+#             db_result['updated_at'] = now
+#         except Exception as e:
+#             print(f"exception {e} in creating db_result")
+#             # print('BREAK')
+#         return db_result
     
-    def _deserialize_result(self, result: Dict, field_types: Dict, fields: Dict) -> Dict:
-        """ The opposite of serialize_result
-            Reads data from the databaser one operator record
-            Adds simple fields from the "result" object
-            Adds attributes of the "CAB" objext
-            Convert result dict to JSON-usable format.
-            Convert lists to JSON
-            Converts sets to JSON lists, handles complex types.
-            """
-        if result:
-            display_result = {}
-            try:
-                for typ in list(field_types.keys()):
-                # INTEGERS AND STRINGS
-                    if typ in ['integer', 'string']:
-                        for fld in fields[typ]:
-                            display_result[fld] = result.get(fld, field_types[typ])
+#     def _deserialize_result(self, result: Dict, field_types: Dict, fields: Dict) -> Dict:
+#         """ The opposite of serialize_result
+#             Reads data from the databaser one operator record
+#             Adds simple fields from the "result" object
+#             Adds attributes of the "CAB" objext
+#             Convert result dict to JSON-usable format.
+#             Convert lists to JSON
+#             Converts sets to JSON lists, handles complex types.
+#             """
+#         if result:
+#             display_result = {}
+#             try:
+#                 for typ in list(field_types.keys()):
+#                 # INTEGERS AND STRINGS
+#                     if typ in ['integer', 'string']:
+#                         for fld in fields[typ]:
+#                             display_result[fld] = result.get(fld, field_types[typ])
 
-                    # SETS AND LISTS
-                    elif  typ in list([ 'set', 'list']):
-                        for fld in fields[typ]:
-                            display_result[fld] = json.loads(result.get(fld, field_types[typ]))
+#                     # SETS AND LISTS
+#                     elif  typ in list([ 'set', 'list']):
+#                         for fld in fields[typ]:
+#                             display_result[fld] = json.loads(result.get(fld, field_types[typ]))
 
-                    # DICT_FIELDS
-                    elif typ == 'dict':
-                        for field in fields[typ]:
-                            if field in result and result[field]:
-                                display_result[field] = json.loads(result[field])
+#                     # DICT_FIELDS
+#                     elif typ == 'dict':
+#                         for field in fields[typ]:
+#                             if field in result and result[field]:
+#                                 display_result[field] = json.loads(result[field])
 
-                    # the cab fields saved in the DB are all strings. We are not going to
-                    # reconstitute the cab object, but just storing the fiels in display_result
-                    elif typ == 'cab_attributes' and len(fields[typ]) > 0:
-                        for fld in fields[typ]:
-                            display_result[fld] = result.get(fld, '')
+#                     # the cab fields saved in the DB are all strings. We are not going to
+#                     # reconstitute the cab object, but just storing the fiels in display_result
+#                     elif typ == 'cab_attributes' and len(fields[typ]) > 0:
+#                         for fld in fields[typ]:
+#                             display_result[fld] = result.get(fld, '')
 
-                display_result['cat'] = RANKINGS[display_result['cat']]
+#                 display_result['cat'] = RANKINGS[display_result['cat']]
 
-            except Exception as e:
-                s.out_files['errors'].write(f"could not deserialize {result}\n")
+#             except Exception as e:
+#                 s.out_files['errors'].write(f"could not deserialize {result}\n")
         
-        return display_result
+#         return display_result
     
-        print(f"stats keys {list(self.stats.keys())} ")
+#         print(f"stats keys {list(self.stats.keys())} ")
 
     
-    def save_stats(self, year, stats):
-        db_result = self._serialize_result(stats, self.field_types, self.stats_fields)
+#     def save_stats(self, year, stats):
+#         db_result = self._serialize_result(stats, self.field_types, self.stats_fields)
                 
-        # Build SQL
+#         # Build SQL
         
-        # Use INSERT OR REPLACE to overwrite existing records
-        sql = f'''
-            INSERT OR REPLACE INTO contest_stats (year, stats) VALUES (?, ?);
-        '''
+#         # Use INSERT OR REPLACE to overwrite existing records
+#         sql = f'''
+#             INSERT OR REPLACE INTO contest_stats (year, stats) VALUES (?, ?);
+#         '''
         
-        values = [year, json.dumps(db_result)]
+#         values = [year, json.dumps(db_result)]
         
-        try:
-            with sqlite3.connect(self.db_path) as conn:
-                cursor = conn.cursor()
-                cursor.execute(sql, values)
-                conn.commit()
-            return True
+#         try:
+#             with sqlite3.connect(self.db_path) as conn:
+#                 cursor = conn.cursor()
+#                 cursor.execute(sql, values)
+#                 conn.commit()
+#             return True
         
-        except Exception as e:
-            print(f"Error saving statistics: {e}")
-            return False
+#         except Exception as e:
+#             print(f"Error saving statistics: {e}")
+#             return False
         
         
-    def get_stats(self, year: str) -> Dict:
-        """  Get contest statistics for a year.
-                Args:
-                    year: Contest year
-                Returns:
-                    Dict with statistics
-        """
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''SELECT * FROM contest_stats WHERE year = ?''', (year))
-            row = cursor.fetchone()
-            if row:
-                columns = [desc[0] for desc in cursor.description]
-                result = {}
-                for i, col in enumerate(columns):
-                    result[col] = row[i]
-                return self._deserialize_result(result, self.field_types, self.result_fields)
+#     def get_stats(self, year: str) -> Dict:
+#         """  Get contest statistics for a year.
+#                 Args:
+#                     year: Contest year
+#                 Returns:
+#                     Dict with statistics
+#         """
+#         with sqlite3.connect(self.db_path) as conn:
+#             cursor = conn.cursor()
+#             cursor.execute('''SELECT * FROM contest_stats WHERE year = ?''', (year))
+#             row = cursor.fetchone()
+#             if row:
+#                 columns = [desc[0] for desc in cursor.description]
+#                 result = {}
+#                 for i, col in enumerate(columns):
+#                     result[col] = row[i]
+#                 return self._deserialize_result(result, self.field_types, self.result_fields)
                 
-        return None
-# '{"total_logs": 200, "rejected_logs": 10, "dx__logs": 0, "us_cdn_logs": 150, "tx_logs": 40, "unclassed_logs": 10, "total_qsos": 5000, "valid_qsos": 4800, "qsos_with_tx": 23, "qsos_with_us_cdn": 23, "qsos_with_dx": 23, "duplicate_qsos": 23, "nils": 10, "busteds": 10, "invalid_qsos": 23, "uniques": 23, "year": "2026", "counties_worked": "[]", "states_worked": "[]", "provinces_worked": "[]", "dx_worked": "[]", "counties_activated": "[]", "rejected_logs_filenames": "[]", "qsos_by_hour": "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "nil_calls": "[]", "busted_calls": "[]", "qsos_by_band": "{\\"160\\": 0, \\"80\\": 0, \\"40\\": 34, \\"20\\": 140, \\"15\\": 120, \\"10\\": 5, \\"6\\": 1, \\"2\\": 5}", "qsos_by_mode": "{\\"PH\\": 200, \\"CW\\": 50, \\"RY\\": 23, \\"DG\\": 23}", "mobile_activation_counts": "{}", "worked_counties_mobile": "{}", "created_at": "2026-10-20T22:09:35.870929+00:00", "updated_at": "2026-10-20T22:09:35.870929+00:00"}'
+#         return None
+# # '{"total_logs": 200, "rejected_logs": 10, "dx__logs": 0, "us_cdn_logs": 150, "tx_logs": 40, "unclassed_logs": 10, "total_qsos": 5000, "valid_qsos": 4800, "qsos_with_tx": 23, "qsos_with_us_cdn": 23, "qsos_with_dx": 23, "duplicate_qsos": 23, "nils": 10, "busteds": 10, "invalid_qsos": 23, "uniques": 23, "year": "2026", "counties_worked": "[]", "states_worked": "[]", "provinces_worked": "[]", "dx_worked": "[]", "counties_activated": "[]", "rejected_logs_filenames": "[]", "qsos_by_hour": "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "nil_calls": "[]", "busted_calls": "[]", "qsos_by_band": "{\\"160\\": 0, \\"80\\": 0, \\"40\\": 34, \\"20\\": 140, \\"15\\": 120, \\"10\\": 5, \\"6\\": 1, \\"2\\": 5}", "qsos_by_mode": "{\\"PH\\": 200, \\"CW\\": 50, \\"RY\\": 23, \\"DG\\": 23}", "mobile_activation_counts": "{}", "worked_counties_mobile": "{}", "created_at": "2026-10-20T22:09:35.870929+00:00", "updated_at": "2026-10-20T22:09:35.870929+00:00"}'
 
 
-db = ContestDatabase(Path(DATABASE_FILE))
-create_tables()
-# Convenience functions
-def save_stats(contest_year: str, result: Dict, db_path: str = DATABASE_FILE) -> bool:
-    """
-    Save a result to the database.
+# db = ContestDatabase(Path(DATABASE_FILE))
+# create_tables()
+# # Convenience functions
+# def save_stats(contest_year: str, result: Dict, db_path: str = DATABASE_FILE) -> bool:
+#     """
+#     Save a result to the database.
     
-    Args:
-        result: Result dictionary from processor
-        db_path: Path to database file
+#     Args:
+#         result: Result dictionary from processor
+#         db_path: Path to database file
         
-    Returns:
-        True if saved successfully
-    """
-    db = ContestDatabase(db_path)
-    db.drop_db = False
-    return db.save_stats(contest_year, result)
+#     Returns:
+#         True if saved successfully
+#     """
+#     db = ContestDatabase(db_path)
+#     db.drop_db = False
+#     return db.save_stats(contest_year, result)
 
-def get_stats(year: str, db_path: str = DATABASE_FILE) -> Dict:
-    """
-    Get a result from the database.
+# def get_stats(year: str, db_path: str = DATABASE_FILE) -> Dict:
+#     """
+#     Get a result from the database.
     
-    Args:
-        year: Contest year
-        callsign: Station callsign
-        db_path: Path to database file
+#     Args:
+#         year: Contest year
+#         callsign: Station callsign
+#         db_path: Path to database file
         
-    Returns:
-        Result dict or None if not found
-    """
-    db = ContestDatabase(db_path)
-    db.drop_db = False
-    return db.get_stats(year)
+#     Returns:
+#         Result dict or None if not found
+#     """
+#     db = ContestDatabase(db_path)
+#     db.drop_db = False
+#     return db.get_stats(year)
 
 
-save_stats(CONTEST_YEAR, db.stats)
-print('break')
-get_stats(CONTEST_YEAR)
-print('break')
+# save_stats(CONTEST_YEAR, db.stats)
+# print('break')
+# get_stats(CONTEST_YEAR)
+# print('break')
 
 # def is_fuzzy_match(x: str, y: str, max_missing: int = 2) -> bool:
 #     """

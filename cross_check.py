@@ -21,7 +21,7 @@ from pathlib import Path
 import copy
 from cabrillo import QSO
 from cabrillo.qso import frequency_to_band_m
-from utilities import generate_index_key, debug_print, get_near_match, writefile, capture_mobile, get_dxcc, qso_nil, qso_busted
+from utilities import generate_index_key, get_near_match, writefile, capture_mobile, get_dxcc, qso_nil, qso_busted
 from config.config_txqp import CONTEST_TIMES
 
 def cross_check(s):

@@ -19,7 +19,7 @@ from pprint import pprint
 from pdf_final_report import generate_final_report_pdf
 from read_prepare import read_prepare
 from cross_check import cross_check
-from utilities import debug_print
+from utilities import fix_stats
 from score_qsos import score_all_qsos
 from database import save_stats
 from share import SHARED
@@ -52,10 +52,10 @@ def main(contest_year):
         print(f"after cross-check results")
 
     # for debugging, print out all the scores
-    if DEBUG:
-        for r in context.results:
-            debug_print(context, context.results[0], "", False)
-            print(f" {r['callsign']} CW {r['cw_qsos']} PH {r['ph_qsos']} points {r['qso_points']} mults {r['total_multipliers']} score {r['score_wo_bonus']} valid {r['valid_qsos']}\n{r['errors']}\n")
+    # if DEBUG:
+    #     for r in context.results:
+    #         debug_print(context, context.results[0], "", False)
+    #         print(f" {r['callsign']} CW {r['cw_qsos']} PH {r['ph_qsos']} points {r['qso_points']} mults {r['total_multipliers']} score {r['score_wo_bonus']} valid {r['valid_qsos']}\n{r['errors']}\n")
     # for i in [0,10,300]:
     #     r = context.results[i]
     #     print(f"results[{i}]: {r['callsign']} {r['final_score']} {r['mtb_mobile_points']} {r['score_wo_bonus']} {r['total_multipliers']} {r['qso_points']} {r['ph_qsos']} {r['cw_qsos']}")
@@ -65,6 +65,8 @@ def main(contest_year):
         print('all QSOs scored and stored')
         save_stats(context, contest_year, context.stats)
         print('statistics')
+        fix_stats(context)
+        print('after fix stats')
 
     
     # REMEMBER to close all the out_files

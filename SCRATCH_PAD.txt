@@ -2,8 +2,7 @@
 - tx_fixed_logs is wrong
 - valid qsos is 40202 but sum of modes is 40723, sum of bands is  40722, sum of hours is 40722, qsos_with is 52469
 - bad qsos are either 12021 or 12541, but the total - valid = 5348
-- empty: 'mobile_activation_counts': '{}', 'worked_counties_mobile': '{}
-- no mobile_activation_counts or worked_counties_mobile
+
 
 - clubs
 - formatting of individual

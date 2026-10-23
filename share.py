@@ -102,6 +102,16 @@ class SHARED:
         '''
         self.stats = {
             'year': CONTEST_YEAR,
+            'check': {
+                'categorized_log': 0,
+                'scored_qsos': 0,
+                'scored_mode': 0,
+                'scored_band': 0,
+                'scored_hour': 0,
+                'invalidated_qsos': 0,
+                'with receiver': 0,
+                'exceptions': [],
+            },
             # LOGS
             'total_logs': 0,
             'rejected_logs': 0,
@@ -116,7 +126,7 @@ class SHARED:
             'total_qsos': 0,
             'valid_qsos': 0,
             # QSOS BY MODE
-            'qsos_by_mode': {'PH': 0, 'CW': 0, 'RY': 0, 'DG': 0},
+            'qsos_by_mode': {'PH': 0, 'CW': 0, 'RY': 0, 'DG': 0, 'FM': 0},
             # QSOS BY bAND
             'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
             # QSOS BY HOUR
