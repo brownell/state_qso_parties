@@ -9,6 +9,7 @@ Batch Control program to process ALL the logs in the incoming directory
 
 from typing import Dict, List, Set, Optional
 import sqlite3
+import pickle
 from cabrillo.parser import parse_log_file
 from cabrillo.qso import frequency_to_band_m
 from collections import defaultdict
@@ -66,6 +67,8 @@ def main(contest_year):
         save_stats(context, contest_year, context.stats)
         print('statistics')
         fix_stats(context)
+        pprint(s.stats)
+        s.out_files['debug'].write(f"STATS PICKLE:\n{pickle.dumps(s.stats)}")
         print('after fix stats')
 
     

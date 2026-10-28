@@ -3,10 +3,11 @@ Scores just a single QSO and passes the score back to the caller
 This file will almost certainly be QSO-party-dependent.
 '''
 from datetime import datetime
+import re
 from cabrillo.qso import frequency_to_band_m
 from utilities import get_dxcc
 from database import save_result
-from utilities import writefile
+from utilities import writefile, code_to_dxcc
 from config import COUNTIES_ACTIVATED_POINTS, COUNTIES_WORKED_POINTS, MOBILE_REQUIRED_QSOS, CONTEST_YEAR
 qso_types = ['CW', 'PH', 'DG', 'RY']
 qso_type_names = ['cw_qsos', 'ph_qsos', 'dg_qsos', 'dg_qsos']
@@ -22,17 +23,10 @@ def score_all_qsos(s):
             'num_mult': 0
         }
         for qso in result['cab'].qso:
-            # if not qso.valid:
-            #     # already been marked as invalid
-            #     # result['other_invalid_qsos'] += 1
-            #     # s.stats['other_invalid_qsos'] += 1
-            #     temp = f"Failed to score QSO str(qso)"
-            #     writefile(s, result, qso, temp, ['errors', 'other_invalid_qsos'])
-            #     continue
             try:
                 score_a_qso(s, result, qso, dup)
             except Exception as e:
-                s.stats['check']['exceptions'].append(f"score qso: {str(qso)}: {e}")
+                s.stats['exceptions'].append(f"score qso: {str(qso)}: {e}")
                 if qso.valid:
                     # exception trying to score qso
                     qso.valid = False
@@ -54,7 +48,7 @@ def score_all_qsos(s):
                 writefile(s, result, qso, temp, ['errors'])
                 print (f"could not save result for {result['callsign']}\n {str(qso)}")
         except Exception as e:
-            s.stats['check']['exceptions'].append(f"save result 2: {result['callsign']}: {e}")
+            s.stats['exceptions'].append(f"save result 2: {result['callsign']}: {e}")
             if qso and qso.valid:
                 qso.valid = False
                 result['valid_qsos'] -= 1
@@ -66,7 +60,6 @@ def score_all_qsos(s):
 def score_a_qso(s, r, q, dup):
     if not q.valid:
         return False
-    s.stats['check']['scored_qsos'] += 1
     try:
         if q.dx_exch[1] not in dup['mults']:
             dup['mults'].append(q.dx_exch[1])
@@ -78,18 +71,22 @@ def score_a_qso(s, r, q, dup):
         if q.mo.upper() not in list(s.mode_points.keys()):
             temp = f"BAD mode {q.mo}"
             writefile(s, r, q, temp, ['errors'])
-            raise Exception
+            q.valid = False
+            return False
 
         # add 1 to qso type (CW, PH, etc)
         r[f"{q.mo.lower()}_qsos"] += 1
-        if q.mo.upper() in list(r.keys()) and q.mo.upper() in list(s.stats.keys()):        
+        if q.mo.upper() in list(s.stats['qsos_by_mode'].keys()):        
             r['qsos_by_mode'][q.mo.upper()] += 1
             s.stats['qsos_by_mode'][q.mo.upper()] += 1
+            s.stats['check']['scored_band']  += 1
         else:
             temp = f"Bad mode in qso: "
             writefile(s, r, q, temp, ['errors'])
+            q.valid = False
+            return False
 
-        # for ALL operators, record all counties they work
+        # for ALL operators, record all places they work
         if q.de_exch[1] in s.counties:
             r['counties_activated'].add(q.de_exch[1])
             s.stats['counties_activated'].add(q.de_exch[1])
@@ -103,9 +100,12 @@ def score_a_qso(s, r, q, dup):
         elif q.dx_exch[1] in s.provinces:
             r['provinces_worked'].add(q.dx_exch[1])
             s.stats['provinces_worked'].add(q.dx_exch[1])
-        elif r['cab'].location == "DX" or ('dxcc_entity' in list(r.keys()) and  r['callsign'] != r['dccx_entity']):
-            r['dx_worked'].add(r['dx_entity'])
-            s.stats['dx_worked'].add(r['dxcc_entity'])
+        elif not q.dx_exch[1].isalpha():
+            match = re.search(r"\d{1,3}$", q.dx_exch[1])
+            if match != None:
+                dxcc_entity = code_to_dxcc(s, code):
+                r['dx_worked'].add(dxcc_entity)
+                s.stats['dx_worked'].add('dxcc_entity')
         else:
             if q.valid:
                 q.valid = False
@@ -115,6 +115,7 @@ def score_a_qso(s, r, q, dup):
                 s.stats['other_invalid_qsos'] += 1
             temp = "Receiver's exch invalid:"
             writefile(s, r, q, temp, ['errors'])
+            return False
         if q.freq[:2] == '50':
             band = '6'
         elif q.freq == '144':
@@ -127,9 +128,13 @@ def score_a_qso(s, r, q, dup):
             band = frequency_to_band_m(q.freq[:2] + '000')
         if band in list(r['qsos_by_band'].keys()):
             r['qsos_by_band'][str(band)] += 1
+            s.stats['qsos_by_band'][str(band)] += 1
+            s.stats['check']['scored_band'] += 1
         else:
             temp = f"Frequency {q.freq} could not be converted to a band:"
             writefile(s, r, q, temp, ['errors'])
+            q.valid = False
+            return False
 
         # qsos by hour
         hour = int(q.date.strftime('%H'))
@@ -139,9 +144,12 @@ def score_a_qso(s, r, q, dup):
             hour -= 2
         r["qsos_by_hour"][hour + ((int(q.date.strftime("%d")) - 19) * 12)] += 1
         s.stats["qsos_by_hour"][hour + ((int(q.date.strftime("%d")) - 19) * 12)] += 1
+        s.stats['check']['scored_hour'] += 1
+
+        s.stats['check']['scored_qsos'] += 1
 
     except Exception as e:
-        s.stats['check']['exceptions'].append(f"while scoring: {str(q)}: {q.valid}: {e}")
+        s.stats['exceptions'].append(f"while scoring: {str(q)}: {q.valid}: {e}")
         s.stats['check']['scored_qsos'] -= 1
         if q.valid:
             q.valid = False
@@ -184,7 +192,7 @@ def score_an_operator(s, r):
         r['mtb_mobile_points'] += (int(len(r['worked_counties_mobile'])  / ( MOBILE_REQUIRED_QSOS))) * COUNTIES_WORKED_POINTS
         r['final_score'] = r['score_wo_bonus'] + r['mtb_mobile_points'] +  r['cab_mobile_points']
     except Exception as e:
-        s.stats['check']['exceptions'].append(f"score op: {r['callsign']}: {e}")
+        s.stats['exceptions'].append(f"score op: {r['callsign']}: {e}")
         temp = f"Exception {e} scoring operator {r['callsign']}"
         writefile(s, r, None, temp, ['errors'])
         print(f"could not score {r['callsign']}")

@@ -264,7 +264,7 @@ class ContestDatabase:
             db_result['created_at'] = now
             db_result['updated_at'] = now
         except Exception as e:
-            s.stats['check']['exceptions'].append(f"serialize result: {result['callsign']}: {e}")
+            s.stats['exceptions'].append(f"serialize result: {result['callsign']}: {e}")
             print(f"exception {e} in creating db_result")
             # print('BREAK')
         return db_result
@@ -307,7 +307,7 @@ class ContestDatabase:
                 display_result['cat'] = RANKINGS[display_result['cat']]
 
             except Exception as e:
-                s.stats['check']['exceptions'].append(f"de-serialize result: {result['callsign']}: {e}")
+                s.stats['exceptions'].append(f"de-serialize result: {result['callsign']}: {e}")
                 s.out_files['errors'].write(f"could not deserialize {result}\n")
         
         return display_result
@@ -356,7 +356,7 @@ class ContestDatabase:
                 conn.commit()
             return True
         except Exception as e:
-            s.stats['check']['exceptions'].append(f"save result: {result['callsign']}: {e}")
+            s.stats['exceptions'].append(f"save result: {result['callsign']}: {e}")
             print(f"Error saving result: {e}")
             return False
     
@@ -403,7 +403,7 @@ class ContestDatabase:
             return True
         
         except Exception as e:
-            s.stats['check']['exceptions'].append(f"save stats: {s.stats['total_logs']}: {e}")
+            s.stats['exceptions'].append(f"save stats: {s.stats['total_logs']}: {e}")
             print(f"Error saving statistics: {e}")
             return False
            

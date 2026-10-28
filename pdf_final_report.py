@@ -68,7 +68,7 @@ subtitle_style = ParagraphStyle(
     parent=styles['Heading2'],
     fontName='Times-Roman',
     fontSize=14,
-    textColor=colors.HexColor('#333333'),
+    textColor=colors.HexColor("#030303"),
     alignment=1, # Center
     spaceAfter=4
 )
@@ -77,7 +77,7 @@ date_style = ParagraphStyle(
     parent=styles['Normal'],
     fontName='Helvetica-Oblique',
     fontSize=9,
-    textColor=colors.HexColor("#262626"),
+    textColor=colors.HexColor("#090000"),
     alignment=1, # Center
     spaceAfter=14
 )
@@ -107,7 +107,7 @@ table_title_style = ParagraphStyle(
     parent=styles['Heading3'],
     fontName='Helvetica-Bold',
     fontSize=11,
-    textColor=colors.HexColor('#333333'),
+    textColor=colors.HexColor("#000000"),
     spaceBefore=8,
     spaceAfter=4
 )
@@ -208,7 +208,7 @@ def _add_section(section, year):
                 bg_color = colors.HexColor('#C0C0C0')
                 is_highlighted = True
             elif rank == 3:
-                bg_color = colors.HexColor('#CD7F32')
+                bg_color = colors.HexColor("#32CD8A")
                 is_highlighted = True
             
             style_cmds.append(('BACKGROUND', (0, row_idx), (-1, row_idx), bg_color))

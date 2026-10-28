@@ -80,6 +80,8 @@ class SHARED:
         self.all_callsigns = {}  # To track the indices of all callsigns that submitted logs for 
         self.mobile_callsigns = set() # Track callsigns that have location "mobile"
         self.qso_index_dict = defaultdict(list)
+        self.exch_to_dxcc = {}
+        self.dxcc_code_to_dxcc_entity = {}
         self.contest_clubs = {
             "Austin QRP Club": 0, "Baytown Area ARC": 0, "Central Texas DX and Contest Club": 0, "Dallas ARC": 0,
             "DCT ARC": 0, 
@@ -109,50 +111,57 @@ class SHARED:
                 'scored_band': 0,
                 'scored_hour': 0,
                 'invalidated_qsos': 0,
-                'with receiver': 0,
-                'exceptions': [],
+                'with_receiver': 0,
+                'states_worked': 0,
+                'provinces_worked': 0,
+                'dx_worked': 0,
+                'counties_activated': 0,
             },
             # LOGS
             'total_logs': 0,
             'rejected_logs': 0,
-            'rejected_logs_filenames': [], # logs of PARSER not_valids
             'dx_logs': 0,
             'us_logs': 0,
             'cdn_logs': 0,
             'tx_mobile_logs': 0,
             'tx_fixed_logs': 0,
             'unclassed_logs': 0,
+            'other_invalid_qsos': 0,
+            'multi_county_exchanges': 0,
+            'uniques': 0,
             # QSOS
             'total_qsos': 0,
             'valid_qsos': 0,
+            'qsos_with_canada': 0,
+            'qsos_with_tx': 0,
+            'qsos_with_us': 0,
+            'qsos_with_tx': 0,
+            'qsos_with_us': 0,
+            'qsos_with_dx': 0,
+            'qsos_with_dx': 0,
+            'duplicate_qsos': 0,
+            'nils': 0,
+            'busteds': 0,
             # QSOS BY MODE
             'qsos_by_mode': {'PH': 0, 'CW': 0, 'RY': 0, 'DG': 0, 'FM': 0},
             # QSOS BY bAND
             'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
             # QSOS BY HOUR
             'qsos_by_hour': [0] * 24,
+            'exceptions': [],
+            'mobile_activation_counts': {},
+            'worked_counties_mobile': {},
             # QSOS BY DESTINATION
-            'qsos_with_tx': 0,
-            'qsos_with_us': 0,
             'states_worked': set(),
-            'qsos_with_canada': 0,
             'provinces_worked': set(),
-            'qsos_with_dx': 0,
             'dx_worked': set(),
             # COUNTIES
             'counties_activated': set(),
             'counties_worked': set(),
-            'mobile_activation_counts': {},
-            'worked_counties_mobile': {},
             # QSO ERRORS
-            'duplicate_qsos': 0,
-            'nils': 0,
             'nil_calls': [],
-            'busteds': 0,
             'busted_calls': [],
-            'other_invalid_qsos': 0,
-            'multi_county_exchanges': 0,
-            'uniques': 0,
+            'rejected_logs_filenames': [], # logs of PARSER not_valids
         }
 
     # One of these is created for each log file

@@ -9,13 +9,26 @@ from pprint import pprint
 from datetime import datetime, timedelta
 from cabrillo import QSO
 from share import SHARED as s
+import re
 from cabrillo.qso import frequency_to_band_m
 
 # to get country name and ADIF number from callsign
 my_lookup_lib = LookupLib(lookuptype='countryfile', filename='./reference_data/cty.plist', username=QRZ_CALLSIGN, pwd=QRZ_PASSWORD)
 my_callinfo = Callinfo(my_lookup_lib)
 
-def get_dxcc(s, location, callsign):
+def exch_to_dxcc(s, exch):
+    if exch in (s.exch_to_dxcc):
+        return s.exch_to_dxcc(exch)
+    else:
+        return None, None
+
+def code_to_dxcc(s, code):
+    if code in (s.code_to_dxcc):
+        return s.code_to_dxcc(code)
+    else:
+        return None, None
+
+def get_dxcc(s, location, callsign, exch = None):
     ## check if this log is from a DX station, and save the dxcc_entity which will be used for cross-checking
     if location == 'DX' or (location not in s.states and location not in s.provinces and location not in s.counties):
         # it's not in US or Canada
@@ -204,6 +217,13 @@ def fix_stats(s):
     s.stats['check']['invalidated_qsos'] = s.stats['duplicate_qsos'] + s.stats['busteds'] + s.stats['nils'] + s.stats['busteds'] + s.stats['other_invalid_qsos']
     s.stats['check']['scored_mode'] = sum(s.stats['qsos_by_mode'][key] for key in s.stats['qsos_by_mode'])
     s.stats['check']['scored_band'] = sum(s.stats['qsos_by_band'][key] for key in s.stats['qsos_by_band'])
+    s.stats['check']['scored_hour'] = sum(s.stats['qsos_by_hour'])
+
+    
+    s.stats['check']['states_worked'] = sum(s.stats['qsos_by_hour'])
+    s.stats['check']['scored_hour'] = sum(s.stats['qsos_by_hour'])
+    s.stats['check']['scored_hour'] = sum(s.stats['qsos_by_hour'])
+    s.stats['check']['scored_hour'] = sum(s.stats['qsos_by_hour'])
     s.stats['check']['scored_hour'] = sum(s.stats['qsos_by_hour'])
 
 

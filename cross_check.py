@@ -132,7 +132,5 @@ def check_it(s, result, dx_result, qso):
     return False
 
 def make_dup(s, r, qso):
-    # de = get_dxcc(s, r['cab'].location, r['callsign'])[1]
-    # dx = get_dxcc(s, qso.dx_exch[1].upper(), qso.dx_call.upper())[1]
     temp = "_".join([qso.de_call, qso.dx_call, qso.de_exch[1].upper(), qso.dx_exch[1].upper(), frequency_to_band_m(qso.freq), qso.mo.upper()])
     return temp
