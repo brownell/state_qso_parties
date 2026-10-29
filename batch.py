@@ -40,7 +40,8 @@ def main(contest_year):
     '''
     if not REPORTS_ONLY:
         read_prepare(context)
-        print(f"after read_prepare")
+        print(f"after read_prepare: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+        print('break')
 
     '''
     Do the cross-checking, marking qsos that fail the match test.
@@ -50,8 +51,8 @@ def main(contest_year):
     
     if not REPORTS_ONLY:
         cross_check(context)
-        print(f"after cross-check results")
-
+        print(f"after cross-check results: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+        print('break')
     # for debugging, print out all the scores
     # if DEBUG:
     #     for r in context.results:
@@ -63,7 +64,8 @@ def main(contest_year):
 
     if not REPORTS_ONLY:
         score_all_qsos(context)
-        print('all QSOs scored and stored')
+        print(f"all QSOs scored and stored: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+        print('break')
         print('statistics')
         fix_stats(context)
         save_stats(context, contest_year, s.stats)

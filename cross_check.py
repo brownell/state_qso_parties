@@ -48,13 +48,13 @@ def cross_check(s):
                     temp = f"Duplicate QSO: "
                     writefile(s, result, qso, temp, ['errors'])
                     qso.valid = False
+                    s.stats['invalidated_qsos'] += 1
                 result['dup_qsos'] += 1
                 dup['num_qso'] += 1
                 continue
             else:
                 dup['qsos'].append(qso_dup)
 
-            
             if "Mobile" in result['cab'].category and "/" in qso.de_exch[1]:
                 # op should have made this two qsos but we do it for them
                 # mobile put multiple counties in the same QSO separated by "/"
@@ -83,6 +83,7 @@ def cross_check(s):
             if not check_it(s, result, dx_result, qso):
                 if qso.valid:
                     qso.valid = False
+                    s.stats['invalidated_qsos'] += 1
                     result['valid_qsos'] -= 1
 
 
@@ -98,6 +99,7 @@ def check_it(s, result, dx_result, qso):
         qso.date <= CONTEST_TIMES[1]['end'] )
         ):
         qso.valid = False
+        s.stats['invalidated_qsos'] += 1
         writefile(s, result, qso, 'BAD DATE/TIME: QSO time not within contest times:', ['errors'])
     k = generate_index_key(s, qso, qso.dx_call, True) # from the dx POV
 

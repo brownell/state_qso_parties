@@ -30,7 +30,7 @@ def code_to_dxcc(s, code):
     else:
         return None
 
-def get_dxcc(s, location, callsign, exch = None):
+def get_dxcc(s, location, callsign):
     ## check if this log is from a DX station, and save the dxcc_entity which will be used for cross-checking
     if location == 'DX' or (location not in s.states and location not in s.provinces and location not in s.counties):
         # it's not in US or Canada
@@ -42,7 +42,7 @@ def get_dxcc(s, location, callsign, exch = None):
             except:
                 return 0, callsign
 
-        if len(callinfo) > 0 and (callinfo['country'] not in ['United States', 'Canada', 'Alaska', 'Hawaii']):
+        if len(callinfo) > 0 and (callinfo['country'] not in ['United States', 'Canada']):
             return callinfo['adif'], callinfo['country']
             
     return 0, callsign
@@ -168,6 +168,7 @@ def qso_busted(s, qso, result):
     # if result['dxcc_entity'] != result['callsign']:
     #     print(f"busted with dxcc_entity {result['dxcc_entity']}\n{qso}")
     qso.valid = False
+    s.stats['invalidated_qsos'] += 1
     result['busteds'] += 1
     result['busted_calls'].append([qso.de_call, qso.dx_call])
     s.stats['busteds'] += 1
@@ -176,6 +177,7 @@ def qso_busted(s, qso, result):
 
 def qso_nil(s, qso, result):
     qso.valid = False
+    s.stats['invalidated_qsos'] += 1
     result['nils'] += 1
     result['nil_calls'].append([qso.de_call, qso.dx_call])
     s.stats['nils'] += 1
@@ -192,9 +194,7 @@ def capture_mobile(s, result, dx_result, qso, match):
     # for the mobile users, save the county they are activating
     if qso.de_call in s.mobile_callsigns:
         capture_contacts(s, result, dx_result, qso)
-    else:
-        s.stats['counties_activated'].add(qso.de_call)
-    if match.de_call in s.mobile_callsigns:
+    if match != None and match.de_call in s.mobile_callsigns:
         capture_contacts(s, dx_result, result, match)
 
 def capture_contacts(s, result1, result2, qso):
@@ -214,19 +214,16 @@ def capture_contacts(s, result1, result2, qso):
 
 def fix_stats(s):
     # do some fixup of the stats after all are collected
-    s.stats['logs_by_type'] = s.stats['dx_logs'] + s.stats['us_logs'] + s.stats['cdn_logs'] + s.stats['tx_mobile_logs'] + s.stats['tx_fixed_logs']
-    s.stats['with_receiver'] = s.stats['qsos_with_tx'] + s.stats['qsos_with_us'] + s.stats['qsos_with_canada'] + s.stats['qsos_with_dx']
-    s.stats['invalidated_qsos'] = s.stats['duplicate_qsos'] + s.stats['busteds'] + s.stats['nils'] + s.stats['busteds'] + s.stats['other_invalid_qsos']
-    s.stats['scored_mode'] = sum(s.stats['qsos_by_mode'][key] for key in s.stats['qsos_by_mode'])
-    s.stats['scored_band'] = sum(s.stats['qsos_by_band'][key] for key in s.stats['qsos_by_band'])
-    s.stats['scored_hour'] = sum(s.stats['qsos_by_hour'])
     s.stats['num_states_worked'] = len(s.stats['states_worked'])
     s.stats['num_provinces_worked'] = len(s.stats['provinces_worked'])
     s.stats['num_dx_worked'] = len(s.stats['dx_worked'])
     s.stats['num_counties_activated'] = len(s.stats['counties_activated'])
+    s.stats['num_counties_activated_mobile'] = 0
     s.stats['num_counties_worked'] = len(s.stats['counties_worked'])
-    s.stats['num_scored_qsos'] = sum(s.stats['qsos_by_mode'][key] for key in s.stats['qsos_by_mode'])
 
+    save_stats(s, "Statistics")
+
+def save_stats(s, message):
     stats_keys = list(s.stats.keys())
     for k in list(STATISTICS_TEXT.keys()):
         if k in stats_keys:

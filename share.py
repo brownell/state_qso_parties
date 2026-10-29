@@ -106,19 +106,6 @@ class SHARED:
         '''
         self.stats = {
             'year': CONTEST_YEAR,
-            'check': {
-                'categorized_log': 0,
-                'scored_qsos': 0,
-                'scored_mode': 0,
-                'scored_band': 0,
-                'scored_hour': 0,
-                'invalidated_qsos': 0,
-                'with_receiver': 0,
-                'num_states_worked': 0,
-                'num_provinces_worked': 0,
-                'num_dx_worked': 0,
-                'counties_activated': 0,
-            },
             # LOGS
             'total_logs': 0,
             'rejected_logs': 0,
@@ -128,21 +115,24 @@ class SHARED:
             'tx_mobile_logs': 0,
             'tx_fixed_logs': 0,
             'unclassed_logs': 0,
-            'other_invalid_qsos': 0,
-            'multi_county_exchanges': 0,
-            'uniques': 0,
             # QSOS
             'total_qsos': 0,
             'scored_qsos': 0,
+            'uniques': 0,
             'qsos_with_canada': 0,
             'qsos_with_tx': 0,
             'qsos_with_us': 0,
             'qsos_with_tx': 0,
             'qsos_with_us': 0,
             'qsos_with_dx': 0,
+            # QSOs with ERRORS
             'duplicate_qsos': 0,
             'nils': 0,
+            'nil_calls': [],
             'busteds': 0,
+            'busted_calls': [],
+            'other_invalid_qsos': 0,
+            'multi_county_exchanges': 0,
             # QSOS BY MODE
             'qsos_by_mode': {'PH': 0, 'CW': 0, 'RY': 0, 'DG': 0, 'FM': 0},
             # QSOS BY bAND
@@ -160,10 +150,7 @@ class SHARED:
             'counties_activated': set(),
             'counties_worked': set(),
             # QSO ERRORS
-            'nil_calls': [],
-            'busted_calls': [],
-            'rejected_logs_filenames': [], # logs of PARSER not_valids
-            'categorized_log': 0,
+            'uncategorized_logs': 0,
             'scored_mode': 0,
             'scored_band': 0,
             'scored_hour': 0,

@@ -128,7 +128,7 @@ def results():
         from config.config import CONTEST_YEARS
     except ImportError:
         # Fallback if CONTEST_YEARS not defined
-        CONTEST_YEARS = ['2026', '2025', '2024']
+        CONTEST_YEARS = ['2026']
     return render_template('results_lookup.html', available_years=years.split(',') if years else CONTEST_YEARS)
 
 

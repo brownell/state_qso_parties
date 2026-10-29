@@ -35,9 +35,6 @@ if not SECRET_KEY:
     raise ValueError("SECRET_KEY not set in environment!")
 
 FLASK_ENV = os.environ.get('FLASK_ENV', 'production')
-CONTEST_NAME = os.environ.get('CONTEST_NAME', False)
-CONTEST_YEAR = os.environ.get('CONTEST_YEAR', False)
-
 
 # ============================================================================
 # REFERENCE DATA FILES
