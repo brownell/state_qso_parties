@@ -6,9 +6,11 @@ or checking if a callsign is valid.
 from config import QRZ_CALLSIGN, QRZ_PASSWORD
 from pyhamtools import LookupLib, Callinfo
 from pprint import pprint
+import json
 from datetime import datetime, timedelta
 from cabrillo import QSO
 from share import SHARED as s
+from config.config_txqp import STATISTICS_TEXT
 import re
 from cabrillo.qso import frequency_to_band_m
 
@@ -26,7 +28,7 @@ def code_to_dxcc(s, code):
     if code in (s.code_to_dxcc):
         return s.code_to_dxcc(code)
     else:
-        return None, None
+        return None
 
 def get_dxcc(s, location, callsign, exch = None):
     ## check if this log is from a DX station, and save the dxcc_entity which will be used for cross-checking
@@ -212,20 +214,27 @@ def capture_contacts(s, result1, result2, qso):
 
 def fix_stats(s):
     # do some fixup of the stats after all are collected
-    s.stats['check']['logs_by_type'] = s.stats['dx_logs'] + s.stats['us_logs'] + s.stats['cdn_logs'] + s.stats['tx_mobile_logs'] + s.stats['tx_fixed_logs']
-    s.stats['check']['with_receiver'] = s.stats['qsos_with_tx'] + s.stats['qsos_with_us'] + s.stats['qsos_with_canada'] + s.stats['qsos_with_dx']
-    s.stats['check']['invalidated_qsos'] = s.stats['duplicate_qsos'] + s.stats['busteds'] + s.stats['nils'] + s.stats['busteds'] + s.stats['other_invalid_qsos']
-    s.stats['check']['scored_mode'] = sum(s.stats['qsos_by_mode'][key] for key in s.stats['qsos_by_mode'])
-    s.stats['check']['scored_band'] = sum(s.stats['qsos_by_band'][key] for key in s.stats['qsos_by_band'])
-    s.stats['check']['scored_hour'] = sum(s.stats['qsos_by_hour'])
+    s.stats['logs_by_type'] = s.stats['dx_logs'] + s.stats['us_logs'] + s.stats['cdn_logs'] + s.stats['tx_mobile_logs'] + s.stats['tx_fixed_logs']
+    s.stats['with_receiver'] = s.stats['qsos_with_tx'] + s.stats['qsos_with_us'] + s.stats['qsos_with_canada'] + s.stats['qsos_with_dx']
+    s.stats['invalidated_qsos'] = s.stats['duplicate_qsos'] + s.stats['busteds'] + s.stats['nils'] + s.stats['busteds'] + s.stats['other_invalid_qsos']
+    s.stats['scored_mode'] = sum(s.stats['qsos_by_mode'][key] for key in s.stats['qsos_by_mode'])
+    s.stats['scored_band'] = sum(s.stats['qsos_by_band'][key] for key in s.stats['qsos_by_band'])
+    s.stats['scored_hour'] = sum(s.stats['qsos_by_hour'])
+    s.stats['num_states_worked'] = len(s.stats['states_worked'])
+    s.stats['num_provinces_worked'] = len(s.stats['provinces_worked'])
+    s.stats['num_dx_worked'] = len(s.stats['dx_worked'])
+    s.stats['num_counties_activated'] = len(s.stats['counties_activated'])
+    s.stats['num_counties_worked'] = len(s.stats['counties_worked'])
+    s.stats['num_scored_qsos'] = sum(s.stats['qsos_by_mode'][key] for key in s.stats['qsos_by_mode'])
 
-    
-    s.stats['check']['states_worked'] = sum(s.stats['qsos_by_hour'])
-    s.stats['check']['scored_hour'] = sum(s.stats['qsos_by_hour'])
-    s.stats['check']['scored_hour'] = sum(s.stats['qsos_by_hour'])
-    s.stats['check']['scored_hour'] = sum(s.stats['qsos_by_hour'])
-    s.stats['check']['scored_hour'] = sum(s.stats['qsos_by_hour'])
-
+    stats_keys = list(s.stats.keys())
+    for k in list(STATISTICS_TEXT.keys()):
+        if k in stats_keys:
+            print(f"{STATISTICS_TEXT[k]}: {s.stats[k]}")
+            s.out_files['stats'].write(f"{STATISTICS_TEXT[k]}: {s.stats[k]}\n")
+        else:
+             print(f"\n*** {STATISTICS_TEXT[k]} ***")
+             s.out_files['stats'].write(f"\n*** {STATISTICS_TEXT[k]} ***\n")
 
 # def debug_print(s, r, title, p=True):
     # x = {}

@@ -64,11 +64,9 @@ def main(contest_year):
     if not REPORTS_ONLY:
         score_all_qsos(context)
         print('all QSOs scored and stored')
-        save_stats(context, contest_year, context.stats)
         print('statistics')
         fix_stats(context)
-        pprint(s.stats)
-        s.out_files['debug'].write(f"STATS PICKLE:\n{pickle.dumps(s.stats)}")
+        save_stats(context, contest_year, s.stats)
         print('after fix stats')
 
     

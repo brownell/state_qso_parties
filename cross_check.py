@@ -44,7 +44,6 @@ def cross_check(s):
             if qso_dup in dup['qsos']:
                 if qso.valid:
                     result['valid_qsos'] -= 1
-                    s.stats['valid_qsos'] -= 1
                     s.stats['duplicate_qsos'] += 1
                     temp = f"Duplicate QSO: "
                     writefile(s, result, qso, temp, ['errors'])
@@ -91,13 +90,14 @@ def check_it(s, result, dx_result, qso):
     # from the qso_index_dict, get all POTENTIAL matches, based
     # on callsign, exchange, mode, and band
     c = s.stats
-    if not (qso.date >= CONTEST_TIMES[0]['start'] and 
-       (qso.date <= CONTEST_TIMES[0]['end'] )) or (
-        qso.date >= CONTEST_TIMES[1]['start'] and 
-       (qso.date <= CONTEST_TIMES[1]['end'] )
-       ):
+    if not (
+        ( qso.date >= CONTEST_TIMES[0]['start'] and 
+        qso.date <= CONTEST_TIMES[0]['end'] )
+        or 
+        ( qso.date >= CONTEST_TIMES[1]['start'] and 
+        qso.date <= CONTEST_TIMES[1]['end'] )
+        ):
         qso.valid = False
-        s.stats['valid_qsos'] -= 1
         writefile(s, result, qso, 'BAD DATE/TIME: QSO time not within contest times:', ['errors'])
     k = generate_index_key(s, qso, qso.dx_call, True) # from the dx POV
 

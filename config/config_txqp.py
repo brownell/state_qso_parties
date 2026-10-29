@@ -93,32 +93,27 @@ STATISTICS_TEXT = {
     'unclassed_logs': 'Unclassified Logs',
     # QSOS
     'title_qsos': 'QSOS',
-    'total_qsos': 'Total QSOs',
-    'valid_qsos': 'Scored QSOs',
+    'total_qsos': 'Total Number of QSOs',
+    'num_scored_qsos': 'Number of Scored QSOs',
     # QSOS BY MODE
     'title_mode': "QSOs by Mode",
-    'qsos_by_mode': {'PH': 0, 'CW': 0, 'RY': 0, 'DG': 0},
+    'scored_mode': 'QSO Count for Mode',
+    'qsos_by_mode': 'QSOs by Mode',
     # QSOS BY bAND
     'title_band': "QSOs by Band",
-    'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
+    'scored_band': 'QSO Count for Band',
+    'qsos_by_band': "QSOs by Band",
     # QSOS BY HOUR
     'title_hour': 'QSOs by Hour',
-    'qsos_by_hour': [0] * 24,
-    # QSOS BY DESTINATION
-    'title_dest': 'From TX to Destination',
-    'qsos_with_tx': 'Texas',
-    'qsos_with_us': 'US Non Texas',
-    'states_worked': 'States Worked',
-    'qsos_with_canada': 'Provinces',
-    'provinces_worked': 'Provinces Worked',
-    'qsos_with_dx': 'Non North America',
-    'dx_worked': 'DXCC Worked',
-    # COUNTIES
-    'title_counties': 'Counties Activated and Worked',
-    'counties_activated': 'Counties Activated Non-Mobile',
-    'counties_worked': 'Counties Worked by Any Station',
-    'mobile_activation_counts': 'Number Mobile Activations by County',
-    'worked_counties_mobile': 'Number Mobiles Worked By County',
+    'scored_hour': 'QSO Count for hour',
+    'qsos_by_hour': 'QSOs by Hour',
+    # Counts of QSOS BY DESTINATION
+    'title_dest': 'QSO Counts From TX to Destination',
+    'with_receiver': 'Total Counted with a Destination',
+    'qsos_with_tx': 'Number with Texas',
+    'qsos_with_us': 'Number with US Non Texas',
+    'qsos_with_canada': 'Number with Canada',
+    'qsos_with_dx': 'Number with Non North America',
     # QSO ERRORS
     'title_qso_issues': 'QSO Issues',
     'duplicate_qsos': 'Duplicate QSOs',
@@ -129,6 +124,25 @@ STATISTICS_TEXT = {
     'multi_county_exchanges': 'Exchanges with Multiple Counties',
     'nil_calls': 'NIL QSOs',
     'busted_calls': 'Busted QSOs',
+    # checks
+    'checks_title': 'Sums to Check the Previous Values',
+    'categorized_log': 'Categorized Logs',
+    'invalidated_qsos': 0,
+    'with_receiver': 0,
+    'num_states_worked': 0,
+    'num_provinces_worked': 0,
+    'num_dx_worked': 0,
+    'num_counties_activated': 0,
+    # lists
+    'title_counties': 'Areas Activated and Worked',
+    'counties_activated': 'Counties Activated Non-Mobile',
+    'counties_worked': 'Counties Worked by Any Station',
+    'states_worked': 'List of Non-TX States Worked',
+    'provinces_worked': 'List of Provinces Worked',
+    'dx_worked': 'List of Non North America Worked',
+    'mobile_activation_counts': 'Number Mobile Activations by County',
+    'worked_counties_mobile': 'Number Mobiles Worked By County',
+
         }
 RANKINGS = {
 

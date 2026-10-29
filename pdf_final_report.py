@@ -24,7 +24,7 @@ from database import get_clubs_section
 try:
     from reportlab.lib import colors
     from reportlab.lib.pagesizes import letter
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, KeepTogether, PageBreak
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, KeepTogether, PageBreak, Image
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.pdfgen import canvas
 
@@ -35,6 +35,7 @@ except ImportError:
 # Ensure output directory exists
 output_path = Path(FINAL_REPORTS_DIR)
 output_path.mkdir(parents=True, exist_ok=True)
+img_path = Path('static/images')
 # Define output file path
 when = datetime.now().strftime('%m-%d-%H-%M')
 print(f"Texas QSO Party - Generate Final Report PDF ({CONTEST_YEAR} {when}))")
@@ -44,15 +45,24 @@ output_file = (output_path / f"final_report_{CONTEST_YEAR}_{when}.pdf")
 c = canvas.Canvas("final_report.pdf")
 c.setTitle("TXQP Report")
 
+styles = getSampleStyleSheet()
+
+doc = SimpleDocTemplate(
+    "report.pdf",
+    title="Club Activity Report",
+    author="Your Name",
+)
+
 doc = SimpleDocTemplate(
     str(output_file),
+    title="TXQP 2026",
+    author="TX DX Society",
     pagesize=letter,
     rightMargin=15,
     leftMargin=15,
     topMargin=20,
     bottomMargin=20
 )
-styles = getSampleStyleSheet()
 # Custom styles
 title_style = ParagraphStyle(
     'TitleStyle',
@@ -61,23 +71,24 @@ title_style = ParagraphStyle(
     fontSize=24,
     textColor=colors.HexColor('#8B0000'),
     alignment=1, # Center
-    spaceAfter=6
+    spaceAfter=18
 )
 subtitle_style = ParagraphStyle(
     'SubtitleStyle',
     parent=styles['Heading2'],
     fontName='Times-Roman',
-    fontSize=14,
+    fontSize=20,
     textColor=colors.HexColor("#030303"),
     alignment=1, # Center
-    spaceAfter=4
+    spaceBefore=18,
+    spaceAfter=18
 )
 date_style = ParagraphStyle(
     'DateStyle',
     parent=styles['Normal'],
     fontName='Helvetica-Oblique',
     fontSize=9,
-    textColor=colors.HexColor("#090000"),
+    textColor=colors.HexColor("#000000"),
     alignment=1, # Center
     spaceAfter=14
 )
@@ -144,6 +155,13 @@ def _set_up_pdf_document(year):
     story.append(Paragraph(f"Texas QSO Party {year}", title_style))
     story.append(Paragraph("Final Results", subtitle_style))
     story.append(Paragraph(f"Generated: {datetime.now().strftime('%B %d, %Y')}", date_style))
+
+    # logo
+    img = Image(f"{img_path}/txqp.png")
+    aspect = img.imageHeight / float(img.imageWidth)
+    img.drawWidth = 200
+    img.drawHeight = 200 * aspect
+    story.append(img)
     
     # Intro
     intro_text = FINAL_REPORT_TXT if FINAL_REPORT_TXT else 'Congratulations to all participants!'
@@ -172,16 +190,16 @@ def _add_section(section, year):
         
         # Base Table Style
         style_cmds = [
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4472C4')),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#6899EE")),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, 0), 'LEFT'),
             ('ALIGN', (0, 0), (0, -1), 'CENTER'), # Rank column centered
             ('FONTNAME', (0, 0), (-1, 0), 'Courier-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 9),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
             ('TOPPADDING', (0, 0), (-1, 0), 6),
-            ('FONTNAME', (0, 1), (-1, -1), 'Courier'),
-            ('FONTSIZE', (0, 1), (-1, -1), 8),
+            ('FONTNAME', (0, 1), (-1, -1), 'Courier-Bold'),
+            ('FONTSIZE', (0, 1), (-1, -1), 9),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             ('TOPPADDING', (0, 1), (-1, -1), 3),
@@ -196,19 +214,19 @@ def _add_section(section, year):
             if i % 2 == 0:
                 bg_color = colors.HexColor('#ffffff')
             else:
-                bg_color = colors.HexColor('#f0f0f0')
+                bg_color = colors.HexColor("#bff5d7")
             
             # Rank highlighting
             rank = row[0] # Rank is first column
             is_highlighted = False
             if rank == 1:
-                bg_color = colors.HexColor('#FFD700')
+                bg_color = colors.HexColor("#B4F0B5")
                 is_highlighted = True
             elif rank == 2:
-                bg_color = colors.HexColor('#C0C0C0')
+                bg_color = colors.HexColor("#CA9AEFFF")
                 is_highlighted = True
             elif rank == 3:
-                bg_color = colors.HexColor("#32CD8A")
+                bg_color = colors.HexColor("#B2C9FA")
                 is_highlighted = True
             
             style_cmds.append(('BACKGROUND', (0, row_idx), (-1, row_idx), bg_color))

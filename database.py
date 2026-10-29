@@ -386,7 +386,10 @@ class ContestDatabase:
 
     def save_stats(self, s, year, stats):
         db_result = self._serialize_result(stats, self.field_types, self.stats_fields)
-                
+
+        json_stats = json.dumps(db_result)
+        s.out_files['debug'].write(json_stats)
+
         # Build SQL
         
         # Use INSERT OR REPLACE to overwrite existing records
@@ -484,7 +487,7 @@ def get_clubs_section(s, year):
             rows = []
             j = 1
             for i, t in enumerate(temp):
-                if int(list(temp[i])[2]) == 1:
+                if int(list(temp[i])[1]) == 1:
                     break
                 rows.append([j] + list(temp[i])[:-1])
                 j += 1

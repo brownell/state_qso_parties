@@ -57,6 +57,7 @@ class SHARED:
             'nils': open(SCRIPT_DIR /  "OUTPUT_FILES" / "NILS_FILE.txt", "w"),
             'debug': open(SCRIPT_DIR /  "OUTPUT_FILES" / "DEBUG_FILE.txt", "w"),
             'dups': open(SCRIPT_DIR /  "OUTPUT_FILES" / "DUPS_FILE.txt", "w"),
+            'stats': open(SCRIPT_DIR /  "OUTPUT_FILES" / "STATS_FILE.txt", "w"),
             'other_invalid_qsos': open(SCRIPT_DIR /  "OUTPUT_FILES" / "OTHER_INVALID_QSOS_FILE.txt", "w")
         }
         self.out_files['errors'].seek(0)
@@ -66,6 +67,7 @@ class SHARED:
         self.out_files['nils'].seek(0)
         self.out_files['debug'].seek(0)
         self.out_files['dups'].seek(0)
+        self.out_files['stats'].seek(0)
         self.out_files['other_invalid_qsos'].seek(0)
         self.script_dir = Path(__file__).resolve().parent
         self.first_call_qth = None  # To track the sent QTH in a log for checking other QSOs against it
@@ -81,7 +83,7 @@ class SHARED:
         self.mobile_callsigns = set() # Track callsigns that have location "mobile"
         self.qso_index_dict = defaultdict(list)
         self.exch_to_dxcc = {}
-        self.dxcc_code_to_dxcc_entity = {}
+        self.code_to_dxcc = {}
         self.contest_clubs = {
             "Austin QRP Club": 0, "Baytown Area ARC": 0, "Central Texas DX and Contest Club": 0, "Dallas ARC": 0,
             "DCT ARC": 0, 
@@ -112,9 +114,9 @@ class SHARED:
                 'scored_hour': 0,
                 'invalidated_qsos': 0,
                 'with_receiver': 0,
-                'states_worked': 0,
-                'provinces_worked': 0,
-                'dx_worked': 0,
+                'num_states_worked': 0,
+                'num_provinces_worked': 0,
+                'num_dx_worked': 0,
                 'counties_activated': 0,
             },
             # LOGS
@@ -131,13 +133,12 @@ class SHARED:
             'uniques': 0,
             # QSOS
             'total_qsos': 0,
-            'valid_qsos': 0,
+            'scored_qsos': 0,
             'qsos_with_canada': 0,
             'qsos_with_tx': 0,
             'qsos_with_us': 0,
             'qsos_with_tx': 0,
             'qsos_with_us': 0,
-            'qsos_with_dx': 0,
             'qsos_with_dx': 0,
             'duplicate_qsos': 0,
             'nils': 0,
@@ -162,6 +163,16 @@ class SHARED:
             'nil_calls': [],
             'busted_calls': [],
             'rejected_logs_filenames': [], # logs of PARSER not_valids
+            'categorized_log': 0,
+            'scored_mode': 0,
+            'scored_band': 0,
+            'scored_hour': 0,
+            'invalidated_qsos': 0,
+            'with_receiver': 0,
+            'num_states_worked': 0,
+            'num_provinces_worked': 0,
+            'num_dx_worked': 0,
+            'num_counties_activated': 0,
         }
 
     # One of these is created for each log file
