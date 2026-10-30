@@ -36,6 +36,9 @@ def cross_check(s):
             'qsos': [],
             'num_qso': 0,
         }
+        if result['callsign'] == 'AA0AW':
+            print(f"DEBUG: cross_check: processing {result['callsign']}")
+            print('breakpoint')
         for qso in result['cab'].qso:
             # this is to account for qsos that were already matched when they were the DX qso
             # and it was observed they were valid and should be scored
@@ -55,17 +58,6 @@ def cross_check(s):
             else:
                 dup['qsos'].append(qso_dup)
 
-            if "Mobile" in result['cab'].category and "/" in qso.de_exch[1]:
-                # op should have made this two qsos but we do it for them
-                # mobile put multiple counties in the same QSO separated by "/"
-                writefile(s, result, qso, 'Multi-county exchange', ['warnings'])
-                s.stats['multi_county_exchanges'] += 1
-                counties = qso.de_exch[1].split('/')
-                qso.de_exch[1] = counties[0]
-                for c in counties[1:]:
-                    new_qso = copy.deepcopy(qso)
-                    new_qso.de_call = c
-                    result['cab'].qso.append(new_qso)
             if qso.dx_call not in list(s.all_callsigns.keys()):
                 # this is a UNIQUE - he gets the points
                 result['uniques'] += 1
@@ -73,19 +65,20 @@ def cross_check(s):
                 writefile(s, result, qso, 'No log from receiver', ['uniques'])
                 continue
 
-
             # this is to account for qsos that were already matched when they were the DX qso
             # and it was observed they were valid and should be scored
             if getattr(qso, 'points', False):
                 continue
 
             dx_result = s.results[s.all_callsigns[qso.dx_call]]
+            if len(dx_result) == 0:
+                print(f"DEBUG: cross_check: dx_result is empty for {qso.dx_call}")
+                print('breakpoint')
             if not check_it(s, result, dx_result, qso):
                 if qso.valid:
                     qso.valid = False
                     s.stats['invalidated_qsos'] += 1
                     result['valid_qsos'] -= 1
-
 
 def check_it(s, result, dx_result, qso):
     # from the qso_index_dict, get all POTENTIAL matches, based
@@ -106,6 +99,8 @@ def check_it(s, result, dx_result, qso):
     # see if there are any PERFECT matches (except time)
     potential_matches = s.qso_index_dict[k]
     if len(potential_matches) == 0:
+        print(f"DEBUG: check_it: no potential matches for {qso.de_call} -> {qso.dx_call} k = {k}")
+        print('breakpoint')
         match = get_near_match(s, qso, result, dx_result)
         if match != None:
             ''' the near_match (if one) is a receiver qso that does not

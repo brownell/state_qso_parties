@@ -42,7 +42,7 @@ def get_dxcc(s, location, callsign):
             except:
                 return 0, callsign
 
-        if len(callinfo) > 0 and (callinfo['country'] not in ['United States', 'Canada']):
+        if len(callinfo) > 0 and (callinfo['country'] not in ['United States', 'Canada', 'Alaska', 'Hawaii']):
             return callinfo['adif'], callinfo['country']
             
     return 0, callsign
@@ -218,8 +218,9 @@ def fix_stats(s):
     s.stats['num_provinces_worked'] = len(s.stats['provinces_worked'])
     s.stats['num_dx_worked'] = len(s.stats['dx_worked'])
     s.stats['num_counties_activated'] = len(s.stats['counties_activated'])
-    s.stats['num_counties_activated_mobile'] = 0
     s.stats['num_counties_worked'] = len(s.stats['counties_worked'])
+    s.stats['num_bad_exchanges'] = len(s.stats['bad_exchanges'])
+    s.stats['num_counties_activated_mobile'] = 0
 
     save_stats(s, "Statistics")
 

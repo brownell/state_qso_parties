@@ -122,6 +122,7 @@ STATISTICS_TEXT = {
     'busteds': 'Number of Busteds',
     'other_invalid_qsos': 'Number Invalidated for Other Reasons',
     'multi_county_exchanges': 'Number of Exchanges With Multiple Counties',
+    'num_bad_exchanges': 0,
     # Activity
     'title_activity': 'Counts of Some Activities',
     # checks
@@ -136,6 +137,7 @@ STATISTICS_TEXT = {
     'num_counties_activated_mobile': 'Number of Counties Activated - Mobile',
     # lists
     'title_counties': 'Areas Activated and Worked',
+    'bad_exchanges': 'Invalid Exchanges',
     'mobile_activation_counts': 'Number Mobile Activations by County',
     'worked_counties_mobile': 'Number Mobiles Worked By County',
     'counties_activated': 'Counties Activated',

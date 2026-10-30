@@ -110,6 +110,7 @@ def score_a_qso(s, r, q, dup):
         hour_of_24 = hour + ((int(q.date.strftime("%d")) - 19) * 12)
 
         # Put all the actual scoring at the end of this "try" block so that if anything goes wrong
+
         # we can catch it and mark the QSO as invalid
         r[f"{q.mo.lower()}_qsos"] += 1       
         r['qsos_by_mode'][q.mo.upper()] += 1

@@ -65,11 +65,12 @@ def main(contest_year):
     if not REPORTS_ONLY:
         score_all_qsos(context)
         print(f"all QSOs scored and stored: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
-        print('break')
         print('statistics')
         fix_stats(context)
+        print(f"stats fixed: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
         save_stats(context, contest_year, s.stats)
-        print('after fix stats')
+        print(f"stats saved: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+        print('after stats')
 
     
     # REMEMBER to close all the out_files

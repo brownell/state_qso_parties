@@ -1,0 +1,65 @@
+
+*** LOGS ***
+Total Number of Logs Received: 413
+Number of Logs Rejected: 0
+
+*** Sources of Logs ***
+US Non-Texas: 256
+Canada: 2
+Texas Fixed Logs: 107
+Texax Mobile Logs: 18
+Outside North America: 10
+Unclassified Logs: 0
+
+*** QSOS ***
+Total Number of QSOs: 52779
+Number of Scored QSOs: 49717
+Number of Unique QSOs: 18998
+
+*** QSOs by Mode ***
+QSO Count for Mode: 49717
+QSOs by Mode: {'PH': 18021, 'CW': 31432, 'RY': 39, 'DG': 225, 'FM': 0}
+
+*** QSOs by Band ***
+QSO Count for Band: 49717
+QSOs by Band: {'160': 2, '80': 565, '40': 15001, '20': 30564, '15': 3476, '10': 65, '6': 0, '2': 44}
+
+*** QSOs by Hour ***
+QSO Count for hour: 49717
+QSOs by Hour: [4263, 3794, 2817, 2540, 2783, 2493, 3422, 2448, 2758, 3192, 2615, 2690, 3304, 2599, 1872, 1704, 2019, 2395, 9, 0, 0, 0, 0, 0]
+
+*** QSO Counts From TX to Destination ***
+Number of QSOs With a Receiver: 105140
+Number With Texas: 47580
+Number With US Non Texas: 51858
+Number With Canada: 2110
+Number With Non North America: 3592
+
+*** QSO Issues ***
+Numbre of Duplicate QSOs: 971
+Number of NILs: 3438
+Number of Busteds: 134
+Number Invalidated for Other Reasons: 305
+Number of Exchanges With Multiple Counties: 28
+0: 49
+
+*** Counts of Some Activities ***
+
+*** Sums to Check the Previous Values ***
+Number of Uncategorized Logs: 96
+Number of QSOs Invalidated: 4862
+Number of Non-TX States Worked: 49
+Number of Provinces Worked: 13
+Number of Non North America Worked: 83
+Number of Counties Activated - Non-Mobile: 0
+Number of Counties Activated - Mobile: 0
+
+*** Areas Activated and Worked ***
+Invalid Exchanges: {'PIE', 'KITWA', 'LAMA/FANN', 'SON', 'BOO/WEB/GRE', 'VE', 'KP4', 'CX', 'WS', 'CASS/MORR', 'HOPK/F', 'TITU/M', 'PEND', 'DELT/HOPK', 'PAC', 'ROC', 'HUMP', 'HILNH', 'GRSL', 'DELT/FANN/HUNT', 'KC', 'RRIV/LAMA', 'RT66', 'JHOG/ZAPA/WEBB', 'YS', 'COOK/DENT', 'DELT/F', 'CLARWA', 'WILY/CMRN/HIDA', 'JHOG/ZAPA', 'USA', 'RE', 'COO', 'DENT/COOK', 'DENT/C', 'PPIN/STEP', 'BRAZ', 'VE4', 'BELT', 'X', 'CLAL', 'C', 'FRA/CEG', 'MONT/W', 'MCLN', 'TITU/MORR', 'MASWA', 'RAND/POTT/CARS', 'THU'}
+Number Mobile Activations by County: {'MARI': 48, 'PPIN': 442, 'STEP': 463, 'EAST': 86, 'HRSN': 110, 'CHER': 100, 'DENT': 675, 'COOK': 301, 'CALL': 44, 'PANO': 94, 'RUSK': 80, 'DELT': 731, 'FANN': 360, 'HUNT': 410, 'HOPK': 715, 'RBSN': 118, 'MADI': 140, 'LEON': 140, 'FRAN': 353, 'WEBB': 128, 'JHOG': 104, 'ZAPA': 100, 'UPSH': 250, 'WOOD': 244, 'MONT': 156, 'ECTO': 122, 'CLAY': 132, 'WINK': 124, 'ARCH': 86, 'WICH': 194, 'HDMN': 124, 'CAMP': 154, 'CHIL': 88, 'WALK': 90, 'MIDL': 76, 'LAMA': 207, 'BOWI': 297, 'CASS': 372, 'DAWS': 82, 'LEE': 85, 'FAYE': 10, 'MART': 100, 'RAIN': 114, 'TRIN': 72, 'LAVA': 42, 'TITU': 257, 'RRIV': 145, 'MORR': 245, 'BZOS': 130, 'GREG': 84, 'SMIT': 102, 'VZAN': 98, 'COKE': 70, 'KAUF': 110, 'WILY': 84, 'STER': 90, 'ROCK': 142, 'GLAS': 106, 'DALS': 146, 'COLN': 130, 'NACO': 216, 'BROO': 76, 'TARR': 54, 'WISE': 244, 'ANDR': 66, 'WILB': 128, 'WARD': 92, 'PECO': 80, 'CRAN': 68, 'CROC': 70, 'HALL': 130, 'COLW': 84, 'UPTO': 88, 'DONL': 128, 'ARMS': 124, 'MGMY': 40, 'RAND': 154, 'CARS': 152, 'POTT': 156, 'REAG': 94, 'SJAC': 66, 'BORD': 84, 'FISH': 66, 'CMRN': 74, 'HIDA': 80, 'DUVA': 74, 'JWEL': 64, 'LIVO': 86, 'MMUL': 84, 'VICT': 52, 'JKSN': 24, 'HOUS': 70, 'LIBE': 28, 'PARK': 62, 'SHAC': 64, 'BEE': 76, 'GOLI': 76, 'SCUR': 48, 'RUNN': 64, 'WALL': 80, 'GRIM': 82, 'JONE': 50, 'REFU': 32, 'NUEC': 26, 'SPAT': 38, 'BROW': 40, 'KLEB': 62, 'KENY': 62, 'TAYL': 38, 'DEWI': 36, 'FREE': 14, 'BZIA': 12, 'WMSN': 4, 'LLAN': 4}
+Number Mobiles Worked By County: {'AD4EB': {'PANO', 'WOOD', 'ARMS', 'ARCH', 'DENT', 'HOPK', 'RUSK', 'WICH', 'UPSH', 'COLW', 'HUNT', 'WILB', 'HDMN', 'SMIT', 'MARI', 'DELT', 'LAMA', 'FRAN', 'RAND', 'MONT', 'HRSN', 'HALL', 'CARS', 'RAIN', 'VZAN', 'COLN', 'CAMP', 'POTT', 'WISE', 'CHIL', 'FANN', 'MORR', 'TARR', 'CLAY', 'KAUF', 'DALS', 'CASS', 'ROCK', 'PARK', 'TITU', 'DONL', 'GREG'}, 'K5T': {'STEP', 'PPIN', 'DENT'}, 'N5NA': {'EAST', 'FISH', 'RUNN', 'COKE', 'STER', 'UPTO', 'DAWS', 'PECO', 'REAG', 'CALL', 'GLAS', 'WARD', 'SCUR', 'JONE', 'SHAC', 'CROC', 'STEP', 'ANDR', 'ECTO', 'MIDL', 'BORD', 'BROW', 'TAYL', 'WINK', 'CRAN', 'MART'}, 'N5NU': {'WALK', 'NACO', 'MGMY', 'CHER', 'RUSK', 'TRIN', 'SJAC', 'HOUS', 'LIBE'}, 'N5T': {'COOK', 'DENT'}, 'K5CM': {'WOOD', 'DELT', 'CASS', 'MORR', 'FANN', 'LAMA', 'FRAN', 'HOPK', 'UPSH', 'TITU', 'HUNT', 'BOWI', 'CAMP', 'RRIV'}, 'K5K': {'DELT', 'DENT', 'HOPK'}, 'K5EC': {'FREE', 'LEON', 'BZOS', 'GRIM', 'MADI', 'WALL', 'RBSN'}, 'KT3X': {'SPAT', 'BEE', 'LAVA', 'KENY', 'MMUL', 'JHOG', 'JWEL', 'DUVA', 'HIDA', 'LIVO', 'GOLI', 'REFU', 'WILY', 'LEE', 'FAYE', 'KLEB', 'BROO', 'WEBB', 'DEWI', 'VICT', 'ZAPA', 'JKSN', 'NUEC', 'CMRN'}, 'N5KW': {'WOOD', 'CASS', 'DELT', 'MORR', 'FANN', 'LAMA', 'FRAN', 'HOPK', 'UPSH', 'TITU', 'HUNT', 'BOWI', 'CAMP', 'RRIV'}, 'KE5OBS': {'DELT', 'HOPK'}, 'KC4EEL': {'DELT', 'HOPK'}, 'K5B': {'COOK', 'DENT'}, 'KR1BBT': {'LEE'}, 'KE5ZPP': {'BZIA'}, 'KJ5GCH': {'TARR'}, 'N5TTT': {'LLAN', 'WMSN'}}
+Counties Activated: set()
+List Counties Worked by Any Station: {'EAST', 'HARR', 'SPAT', 'ARMS', 'AUST', 'STER', 'DAWS', 'HAYS', 'RUSK', 'KENY', 'HASK', 'WICH', 'COLW', 'MMUL', 'PECO', 'BAND', 'HOWA', 'MOOR', 'WARD', 'ZAVA', 'MITC', 'LAMA', 'DUVA', 'OCHI', 'COML', 'STEP', 'VZAN', 'CROC', 'CAMP', 'BELL', 'GALV', 'GUAD', 'HOOD', 'FANN', 'LUBB', 'TARR', 'LAMP', 'DALM', 'CALD', 'JDAV', 'ECTO', 'GILL', 'WALK', 'BEXA', 'CASS', 'KINN', 'GRIM', 'ZAPA', 'BRIS', 'CRAN', 'SAUG', 'ORAN', 'ANDE', 'TGRE', 'FOAR', 'DONL', 'PANO', 'HANS', 'PPIN', 'FISH', 'UPTO', 'NAVA', 'ARCH', 'LAVA', 'BEE', 'CHER', 'UPSH', 'MLEN', 'CULB', 'TRAV', 'ROBE', 'CORY', 'KARN', 'SMIT', 'BAIL', 'SCUR', 'MILL', 'JWEL', 'BAST', 'KING', 'JONE', 'HALL', 'POLK', 'EPAS', 'COMA', 'PARM', 'BOWI', 'FREE', 'MADI', 'SOME', 'BREW', 'WALL', 'THRO', 'UVAL', 'SJAC', 'MIDL', 'JACK', 'JEFF', 'CHAM', 'ANGE', 'VICT', 'ATAS', 'LAMB', 'MGMY', 'WHAR', 'WINK', 'MART', 'BURN', 'CMRN', 'RRIV', 'WOOD', 'NACO', 'WMSN', 'DENT', 'BZIA', 'HOPK', 'HOCK', 'HRDN', 'LIPS', 'HEND', 'REAG', 'HDMN', 'HART', 'JHOG', 'MILA', 'BOSQ', 'JOHN', 'FRAN', 'HEMP', 'MONT', 'HRSN', 'KNOX', 'WASH', 'HAMI', 'ELLI', 'COLN', 'CHIL', 'WISE', 'WLSN', 'GRSN', 'MORR', 'SABI', 'WHEE', 'KLEB', 'GONZ', 'TERY', 'TRIN', 'CLAY', 'BORD', 'WEBB', 'MOTL', 'LEON', 'LLAN', 'JKSN', 'ROCK', 'NUEC', 'SSAB', 'COOK', 'GRAY', 'PARK', 'KERR', 'YOUN', 'COKE', 'BZOS', 'RUNN', 'LSAL', 'HOUS', 'HUNT', 'WILB', 'BAYL', 'CALL', 'RBSN', 'GLAS', 'MARI', 'MASO', 'DELT', 'REAL', 'SHAC', 'RAND', 'HIDA', 'LIVO', 'CARS', 'RAIN', 'ARAN', 'GOLI', 'FBEN', 'LIBE', 'REFU', 'STAR', 'POTT', 'COLO', 'WILY', 'MEDI', 'FAYE', 'LEE', 'ANDR', 'CALH', 'SWIS', 'BROO', 'SHMN', 'DEWI', 'KAUF', 'DALS', 'BLAN', 'HILL', 'BROW', 'TAYL', 'TITU', 'BURL', 'GREG'}
+List of Non-TX States Worked: {'MT', 'ID', 'MA', 'IN', 'LA', 'MN', 'AR', 'KY', 'NM', 'CO', 'MS', 'KS', 'IL', 'SD', 'SC', 'NE', 'WA', 'AK', 'NV', 'DE', 'PA', 'NC', 'UT', 'GA', 'AL', 'ND', 'WY', 'MO', 'NY', 'HI', 'MD', 'NJ', 'NH', 'WI', 'VT', 'VA', 'WV', 'OR', 'IA', 'CA', 'ME', 'OH', 'OK', 'RI', 'FL', 'TN', 'MI', 'AZ', 'CT'}
+List of Provinces Worked: {'ON', 'NS', 'NL', 'VE4', 'NX5M', 'MB', 'VE9', 'NB', 'SK', 'PE', 'QC', 'BC', 'AB'}
+List of Non North America Worked: {'Aland Islands', 'Greece', 'Oman', 'European Russia', 'Honduras', 'Luxembourg', 'St. Helena', 'Lithuania', 'Argentina', 'Iceland', 'Colombia', 'Qatar', 'Norfolk Island', 'Philippines', 'Puerto Rico', 'Italy', 'European Turkey', 'Austria', 'Ireland', 'Slovak Republic', 'Georgia', 'Sardinia', 'Croatia', 'Kaliningrad', 'Chile', 'Uruguay', 'Israel', 'Martinique', 'Crete', 'France', 'Serbia', 'Scotland', 'Bulgaria', 'Peru', 'Dominican Republic', 'Belgium', 'Belarus', 'Spain', 'Guantanamo Bay', 'Hungary', 'Cuba', 'Denmark', 'Canary Islands', 'Switzerland', 'Moldova', 'Brazil', 'Guam', 'Ecuador', 'Fed. Rep. of Germany', 'Romania', 'Australia', 'Saudi Arabia', 'Anguilla', 'St. Lucia', 'South Africa', 'Asiatic Turkey', 'Portugal', 'Sweden', 'Mexico', 'Finland', 'Trinidad & Tobago', 'Costa Rica', 'Asiatic Russia', 'Barbados', 'Poland', 'US Virgin Islands', 'Ukraine', 'Seychelles', 'Bahamas', 'Czech Republic', 'Japan', 'Panama', 'Estonia', 'Kenya', 'Slovenia', 'Netherlands', 'Latvia', 'Norway', 'Wales', 'Ceuta & Melilla', 'India', 'American Samoa', 'England'}

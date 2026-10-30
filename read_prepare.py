@@ -126,6 +126,7 @@ def update_qso_index_dict(s, result, cab):
         
         # multiple counties in sender exchange
         if '/' in qso.de_exch[1]:
+            s.stats['bad_exchanges'].add(qso.de_exch[1])
             s.stats['multi_county_exchanges'] += 1
             counties = qso.de_exch[1].split('/')
             qso.de_exch[1] = counties[0]
@@ -135,6 +136,7 @@ def update_qso_index_dict(s, result, cab):
                 result['cab'].qso.append(new_qso)
         # multiple counties in receiver exchange
         if '/' in qso.dx_exch[1]:
+            s.stats['bad_exchanges'].add(qso.dx_exch[1])
             s.stats['multi_county_exchanges'] += 1
             counties = qso.dx_exch[1].split('/')
             qso.dx_exch[1] = counties[0]
@@ -148,6 +150,7 @@ def update_qso_index_dict(s, result, cab):
             # neither exchange is a TX county, so this is an invalid QSO
             qso.valid = False  # so it will not be used in scoring
             result['other_invalid_qsos'] += 1
+
             s.stats['other_invalid_qsos'] += 1
             s.stats['invalidated_qsos'] += 1
             writefile(s, result, 'Neither exchange is a TX county:', ['errors', 'other_invalid_qsos'])
@@ -160,7 +163,8 @@ def update_qso_index_dict(s, result, cab):
             writefile(s, result, 'One or both exchanges is "TX":', ['errors'])
             continue
 
-        if not record_recipient_location(s, qso, result):
+        got_location = record_recipient_location(s, qso, result)
+        if not got_location:
             # this is an invalid QSO, so we will not score it
             continue
         

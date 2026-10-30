@@ -133,6 +133,7 @@ class SHARED:
             'busted_calls': [],
             'other_invalid_qsos': 0,
             'multi_county_exchanges': 0,
+            'bad_exchanges': set(),
             # QSOS BY MODE
             'qsos_by_mode': {'PH': 0, 'CW': 0, 'RY': 0, 'DG': 0, 'FM': 0},
             # QSOS BY bAND

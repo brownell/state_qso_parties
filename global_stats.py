@@ -76,7 +76,7 @@ def categorize_log(s, result, qso):
         s.stats['us_logs'] += 1
         return True
     # see if de exchange is a province
-    elif qso.de_exch[1] in s.provinces:
+    elif qso.dx_exch[1] in s.provinces or (len(qso.dx_exch[1]) > 2 and qso.dx_exch[1][:2] == qso.dx_call[:2]):
         s.stats['cdn_logs'] += 1
         return True
     else:
@@ -104,7 +104,7 @@ def record_recipient_location(s, qso, result):
         s.stats['qsos_with_tx'] += 1
         s.stats['with_receiver'] += 1
         s.stats['counties_worked'].add(qso.dx_exch[1])
-    elif qso.dx_exch[1] in s.provinces:
+    elif qso.dx_exch[1] in s.provinces or (len(qso.dx_exch[1]) > 2 and qso.dx_exch[1][:2] == qso.dx_call[:2]):
         s.stats['qsos_with_canada'] += 1
         s.stats['with_receiver'] += 1
         s.stats['provinces_worked'].add(qso.dx_exch[1])
@@ -118,4 +118,6 @@ def record_recipient_location(s, qso, result):
         result['other_invalid_qsos'] += 1
         s.stats['other_invalid_qsos'] += 1
         s.stats['invalidated_qsos'] += 1
+        s.stats['bad_exchanges'].add(qso.dx_exch[1])
         return False
+    return True
