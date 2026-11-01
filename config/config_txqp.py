@@ -122,9 +122,7 @@ STATISTICS_TEXT = {
     'busteds': 'Number of Busteds',
     'other_invalid_qsos': 'Number Invalidated for Other Reasons',
     'multi_county_exchanges': 'Number of Exchanges With Multiple Counties',
-    'num_bad_exchanges': 0,
-    # Activity
-    'title_activity': 'Counts of Some Activities',
+    'num_bad_exchanges': 'Number of Bad Exchanges',
     # checks
     'checks_title': 'Sums to Check the Previous Values',
     'uncategorized_logs': 'Number of Uncategorized Logs',

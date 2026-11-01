@@ -300,7 +300,7 @@ class ContestDatabase:
 
                     # the cab fields saved in the DB are all strings. We are not going to
                     # reconstitute the cab object, but just storing the fiels in display_result
-                    elif typ == 'cab_attributes' and len(fields[typ]) > 0:
+                    elif typ == 'cab' and len(fields[typ]) > 0:
                         for fld in fields[typ]:
                             display_result[fld] = result.get(fld, '')
 

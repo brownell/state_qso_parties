@@ -3,6 +3,7 @@ Scores just a single QSO and passes the score back to the caller
 This file will almost certainly be QSO-party-dependent.
 '''
 from datetime import datetime
+from pprint import pprint
 import re
 from cabrillo.qso import frequency_to_band_m
 from utilities import get_dxcc
@@ -16,6 +17,9 @@ qso_type_names = ['cw_qsos', 'ph_qsos', 'dg_qsos', 'dg_qsos']
 
 def score_all_qsos(s):
     for result in s.results:
+        if result['callsign'] == 'K7GM':
+            pprint(result)
+            print('breakpoint')
         dup = {
             'qsos': [],
             'num_qso': 0,

@@ -78,15 +78,6 @@ def generate_index_key(s, qso, call_to_use, mirror):
         return call_to_use.split('/')[0] + qso.de_exch[1].split('/')[0].upper() + qso.dx_exch[1].split('/')[0].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
     else:
         return call_to_use.split('/')[0] + qso.dx_exch[1].split('/')[0].upper() + qso.de_exch[1].split('/')[0].upper() + qso.mo.upper() + frequency_to_band_m(qso.freq)
-    
-COUNTS = [
-    'counties_worked', 
-    'states_worked', 
-    'provinces_worked', 
-    'dx_worked' 
-    ]
-INTG = ['final_score', 'score_wo_bonus', 'mtb_mobile_points', 'total_multipliers', 'qso_points', 'total_qsos', 'valid_qsos', 'cw_qsos', 'ph_qsos', 'dg_qsos', 'ry_qsos'
-    ] 
 
 def is_fuzzy_match(x: str, y: str, max_missing: int = 2) -> bool:
     """
