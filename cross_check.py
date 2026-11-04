@@ -99,8 +99,6 @@ def check_it(s, result, dx_result, qso):
     # see if there are any PERFECT matches (except time)
     potential_matches = s.qso_index_dict[k]
     if len(potential_matches) == 0:
-        print(f"DEBUG: check_it: no potential matches for {qso.de_call} -> {qso.dx_call} k = {k}")
-        print('breakpoint')
         match = get_near_match(s, qso, result, dx_result)
         if match != None:
             ''' the near_match (if one) is a receiver qso that does not

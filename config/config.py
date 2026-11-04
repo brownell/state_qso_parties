@@ -112,17 +112,23 @@ MAX_EDIT_DISTANCE = 2  # Maximum character differences for fuzzy matching (e.g.,
 # CONVERSION of abbreviationS to English
 # ============================================================
 
-convert = {
-    'LO': 'Low Power <= 150 Watts',
-    'HI': 'High Power > 150 Watts',
+CONVERT = {
+    'LP': 'Low Power <= 150 Watts',
+    'HP': 'High Power > 150 Watts',
     'QRP': '<Very Low Power < 10 Watts',
     'MIX': 'Any mode: CW, PH, DG, RY',
     'PH': 'Phone (SSB)',
+    'CW': 'CW',
+    'DG': 'Other Digital',
+    'RY': 'Radio Teletype',
     'FIX': 'Fixed',
     'MOB': 'Mobile',
     'PH QSOs': 'Phone QSOS',
     'DG QSOs': 'Other Digital Modes',
-    'RY QSOs': 'Radio Teletype'}
+    'RY QSOs': 'Radio Teletype',
+    'mbt_mobile_poits': 'Mobile Tracking Bonus',
+    'cab_mobile_points': 'County Activation Bonus',
+    }
 
 # ============================================================
 # BAND AND MODE DEFINITIONS

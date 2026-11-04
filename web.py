@@ -7,6 +7,7 @@ Web interface for contestants to submit and validate Cabrillo log files
 from flask import Flask, json, render_template, request, jsonify
 import os
 from datetime import datetime
+import pprint
 import tempfile
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -18,7 +19,7 @@ app = Flask(__name__)
 
 # Ensure upload directory exists
 os.makedirs(BATCH_INPUT_DIR, exist_ok=True)
-
+SCRIPT_DIR = Path(__file__).resolve().parent
 
 def allowed_file(filename):
     """Check if file extension is allowed"""
@@ -31,65 +32,6 @@ def format_set_as_list(s):
     if not s:
         return []
     return sorted(list(s))
-
-
-# def format_result_for_display(result):
-#     """
-#     Convert the result dictionary to a format suitable for HTML display
-#     Handles sets, dicts, and other complex type
-#     """
-#     display_result = {}
-    
-#     # Copy simple values
-#     simple_fields = [
-#         'callsign', 'exchange', 'overlay', 'location_type', 'mode_category',
-#         'power_level', 'final_score', 'qso_points', 'total_qsos', 'valid_qsos',
-#         'total_multipliers', 'counties_worked_multiplier', 'states_worked_multiplier',
-#         'provinces_worked_multiplier', 'dx_worked_multiplier', 'mtb_mobile_points',
-#         'worked_n5lcc', 'num_n5lcc_contacts', 'name', 'club', 'claimed_score', 'year'
-#     ]
-    
-#     for field in simple_fields:
-#         display_result[field] = result.get(field, 'N/A')
-    
-#     # Convert sets to sorted lists
-#     display_result['counties_worked'] = format_set_as_list(result.get('counties_worked', set()))
-#     display_result['states_worked'] = format_set_as_list(result.get('states_worked', set()))
-#     display_result['provinces_worked'] = format_set_as_list(result.get('provinces_worked', set()))
-#     display_result['dx_worked'] = format_set_as_list(result.get('dx_worked', set()))
-#     display_result['counties_activated'] = format_set_as_list(result.get('counties_activated', set()))
-#     display_result['bands_worked'] = format_set_as_list(result.get('bands_worked', set()))
-    
-#     # Format QSOs by band
-#     qsos_by_band = result.get('qsos_by_band', {})
-#     display_result['qsos_by_band'] = [
-#         {'band': band, 'count': count}
-#         for band, count in sorted(qsos_by_band.items(), key=lambda x: x[0])
-#     ]
-    
-#     # Format QSOs by mode
-#     qsos_by_mode = result.get('qsos_by_mode', {})
-#     display_result['qsos_by_mode'] = [
-#         {'mode': mode, 'count': count}
-#         for mode, count in qsos_by_mode.items()
-#     ]
-    
-
-#     # Format QSOs by hour
-#     try:
-#         temp = result.get('qsos_by_hour', {})
-#         display_result['qsos_by_hour'] = {}
-#         for key in temp:
-#             display_result['qsos_by_hour'][key] =  temp[key]
-#     except Exception as e:
-#         print(f"Error formatting qsos_by_hour for display: {e}")
-#         display_result['qsos_by_hour'] = []
-    
-#     ## errors and warnings
-#     display_result['errors'] = result['errors']
-#     display_result['warnings'] = result['warnings']
-
-#     return display_result
 
 
 @app.route('/')
@@ -106,17 +48,6 @@ def abbreviations():
 def activate():
     """Render the county activation page (placeholder)"""
     return render_template('activate.html')
-
-@app.route('/map')
-def map():
-    """ county map """
-    return render_template('map.html')
-
-# @app.route('/operations')
-# def operations():
-#     """  operations """
-#     return render_template('operations.html')
-
 
 @app.route('/results')
 def results():
@@ -152,9 +83,13 @@ def api_individual_results():
             }), 400
         
         # Get result from database
-        # they come back deserialized
-        # i.e. in json format
+        # they come back deserialized   i.e. in json format
         result = get_result(year, callsign)
+        write_str = f'*** {datetime.now().strftime("%Y-%m-%d %H:%M")}\n'
+        write_str = write_str + pprint.pformat(result, indent=2, width=80)
+        debug_file = open(SCRIPT_DIR /  "OUTPUT_FILES" / "DEBUG_FILE.txt", "w")
+        debug_file.write(write_str)
+        debug_file.close()
         
         if not result:
             return jsonify({

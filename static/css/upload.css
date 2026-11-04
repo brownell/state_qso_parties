@@ -277,7 +277,7 @@ small {
 }
 
 .results-content {
-    background: #f9f9f9;
+    background: #ffffff;
     padding: 25px;
     border-radius: 8px;
     border: 1px solid #ddd;
@@ -296,49 +296,43 @@ small {
     border-bottom: 2px solid #FDD023;
 }
 
-.result-item {
-    display: grid;
-    gap: 10px;
-    max-height:20px;
-    margin-left:100px;
-    grid-template-columns: 200px 1fr;
+.result-group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  column-gap: 0.6em;
+  row-gap: 0.15em;
+    /* Put the value beside the label's final line. */
+  align-items: last baseline;
+
+  /* Center the summary, but allow it to shrink on narrow screens. */
+  width: fit-content;
+  max-width: 100%;
+  margin: 1rem auto;
+
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.25;
 }
 
-.result-item:last-child {
-    border-bottom: none;
+  .result-group2 {
+    margin-bottom: 30px;
+  }
+
+.result-group dt,
+.result-group dd {
+  margin: 0;
 }
 
-.result-label {
-    font-weight: bold;
-    color: #333;
-    text-align: right;
+.result-group dt {
+  min-width: 0;
+  text-align: right;
+  font-size:16px;
 }
 
-.result-value {
-    color: #555;
-    font-weight:bold;
-}
-
-.result-value.highlight {
-    color: black;
-    font-size: 1.1rem;
-}
-
-/* List displays */
-.result-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-}
-
-.result-list-item {
-    background: #fff;
-    padding: 4px 12px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    font-family: 'Courier New', monospace;
+.result-group dd {
+  white-space: nowrap;
+  text-align: left;
+  font-size:16px;
 }
 
 /* Table displays */
@@ -369,7 +363,6 @@ small {
 
 .result-table td:last-child {
     text-align: right;
-    font-family: 'Courier New', monospace;
 }
 
 /* Multipliers display */

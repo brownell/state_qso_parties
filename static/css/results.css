@@ -16,6 +16,12 @@
     margin-bottom: 20px;
     text-align: center;
 }
+.results-type-selection p {
+    color: #8B0000;
+    font-size: 1.0rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
 
 .option-card {
     background: #fff;
@@ -145,7 +151,8 @@
 }
 
 .certificate-rankings {
-    max-width:600px;;
+    max-width:300px;
+    text-align:center;
     color:black;
 }
 
@@ -191,6 +198,31 @@ ul.rankings-list {
     display:flex;
     justify-content: flex-start;
     gap: 1rem;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* List displays */
+.result-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.result-list-item {
+    background: #fff;
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-weight:bold;
+    font-family: "Inter var", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
+}
+
+.error-list-item {
+    font-size: 16px;
+    font-weight: normal;
 }
 
 /* Statistics Section */
@@ -204,6 +236,16 @@ ul.rankings-list {
     align-items: center;
     margin-bottom: 20px;
     margin-top:20px;
+}
+
+.section-sub-header{
+  grid-column: 1 / -1;
+  text-align: left;
+    color: #461D7C;;
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #FDD023;
 }
 
 /* Final Report */

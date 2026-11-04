@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime, timezone
 from share import SHARED as s
-from config.config import DATABASE_FILE, DB_DROP
+from config.config import DATABASE_FILE, DB_DROP,  CONVERT
 from config.config_txqp import RANKINGS
 
 def create_tables():
@@ -380,9 +380,14 @@ class ContestDatabase:
                 result = {}
                 for i, col in enumerate(columns):
                     result[col] = row[i]
-                return self._deserialize_result(result, self.field_types, self.result_fields)
-                
-            return None
+                # convert abbreviations
+                result['category_station'] = CONVERT.get(result['category_station'], "")
+                result['category_mode'] = CONVERT.get(result['category_mode'], "")
+                result['category_power'] = CONVERT.get(result['category_power'], "")
+                dict_result = self._deserialize_result(result, self.field_types, self.result_fields)
+                dict_result['scored_qsos'] = sum(dict_result['qsos_by_hour'])
+                return dict_result
+        return None
 
     def save_stats(self, s, year, stats):
         db_result = self._serialize_result(stats, self.field_types, self.stats_fields)
@@ -565,45 +570,42 @@ def get_stats(year: str, db_path: str = DATABASE_FILE) -> Dict:
     db.drop_db = False
     return db.get_stats(year)
 
-# def store_rankings(year: str):
-#     db = ContestDatabase(DATABASE_FILE)
-#     db.drop_db = False
-#     return db.store_rankings(year)
-
-# def store_rankings(self, year):
-#     """
-#     Store rankings for all results in a year.
+def store_rankings(year):
+    """
+    Store rankings for all results in a year.
     
-#     Args:
-#         year: Contest year
-#     """
-#     with sqlite3.connect(self.db_path, timeout=20.0) as conn:
-#         cursor = conn.cursor()
-#         sql = f'''
-#             WITH ranked AS (
-#                 SELECT year, callsign, ROW_NUMBER() OVER (ORDER BY final_score DESC) AS calculated_rank
-#                 FROM contest_results
-#                 WHERE year = ? AND cat = ?
-#             )
-#             UPDATE contest_results
-#             SET category_rank = ranked.calculated_rank
-#             FROM ranked
-#             WHERE contest_results.year = ranked.year
-#             AND contest_results.callsign = ranked.callsign;
-#         '''
-#         for c in list(RANKINGS.keys()):
-#             try:
-#                 cursor = conn.cursor()
-#                 cursor.execute(sql, [year, c])
-#                 conn.commit
-#                 continue
-#             except Exception as e:
-#                 print(f"***** ERROR could not set category for cat {c}")
-#                 print(f"***** EXCEPTION saving result: {e}")
-#                 return False
-# stats_fields = {
-#     ""
-# }
+    Args:
+        year: Contest year
+    """
+
+    db_path = Path(DATABASE_FILE)
+    with sqlite3.connect(db_path, timeout=20.0) as conn:
+        cursor = conn.cursor()
+        sql = f'''
+            WITH ranked AS (
+                SELECT year, callsign, ROW_NUMBER() OVER (ORDER BY final_score DESC) AS calculated_rank
+                FROM contest_results
+                WHERE year = ? AND cat = ?
+            )
+            UPDATE contest_results
+            SET category_rank = ranked.calculated_rank
+            FROM ranked
+            WHERE contest_results.year = ranked.year
+            AND contest_results.callsign = ranked.callsign;
+        '''
+        for c in list(RANKINGS.keys()):
+            try:
+                cursor = conn.cursor()
+                cursor.execute(sql, [year, c])
+                conn.commit
+                continue
+            except Exception as e:
+                print(f"***** ERROR could not set category for cat {c}")
+                print(f"***** EXCEPTION saving result: {e}")
+                return False
+stats_fields = {
+    ""
+}
 
 
 if __name__ == "__main__":

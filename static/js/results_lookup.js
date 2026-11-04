@@ -1,6 +1,8 @@
 // Texas QSO Party Results Lookup - JavaScript
 console.log("js has loaded")
 document.addEventListener('DOMContentLoaded', function() {
+    
+    console.log("DOMContentLoaded")
     const yearSelect = document.getElementById('year');
     const callsignInput = document.getElementById('callsign');
     const showIndividualBtn = document.getElementById('showIndividualBtn');
@@ -131,6 +133,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Generate certificate HTML
     function generateCertificate(result) {
 // TODO club might be string 'None'
+
+        if (result.category_rank == 1) {
+            rank = `FIRST PLACE in Category`
+        } else if (result.category_rank == 2) {
+            rank = `SECOND PLACE in Category`
+        } else if (result.category_rank == 3) {
+            rank = `THIRD PLACE in Category`
+        } else  if (result.category_rank == '') {
+            rank = 'Not calculated'
+        } else {
+            rank = `Rank in Category: # ${result.category_rank}`
+        }
+
         return `
             <div class="certificate">
                 <div class="certificate-header">
@@ -151,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 <div class="certificate-rankings">
                     <h2>${result.cat}</h2>
-                    <p>Place ${result.rank}
+                    <h2>${rank}</h2>
                 </div>
                 <div class="certificate-footer-container">
                     <div class="certificate-footer">
@@ -171,90 +186,84 @@ document.addEventListener('DOMContentLoaded', function() {
         let html = '';
 
         // Station Information
-        html += '<div class="result-group"><h4>Station Information</h4>';
-        html += `<div class="result-item"><div class="result-label">Callsign:</div><div class="result-value">${result.callsign}</div></div>`;
+        html += `<div class="section-sub-header"><h4>Station Information</h4></div>`
+        // Data in this sub-section
+        html += `<dl class="result-group">`;
+        html += `<dt>Callsign:</dt><dd>${result.callsign}</dd>`;
         if (result.name) {
-            html += `<div class="result-item"><div class="result-label">Operator Name:</div><div class="result-value">${result.name}</div></div>`;
+            html += `<dt>Operator Name:</dt><dd>${result.name}</dd>`
+        };
+        if (result.dxcc_entity && result.dxcc_entity != result.callsign) {
+                 html += `<dt>Location:</dt><dd>${result.dxcc_entity}</dd>`
+        } else if (result.location) {
+            html += `<dt>Location:</dt><dd>${result.location}</dd>`    
         }
-        // if (result.overlay) {
-        //     html += `<div class="result-item"><div class="result-label">Overlay:</div><div class="result-value">${result.overlay}</div></div>`;
-        // }
-        if (result.dx_entity != result.callsign) {
-            html += `<div class="result-item"><div class="result-label">Station Location:</div><div class="result-value">${result.dx_entity}</div></div>`;
-        } else {
-            html += `<div class="result-item"><div class="result-label">Station Location:</div><div class="result-value">${result.category_location}</div></div>`;
+        if (result.category_station) {html += `<dt>Station Type:</dt><dd>${result.category_station}</dd>`
         }
-        html += `<div class="result-item"><div class="result-label">Station Type:</div><div class="result-value">${result.category_station}</div></div>`;
-        html += `<div class="result-item"><div class="result-label">Station Type:</div><div class="result-value">${result.category_station}</div></div>`;
-        html += `<div class="result-item"><div class="result-label">Mode:</div><div class="result-value">${result.category_mode}</div></div>`;
-        html += `<div class="result-item"><div class="result-label">Power Level:</div><div class="result-value">${result.category_power}</div></div>`;
-        html += '</div>';
+        if (result.category_mode) {html += `<dt>Mode:</dt><dd>${result.category_mode}</dd>`
+        }
+        if (result.category_power) {html += `<dt>Powere:</dt><dd>${result.category_power}</dd>`
+        }
+        html += `</dl>`
 
         // Score Summary
-        html += '<div class="result-group"><h4>Score Summary</h4>';
-        html += `<div class="result-item"><div class="result-label">Final Score:</div><div class="result-value ">${result.final_score.toLocaleString()}</div></div>`;
-        if (result.claimed_score) {
-            html += `<div class="result-item"><div class="result-label">Claimed Score:</div><div class="result-value">${result.claimed_score.toLocaleString()}</div></div>`;
+        html += `<div class="section-sub-header"><h4>Score Summary</h4></div>`
+        // Data in this sub-section
+        html += `<dl class="result-group">`;
+        
+        if (result.final_score) {html += `<dt>Final Score:</dt><dd>${result.final_score.toLocaleString()}</dd>`
         }
-        if (result.cab_bonus_points > 0 || result.mtb_bonus_points > 0) {
-            html += `<div class="result-item"><div class="result-label">Score Before Bonus Added</div><div class="result-value">${result.score_wo_bonus}</div></div>`;
+        if (result.claimed_score) {html += `<dt>Claimed Score:</dt><dd>${result.claimed_score.toLocaleString()}</dd>`
         }
-        if (result.cab_bonus_points > 0) {
-            html += `<div class="result-item"><div class="result-label">County Activation Bonus Points</div><div class="result-value">${result.cab_bonus_points}</div></div>`;
+        if (result.cab_mobile_points > 0) {html += `<dt>County Activation Bonus:</dt><dd>${result.cab_mobile_points.toLocaleString()}</dd>`
         }
-        if (result.mtb_bonus_points > 0) {
-            html += `<div class="result-item"><div class="result-label">Mobile Tracking Bonus Points</div><div class="result-value">${result.cab_bonus_points}</div></div>`;
+        if (result.mtb_mobile_points > 0) {html += `<dt>Mobile Tracking Bonus:</dt><dd>${result.cab_mobile_points.toLocaleString()}</dd>`
         }
-        html += `<div class="result-item"><div class="result-label">QSO Points:</div><div class="result-value">${result.qso_points.toLocaleString()}</div></div>`;
-        html += `<div class="result-item"><div class="result-label">Total Multipliers:</div><div class="result-value">${result.total_multipliers.toLocaleString}</div></div>`;
-
-        // if (result.worked_n5lcc && result.worked_n5lcc !== 'N/A') {
-        //     hasBonuses = true;
-        //     bonusesHTML += renderResultItem('Worked N5LCC', result.worked_n5lcc ? 'Yes' : 'No');
-        //     if (result.num_n5lcc_contacts > 0) {
-        //         bonusesHTML += renderResultItem('N5LCC Contacts', result.num_n5lcc_contacts);
-        //     }
-        // }
+        if (result.qso_points > 0) {html += `<dt>Points for QSOs:</dt><dd>${result.qso_points.toLocaleString()}</dd>`
+        }
+        if (result.total_multipliers> 0) {html += `<dt>Multipliers:</dt><dd>${result.cab_mobile_points.toLocaleString()}</dd>`
+        }
+        
+        html += `</dl>`
 
         // QSO Statistics
-        html += '<div class="result-group"><h4>QSO Statistics</h4>';
-        html += '<p>To see which QSO were not scored, see the section of messages below.</p>'
-        html += `<div class="result-item"><div class="result-label">Total QSOs:</div><div class="result-value ">${result.total_qsos.toLocaleString()}</div></div>`;
-        html += `<div class="result-item"><div class="result-label">Valid QSOs:</div><div class="result-value ">${result.valid_qsos.toLocaleString()}</div></div>`;
-        if (result.cw_qsos > 0) {
-        html += `<div class="result-item"><div class="result-label">CW QSOs:</div><div class="result-value ">${result.cw_qsos.toLocaleString()}</div></div>`; }
-        if (result.ph_qsos > 0) {
-        html += `<div class="result-item"><div class="result-label">Phone QSOs:</div><div class="result-value ">${result.ph_qsos.toLocaleString()}</div></div>`; }
-        if (result.rt_qsos > 0) {
-        html += `<div class="result-item"><div class="result-label">RTTY QSOs:</div><div class="result-value ">${result.rt_qsos.toLocaleString()}</div></div>`; }
-        if (result.dg_qsos > 0) {
-        html += `<div class="result-item"><div class="result-label">Other Digital QSOs:</div><div class="result-value ">${result.dg_qsos.toLocaleString()}</div></div>`; }
-        html += '</div>';
+        html += `<div class="section-sub-header"><h4>QSO Statistics</h4></div>`
+        html += '<p class="section-sub-header">To see which QSO were not scored, see the section of messages below.</p>'
+        // Data in this sub-section
+        html += `<dl class="result-group">`;
+        
+        if (result.total_qsos) {html += `<dt>QSOs in Log File:</dt><dd>${result.total_qsos.toLocaleString()}</dd>`
+        }
+        if (result.scored_qsos) {html += `<dt>Scored QSOs:</dt><dd>${result.scored_qsos}</dd>`
+        }
+        if (result.category_station) {html += `<dt>Station Type:</dt><dd>${result.category_station.toLocaleString()}</dd>`
+        }
+        if (result.cw_qsos) {html += `<dt>CW QSOs:</dt><dd>${result.cw_qsos.toLocaleString()}</dd>`
+        }
+        if (result.ph_qsos) {html += `<dt>Phone (SSB or FM) QSOs:</dt><dd>${result.ph_qsos.toLocaleString()}</dd>`
+        }
+        if (result.rt_qsos) {html += `<dt>RTTY QSOs:</dt><dd>${result.rt_qsos.toLocaleString()}</dd>`
+        }
+        if (result.dg_qsos) {html += `<dt>Other Digital QSOs:</dt><dd>${result.dg_qsos.toLocaleString()}</dd>`
+        }
+        if (result.uniques) {html += `<dt>Uniques:</dt><dd>${result.uniques.toLocaleString()}</dd>`
+        }
+        if (result.nils) {html += `<dt>Not In Log (NIL) QSOs:</dt><dd>${result.nils}</dd>`
+        }
+        if (result.busteds) {html += `<dt>Busted QSOs:</dt><dd>${result.busteds}</dd>`
+        }
+        if (result.dup_qsos) {html += `<dt>Duplicate QSOs:</dt><dd>${result.dup_qsos}</dd>`
+        }
+        if (result.invalid_exchange_qso) {html += `<dt>QSOs with Invalid Exchange):</dt><dd>${result.invalid_exchange_qso}</dd>`
+        }
+        if (result.nils) {html += `<dt>Not In Log (NIL):</dt><dd>${result.nils}</dd>`
+        }
+        if (result.other_invalid_qsos) {html += `<dt>Other Invalid QSOs:</dt><dd>${result.other_invalid_qsos}</dd>`
+        }
+        
+        html += `</dl>`
 
-        if (result.uniques > 0) {
-        html += `<div class="result-item"><div class="result-label">Uniques (points awarded):</div><div class="result-value ">${result.uniques.toLocaleString()}</div></div>`; }
-        
-        if (result.nils > 0) {
-        html += `<div class="result-item"><div class="result-label">Not In Log (no points):</div><div class="result-value ">${result.nils.toLocaleString()}</div></div>`; }
-        html += '</div>';
-        
-        if (result.busteds > 0) {
-        html += `<div class="result-item"><div class="result-label"Busted Callsign (no points):</div><div class="result-value ">${result.busteds.toLocaleString()}</div></div>`; }
-        html += '</div>';
-        
-        if (result.dup_qsos > 0) {
-        html += `<div class="result-item"><div class="result-label">Duplicate QSOs (no points):</div><div class="result-value ">${result.dup_qsos.toLocaleString()}</div></div>`; }
-        html += '</div>';
-        
-        if (result.invalid_exchange_qso > 0) {
-        html += `<div class="result-item"><div class="result-label">QSOs With Invalid Exchange:</div><div class="result-value ">${result.invalid_exchange_qso.toLocaleString()}</div></div>`; }
-        html += '</div>';
-        
-        if (result.other_invalid_qsos > 0) {
-        html += `<div class="result-item"><div class="result-label">Other Bad Qsos (no points):</div><div class="result-value ">${result.other_invalid_qsos.toLocaleString()}</div></div>`; }
-        html += '</div>';
-
-        // // Multipliers
+        // // Bonuses - leaaving in for future use
         // html += '<div class="result-group">';
         // html += '<h4>Multipliers</h4>';
         // html += '<table class="result-table">';
@@ -274,7 +283,61 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
         }
         
-        // Counties worked (for NON-LA stations)
+        // QSOs by Band
+        if (result.qsos_by_band) {
+            html += `<div class="section-sub-header"><h4>QSOs by Band</h4></div>`
+            html += '<div class="result-group2">';
+            html += '<table class="result-table">';
+            html += '<thead><tr><th>Band</th><th>Count</th></tr></thead>';
+            html += '<tbody>';
+            for (const [key, value] of Object.entries(result.qsos_by_band)) {
+                // console.log(`by mode  ${key}: ${value}`);
+                if (value > 0) {
+                    html += `<tr><td>${key}</td><td>${value}</td></tr>`;
+                }
+            }
+            html += '</tbody></table>';
+            html += '</div>';
+        }
+
+        // QSOs by Mode
+        if (result.qsos_by_mode) {
+            html += `<div class="section-sub-header"><h4>QSOs by Mode</h4></div>`
+            html += '<div class="result-group2">';
+            html += '<table class="result-table">';
+            html += '<thead><tr><th>Mode</th><th>Count</th></tr></thead>';
+            html += '<tbody>';
+            for (const [key, value] of Object.entries(result.qsos_by_mode)) {
+                console.log(`by mode  ${key}: ${value}`);
+                if (value > 0) {
+                    html += `<tr><td>${key}</td><td>${value}</td></tr>`;
+                }
+            }
+            html += '</tbody></table>';
+            html += '</div>';
+        }
+
+        // QSOs by Hour
+        if (result.qsos_by_hour) {
+            html += `<div class="section-sub-header"><h4>QSOs by Hour</h4></div>`
+            html += '<div class="result-group2">';
+            html += '<table class="result-table">';
+            html += '<thead><tr><th>Hour (1400Z on 9/19 until 0200Z on 9/20 and 1400Z until 2000Z 2/20)</th><th>Count</th></tr></thead>';
+            html += '<tbody>';
+            for (const [key, value] of Object.entries(result['qsos_by_hour'])) {
+                let temp = key;
+                if (key > 2400) {
+                    temp = key - 2400;
+                }
+                if (value > 0) {
+                    html += `<tr><td>${temp}</td><td>${value}</td></tr>`;
+                }
+            }
+            html += '</tbody></table>';
+            html += '</div>';
+        }
+
+         // Counties worked (for NON-state stations)
         if (result.counties_worked && result.counties_worked.length > 0) {
             html += renderResultItem('Counties Worked', result.counties_worked.length);
             html += '<div class="result-list">';
@@ -314,75 +377,9 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
         }
 
-        // QSOs by Band
-        if (result.qsos_by_band && result.qsos_by_band.length > 0) {
-            html += '<div class="result-group">';
-            html += '<h4>QSOs by Band</h4>';
-            html += '<table class="result-table">';
-            html += '<thead><tr><th>Band</th><th>Count</th></tr></thead>';
-            html += '<tbody>';
-            for (const [key, value] of Object.entries(result.qsos_by_band)) {
-                console.log(`by mode  ${key}: ${value}`);
-                if (value > 0) {
-                    html += `<tr><td>${key}</td><td>${value}</td></tr>`;
-                }
-            }
-            html += '</tbody></table>';
-            html += '</div>';
-        }
-
-        // QSOs by Mode
-        if (result.qsos_by_mode) {
-            html += '<div class="result-group">';
-            html += '<h4>QSOs by Mode</h4>';
-            html += '<table class="result-table">';
-            html += '<thead><tr><th>Mode</th><th>Count</th></tr></thead>';
-            html += '<tbody>';
-            for (const [key, value] of Object.entries(result.qsos_by_mode)) {
-                console.log(`by mode  ${key}: ${value}`);
-                if (value > 0) {
-                    html += `<tr><td>${key}</td><td>${value}</td></tr>`;
-                }
-            }
-            html += '</tbody></table>';
-            html += '</div>';
-        }
-
-        // QSOs by Hour
-        if (result.qsos_by_hour) {
-            html += '<div class="result-group">';
-            html += '<h4>QSOs by Hour</h4>';
-            html += '<table class="result-table">';
-            html += '<thead><tr><th>Hour (1400 April 4 through 0200 April 5)</th><th>Count</th></tr></thead>';
-            html += '<tbody>';
-            for (const [key, value] of Object.entries(result['qsos_by_hour'])) {
-                let temp = key;
-                if (key > 2400) {
-                    temp = key - 2400;
-                }
-                if (value > 0) {
-                    html += `<tr><td>${temp}</td><td>${value}</td></tr>`;
-                }
-            }
-            html += '</tbody></table>';
-            html += '</div>';
-        }
-
-        // Bands Worked
-        if (result.bands_worked && result.bands_worked.length > 0) {
-            html += '<div class="result-group">';
-            html += '<h4>Bands Worked</h4>';
-            html += '<div class="result-list">';
-            result.bands_worked.forEach(band => {
-                html += `<span class="result-list-item">${band}m</span>`;
-            });
-            html += '</div>';
-            html += '</div>';
-        }
-
         // errors and warnings
         if (result.errors && result.errors.length > 0) {
-            html += '<div class="result-group">';
+            html += '<div class="result-group2">';
             html += '<h4>Errors</h4>';
             html += '<ul class="error-list">';
             result.errors.forEach(error => {

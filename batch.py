@@ -22,7 +22,7 @@ from read_prepare import read_prepare
 from cross_check import cross_check
 from utilities import fix_stats
 from score_qsos import score_all_qsos
-from database import save_stats
+from database import save_stats, store_rankings
 from share import SHARED
 from config.config import DATABASE_FILE, REPORTS_ONLY, DEBUG
 
@@ -65,7 +65,8 @@ def main(contest_year):
     if not REPORTS_ONLY:
         score_all_qsos(context)
         print(f"all QSOs scored and stored: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
-        print('statistics')
+        store_rankings(CONTEST_YEAR)
+        print(f"scored rankings: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
         fix_stats(context)
         print(f"stats fixed: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
         save_stats(context, contest_year, s.stats)

@@ -8,6 +8,7 @@ import re
 from cabrillo.qso import frequency_to_band_m
 from utilities import get_dxcc
 from database import save_result
+from share import SHARED as s
 from utilities import writefile, code_to_dxcc, exch_to_dxcc
 from config import COUNTIES_ACTIVATED_POINTS, COUNTIES_WORKED_POINTS, MOBILE_REQUIRED_QSOS, CONTEST_YEAR
 qso_types = ['CW', 'PH', 'DG', 'RY']
@@ -17,9 +18,6 @@ qso_type_names = ['cw_qsos', 'ph_qsos', 'dg_qsos', 'dg_qsos']
 
 def score_all_qsos(s):
     for result in s.results:
-        if result['callsign'] == 'K7GM':
-            pprint(result)
-            print('breakpoint')
         dup = {
             'qsos': [],
             'num_qso': 0,
