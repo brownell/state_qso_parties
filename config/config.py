@@ -19,7 +19,7 @@ try:
     if env_path.exists():
         load_dotenv(env_path)
 except ImportError:
-    # dotenv not installed (production), that's OK
+    print(f"dotenv not installed (production), that's OK")
     pass
 
 
@@ -27,14 +27,15 @@ except ImportError:
 # ENVIRONMENT VARIABLES (read from .env)
 # ============================================================================
 
+DEBUG = False
+DB_DROP = False
+REPORTS_ONLY = False
 SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY not set in environment!")
 
 FLASK_ENV = os.environ.get('FLASK_ENV', 'production')
-CONTEST_NAME = os.environ.get('CONTEST_NAME', False)
-CONTEST_YEAR = os.environ.get('CONTEST_YEAR', False)
-
+SCRIPT_DIR = Path(__file__).resolve().parent.parent
 
 # ============================================================================
 # REFERENCE DATA FILES
@@ -57,7 +58,7 @@ QRZ_PASSWORD=os.environ.get('QRZ_PASSWORD')
 # User data (on volume, in /data/)
 # ============================================================================
 BATCH_INPUT_DIR = os.environ.get('BATCH_INPUT_DIR', '/data/batch_input')
-DATABASE_FILE = os.environ.get('DATABASE_FILE', '/data/database/tqp.db')
+DATABASE_FILE = os.environ.get('DATABASE_FILE', '/data/tqp.db')
 FINAL_REPORTS_DIR = os.environ.get('FINAL_REPORTS_DIR', '/data/final_reports')
 
 # ============================================================================
@@ -65,7 +66,7 @@ FINAL_REPORTS_DIR = os.environ.get('FINAL_REPORTS_DIR', '/data/final_reports')
 # ============================================================================
 
 # Available years for results lookup
-CONTEST_YEARS = os.environ.get('CONTEST_YEARS', '2025').split(',')
+CONTEST_YEARS = os.environ.get('CONTEST_YEARS', '2026').split(',')
 CONTEST_YEAR = os.environ.get('CONTEST_YEAR', '2026')
 
 COUNTIES_ACTIVATED_POINTS = 1000 # each county
@@ -95,8 +96,8 @@ POINTS = {
 
 
 # Bonus points
-BONUS_CALLSIGN = 'N5LCC'  # Bonus for working N5LCC (Louisiana Contest Club)
-CALLSIGN_BONUS_POINTS = 100  # Bonus for working N5LCC (Louisiana Contest Club)
+BONUS_CALLSIGN = 'xxxxx'  # Bonus for working N5LCC (Texas Contest Club)
+CALLSIGN_BONUS_POINTS = 100  # Bonus for working N5LCC (Texas Contest Club)
 ROVER_COUNTY_BONUS = 50  # Bonus per county activated (rovers only)
 EXTRA_BONUS_CALLS = os.environ.get('EXTRA_BONUS_CALLS', ['KI5ZAW', 'N5SCJ', 'K5TD'])
 EXTRA_BONUS_YEAR = os.environ.get('EXTRA_BONUS_YEAR', '2026')
@@ -109,10 +110,26 @@ ENABLE_FUZZY_MATCHING = False  # Check for callsign errors
 MAX_EDIT_DISTANCE = 2  # Maximum character differences for fuzzy matching (e.g.,
 
 # ============================================================
-# MAPPING of HQ fields added to log by Bruce Horn's uploader
+# CONVERSION of abbreviationS to English
 # ============================================================
 
-
+CONVERT = {
+    'LP': 'Low Power <= 150 Watts',
+    'HP': 'High Power > 150 Watts',
+    'QRP': '<Very Low Power < 10 Watts',
+    'MIX': 'Any mode: CW, PH, DG, RY',
+    'PH': 'Phone (SSB)',
+    'CW': 'CW',
+    'DG': 'Other Digital',
+    'RY': 'Radio Teletype',
+    'FIX': 'Fixed',
+    'MOB': 'Mobile',
+    'PH QSOs': 'Phone QSOS',
+    'DG QSOs': 'Other Digital Modes',
+    'RY QSOs': 'Radio Teletype',
+    'mbt_mobile_poits': 'Mobile Tracking Bonus',
+    'cab_mobile_points': 'County Activation Bonus',
+    }
 
 # ============================================================
 # BAND AND MODE DEFINITIONS
@@ -171,20 +188,6 @@ PROVINCES = ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', '
 TIME_WINDOW_MINUTES = 60  # ±60 minutes for time matching
 ENABLE_FUZZY_MATCHING = True  # Check for callsign errors
 MAX_EDIT_DISTANCE = 2  # Maximum character differences for fuzzy matching
-
-# ============================================================================
-# FINAL REPORT TEXT
-# ============================================================================
-
-FINAL_REPORT_TXT = """
-<p class=final-intro>Congratulations to all participants in the Louisiana QSO Party!
-
-The Jefferson Amateur Radio Club is proud to present the final results.
-Thank you for your participation and we look forward to seeing you next year!
-
-73,
-Jefferson Amateur Radio Club</p>
-"""
 
 # # ============================================================================
 # # Admin settings

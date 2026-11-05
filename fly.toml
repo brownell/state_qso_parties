@@ -1,38 +1,24 @@
-# fly.toml app configuration file generated for laqp on 2026-03-12T21:21:58-05:00
+# fly.toml app configuration file generated for txqp on 2026-11-04T16:36:18-06:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "laqp"
-primary_region = 'iad'
-
-[build]
-  dockerfile = 'Dockerfile'
-  ignorefile = ".dockerignore"
-
-[env]
-  CONFIG_DIR = '/app/config'
-  CONTEST_YEAR = "2026"
-  DATABASE_PATH = "/data/laqp.db"
-
-[[mounts]]
-  source = 'laqp_data'
-  destination = '/data'
+app = 'txqp'
+primary_region = 'dfw'
 
 [http_service]
-  internal_port = 5000
+  internal_port = 8080
   force_https = true
-  auto_stop_machines = 'stop'
+  auto_stop_machines = 'off'
   auto_start_machines = true
-  min_machines_running = 0
-  processes = ["app"]
+  min_machines_running = 1
+  processes = ['app']
 
-  [http_service.concurrency]
-  type = "connections"
-  hard_limit = 25
-  soft_limit = 20
+[mounts]
+  source = "txqp_data"
+  destination = "/data"
 
 [[vm]]
-  memory = '256mb'
+  memory = '1gb'
   cpus = 1
-  memory_mb = 256
+  memory_mb = 1024

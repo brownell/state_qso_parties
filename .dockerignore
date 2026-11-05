@@ -1,8 +1,38 @@
+# These are files that are used in the batch version of the
+# app and not needed for the Web app
+DOCKER_flyio/
+DOCS/
+OBE/
+OUTPUT_FILES/
+TXQP/
+batch.py
+cross_check.py
+Dockerfile.txt
+env*
+global_stats.py
+leaderboards.py
+ranking_tables.py
+read_prepare.py
+README_cabrillo.md
+README.md
+score_qsos.py
+SCRATCH_PAD.txt
+start.share
+state_qso_parties.code-workspace
+temp.py
+utilities.py
+tests/
+
+
 # flyctl launch added from .gitignore
 # Byte-compiled / optimized / DLL files
 **/__pycache__
 **/*.py[codz]
 **/*$py.class
+
+.venv/
+
+.git/
 
 # C extensions
 **/*.so
@@ -75,6 +105,13 @@ __pycache__
 # Django stuff:
 **/*.log
 **/local_settings.py
+local-data/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
 **/db.sqlite3
 **/db.sqlite3-journal
 
@@ -154,7 +191,7 @@ __pycache__
 # Environments
 **/.env
 **/.envrc
-**/.venv
+**/.venv/**.*
 **/env
 **/venv
 **/ENV

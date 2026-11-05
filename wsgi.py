@@ -10,7 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import the Flask app
-from web import app
+from app import app
 
 # This is what Gunicorn will use
 if __name__ == "__main__":

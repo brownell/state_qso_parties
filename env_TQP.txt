@@ -24,7 +24,7 @@ QRZ_PASSWORD=
 # APPLICATION SETTINGS
 # ============================================================================
 FLASK_ENV=development
-CONTEST_YEAR=2025
+CONTEST_YEAR=2026
 MAX_UPLOAD_SIZE=5242880ex
 
 # ============================================================================

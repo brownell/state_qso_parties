@@ -1,4 +1,6 @@
-# Louisiana QSO Party Processor - Python Dependencies
+# Texas QSO Party Processor - Python Dependencies
+
+cabrillo @ git+https://github.com/brownell/cabrillo.git@0db0ea0e47f1068ac53f34bf0e11033d35e9d9e2
 
 # Database
 SQLAlchemy>=2.0.0
@@ -36,6 +38,6 @@ python-dotenv>=0.19.0
 pyhamtools>=0.12.0
 pycountry>=26.2.16
 dotenv>=0.9.9
+reportlab>=5.1.0
 
--e ../cabrillo
 

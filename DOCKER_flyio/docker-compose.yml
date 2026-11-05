@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  txqp-web:
+    build: .
+    container_name: txqp-web
+    ports:
+      - "5000:5000"
+    volumes:
+      # Persist database
+      - txqp-database:/app/database
+      
+      # Persist uploaded logs
+      - txqp-logs:/app/logs
+      
+      # Persist HTML results (so they survive container restarts)
+      - txqp-results:/app/HTML_RESULTS
+      
+      # Mount data files (parishes, states) - read-only
+      - ./data:/app/data:ro
+      
+      # Optional: Mount config if you want to modify it without rebuilding
+      - ./config:/app/config:ro
+      
+      # Temporary files (doesn't need persistence)
+      - txqp-temp:/app/temp
+    
+    environment:
+      # Flask settings
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY:-change-this-secret-key-in-production}
+      
+      # Database
+      - DATABASE_PATH=/app/database/txqp.db
+      
+      # File paths
+      - UPLOAD_FOLDER=/app/logs/incoming
+      - HTML_RESULTS_DIR=/app/HTML_RESULTS
+      - TEMP_DIR=/app/temp
+      
+      # Contest year (optional)
+      - CONTEST_YEAR=2026
+    
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+# Named volumes for data persistence
+volumes:
+  txqp-database:
+    driver: local
+  txqp-logs:
+    driver: local
+  txqp-results:
+    driver: local
+  txqp-temp:
+    driver: local
+
+# Networks (optional, for future expansion)
+networks:
+  default:
+    name: txqp-network

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Louisiana QSO Party - Contest Results</title>
+    <title>Texas QSO Party - Contest Results</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
 
@@ -12,9 +12,9 @@
 <body>
     <div class="container">
         <header class="banner">
-            <h1>Jefferson Amateur Radio Club</h1>
-            <h2>Louisiana QSO Party - Contest Results</h2>
-            <a href="{{url_for('home')}}">Back to LAQP home</a>
+            <h1>Texas DX Society</h1>
+            <h2>Texas QSO Party - Contest Results</h2>
+            <a href="{{url_for('home')}}">Back to TXQP home</a>
         </header>
 
         <div class="separator"></div>
@@ -22,18 +22,8 @@
         <main>
             <section class="lookup-section">
                 <h3>View Contest Results</h3>
-                
-                <div class="form-group">
-                    <label for="year">Contest Year: <span class="required">*</span></label>
-                    <select id="year" name="year" required>
-                        {% for year in available_years %}
-                        <option value="{{ year }}">{{ year }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
 
                 <div class="results-type-selection">
-                    <h4>What would you like to view?</h4>
                     
                     <div class="option-card">
                         <h5>Individual Results</h5>
@@ -43,12 +33,10 @@
                             <input type="text" id="callsign" name="callsign" 
                                    placeholder="e.g. K5ABC" style="text-transform: uppercase;">
                         </div>
-                        <button type="button" class="btn-primary" id="showIndividualBtn">
+                        <button type="submit" class="btn-primary" id="showIndividualBtn">
                             Show My Results
                         </button>
                     </div>
-
-                    <div class="option-divider">OR</div>
 
                     <div class="option-card">
                         <h5>Final Contest Report</h5>
@@ -56,6 +44,19 @@
                         <button type="button" class="btn-secondary" id="showFinalReportBtn">
                             Show Final Report
                         </button>
+                    </div>
+
+                    <div class="option-card">
+                        <h5>Final Contest Report</h5>
+                        <p>View complete results with all category ranking tables</p>
+                        <a href="{{ url_for('static', filename='pdfs/final_report_2026.pdf') }}" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            class="pdf-button">
+                            <button type="button" class="btn-secondary id="showFinalReportBtn">
+                                Open Final Report PDF in Another Tab
+                            </button>
+                            </a>
                     </div>
                 </div>
 
@@ -119,8 +120,8 @@
         </main>
 
         <footer>
-            <p>&copy; 2026 Jefferson Amateur Radio Club | Louisiana QSO Party</p>
-            <p><a href="https://laqp.contesting.com" style="color: #8B0000; text-decoration: none;">← Submit Your Log</a></p>
+            <p>&copy; 2026 Texas DX Society | Texas QSO Party</p>
+            <p><a href="https://txqp.contesting.com" style="color: #8B0000; text-decoration: none;">← Submit Your Log</a></p>
         </footer>
     </div>
 

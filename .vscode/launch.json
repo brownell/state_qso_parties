@@ -46,6 +46,24 @@
             "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
         },
         {
+            
+            "name": "pdf_final_report",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "pdf_final_report.py",
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+        },
+        {
+            
+            "name": "temp",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "temp.py",
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+        },
+        {
             "name": "WIN Final Report (batch)",
             "type": "debugpy",
             "request": "launch",
@@ -59,7 +77,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "web.py",
+                "FLASK_APP": "app.py",
                 "FLASK_DEBUG": "1"
             },
             "args": [
@@ -77,11 +95,32 @@
             "module": "flask",
             "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
             "env": {
-                "FLASK_APP": "web.py",
+                "FLASK_APP": "app.py",
                 "FLASK_DEBUG": "1"
             },
             "args": [
                 "run",
+                "--no-debugger",
+                "--no-reload"
+            ],
+            "jinja": true,
+            "justMyCode": true
+        },
+
+         {
+            "name": "Flask: Tailscale access",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "flask",
+            "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+            "env": {
+                "FLASK_APP": "app.py",
+                "FLASK_DEBUG": "1"
+            },
+            "args": [
+                "run",
+                "--host=0.0.0.0",
+                "--port=5000",
                 "--no-debugger",
                 "--no-reload"
             ],

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Louisiana QSO Party - Leaderboard Generator
+Texas QSO Party - Leaderboard Generator
 
 Generates leaderboard tables based on declarative configuration.
 Interprets LEADERBOARDS configuration to create ranked tables.
@@ -60,19 +60,6 @@ class LeaderboardGenerator:
                 sections.append(section)
         
         return sections
-    
-    def _clear_all_rankings(self, year: str):
-        """Clear rankings field for all users in a year before regenerating"""
-        foo =  datetime.now().isoformat()
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                UPDATE contest_results
-                SET rankings = ?, updated_at = ?
-                WHERE year = ?
-            ''', (json.dumps({}), datetime.utcnow().isoformat(), year))
-
-            conn.commit()
     
     def _generate_section(self, year: str, section_config: List[Dict], 
                          rankings_dict: Dict = None, save_rankings: bool = True) -> Dict:
@@ -152,7 +139,7 @@ class LeaderboardGenerator:
             
             # Save this user's ranking if requested
             if save_rankings:
-                self._save_user_ranking(year, callsign, ranking_code, rank)
+                self._save_one_user_ranking(year, callsign, ranking_code, rank)
             
             # Build display row: [rank] + [display values]
             ranked_row = [rank] + list(display_values)
@@ -293,7 +280,7 @@ def generate_leaderboards(year: str, leaderboards_config: List,
 
 
 if __name__ == "__main__":
-    print("LAQP Leaderboard Generator")
+    print("TXQP Leaderboard Generator")
     print("This module should be imported, not run directly.")
     print()
     print("Usage:")

@@ -8,87 +8,78 @@ Batch Control program to process ALL the logs in the incoming directory
 """
 
 from typing import Dict, List, Set, Optional
-import csv
-from pyhamtools import LookupLib, Callinfo
+import sqlite3
+import pickle
 from cabrillo.parser import parse_log_file
 from cabrillo.qso import frequency_to_band_m
 from collections import defaultdict
 
-from config.config import (
-    CONTEST_YEAR
-    )
-from database import save_result
-from generate_rankings import generate_rankings
-from generate_final_report import generate_final_report_html
+from config.config import CONTEST_YEAR
+from pathlib import Path
+from pprint import pprint
+from pdf_final_report import generate_final_report_pdf
 from read_prepare import read_prepare
 from cross_check import cross_check
-from utilities import debug_print
+from utilities import fix_stats
+from score_qsos import score_all_qsos
+from database import save_stats, store_rankings
 from share import SHARED
+from config.config import DATABASE_FILE, REPORTS_ONLY, DEBUG
 
 def main(contest_year):
+    s = context
+    db_path = Path(DATABASE_FILE)
+     # Ensure directory exists
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.commit()
     '''
         Read in all the log files, save the Cabrillo object and the data, 
         save values that will be needed later
     '''
-    read_prepare(context)
-    print(f"after read_prepare")
-
+    if not REPORTS_ONLY:
+        read_prepare(context)
+        print(f"after read_prepare: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+        print('break')
 
     '''
     Do the cross-checking, marking qsos that fail the match test.
     Warning messages are generated when qso fails match
     Failed qsos marked invalid so not counted in score
     '''
-    cross_check(context)
-
+    
+    if not REPORTS_ONLY:
+        cross_check(context)
+        print(f"after cross-check results: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+        print('break')
     # for debugging, print out all the scores
-    # for r in context.results:
-    #     debug_print(context, r, "", False)
-        # print(f" {r['callsign']} CW {r['cw_qsos']} PH {r['ph_qsos']} points {r['qso_points']} mults {r['total_multipliers']} score {r['score_wo_bonus']} valid {r['valid_qsos']}\n{r['errors']}\n")
+    # if DEBUG:
+    #     for r in context.results:
+    #         debug_print(context, context.results[0], "", False)
+    #         print(f" {r['callsign']} CW {r['cw_qsos']} PH {r['ph_qsos']} points {r['qso_points']} mults {r['total_multipliers']} score {r['score_wo_bonus']} valid {r['valid_qsos']}\n{r['errors']}\n")
+    # for i in [0,10,300]:
+    #     r = context.results[i]
+    #     print(f"results[{i}]: {r['callsign']} {r['final_score']} {r['mtb_mobile_points']} {r['score_wo_bonus']} {r['total_multipliers']} {r['qso_points']} {r['ph_qsos']} {r['cw_qsos']}")
 
+    if not REPORTS_ONLY:
+        score_all_qsos(context)
+        print(f"all QSOs scored and stored: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+        store_rankings(CONTEST_YEAR)
+        print(f"scored rankings: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+        fix_stats(context)
+        print(f"stats fixed: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+        save_stats(context, contest_year, s.stats)
+        print(f"stats saved: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+        print('after stats')
+
+    
     # REMEMBER to close all the out_files
-    for f in list(context.out_files.keys()):
-        context.out_files[f].close()
-
-        
-    print(f"after cross-check results")
-
-
-    #  Save results to database (valid and invalid)
-    # valid_count = 0
-    # invalid_count = 0
-    saved_count = 0
+    if not REPORTS_ONLY:
+        for f in list(context.out_files.keys()):
+            context.out_files[f].close()
     
-    for result in context.results:
-        
-        # # Save to database (both valid and invalid for record-keeping)
-        try:
-            if save_result(result, contest_year):
-                saved_count += 1
-                status = "✓" if result['is_valid'] else "✗"
-                # print(f"{status} {result['callsign']}: Saved to database")
-            else:
-                print(f"✗ {result['callsign']}: Database save failed")
-        except Exception as e:
-            print(f"✗ {result['callsign']}: Database error - {e}")
-            # print('BREAK')
-        # print('BREAK')
-    
-    # # generate rankings from the database results
-    # generate_rankings(contest_year)
-
-    # # generate_final_report_html(contest_year)
-    # generate_final_report_html(contest_year)
-    
-    # print()
-    # print("=" * 60)
-    # print("Summary")
-    # print("=" * 60)
-    # print(f"Total processed: {len(results)}")
-    # print(f"Valid logs: {valid_count}")
-    # print(f"Invalid logs: {invalid_count}")
-    # print(f"Saved to database: {saved_count}")
-    # print()
+    generate_final_report_pdf(context, contest_year)
     
 if __name__ == "__main__":
     import os, sys
