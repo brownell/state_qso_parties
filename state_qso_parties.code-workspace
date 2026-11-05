@@ -4,9 +4,6 @@
 			"path": "."
 		},
 		{
-			"path": "../cabrillo"
-		},
-		{
 			"path": "../tqp_data/batch_input/2026"
 		}
 	],

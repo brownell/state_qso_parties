@@ -4,6 +4,10 @@
 **/*.py[codz]
 **/*$py.class
 
+.venv/
+
+.git/
+
 # C extensions
 **/*.so
 
@@ -75,6 +79,13 @@ __pycache__
 # Django stuff:
 **/*.log
 **/local_settings.py
+local-data/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
 **/db.sqlite3
 **/db.sqlite3-journal
 
@@ -154,7 +165,7 @@ __pycache__
 # Environments
 **/.env
 **/.envrc
-**/.venv
+**/.venv/**.*
 **/env
 **/venv
 **/ENV

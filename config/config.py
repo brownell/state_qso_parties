@@ -35,6 +35,7 @@ if not SECRET_KEY:
     raise ValueError("SECRET_KEY not set in environment!")
 
 FLASK_ENV = os.environ.get('FLASK_ENV', 'production')
+SCRIPT_DIR = Path(__file__).resolve().parent.parent
 
 # ============================================================================
 # REFERENCE DATA FILES
@@ -57,7 +58,7 @@ QRZ_PASSWORD=os.environ.get('QRZ_PASSWORD')
 # User data (on volume, in /data/)
 # ============================================================================
 BATCH_INPUT_DIR = os.environ.get('BATCH_INPUT_DIR', '/data/batch_input')
-DATABASE_FILE = os.environ.get('DATABASE_FILE', '/data/database/tqp.db')
+DATABASE_FILE = os.environ.get('DATABASE_FILE', '/data/tqp.db')
 FINAL_REPORTS_DIR = os.environ.get('FINAL_REPORTS_DIR', '/data/final_reports')
 
 # ============================================================================

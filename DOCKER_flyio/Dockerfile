@@ -4,26 +4,23 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements file
 COPY requirements.txt .
-
-# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    FLASK_APP=app.py \
+    DATABASE_FILE=/data/database/txqp.db \
+    TEMP_DIR=/app/temp
+
+
 COPY . .
 
-# Create directories for data persistence
-RUN mkdir -p /app/data \
-    /app/logs/incoming \
-    /app/HTML_RESULTS \
-    /app/database \
-    /app/temp
+EXPOSE 8080
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc git ca-certificates  \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user for running the app
 RUN useradd -m -u 1000 txqp && \
@@ -33,19 +30,11 @@ RUN useradd -m -u 1000 txqp && \
 USER txqp
 
 # Expose port
-EXPOSE 5000
-
-# Environment variables
-ENV FLASK_APP=app.py \
-    PYTHONUNBUFFERED=1 \
-    DATABASE_PATH=/app/database/txqp.db \
-    UPLOAD_FOLDER=/app/logs/incoming \
-    HTML_RESULTS_DIR=/app/HTML_RESULTS \
-    TEMP_DIR=/app/temp
+EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:5000/health')" || exit 1
+    CMD python -c "import requests; requests.get('http://localhost:8080/health')" || exit 1
 
 # Run with gunicorn for production
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "120", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--timeout", "120", "app:app"]

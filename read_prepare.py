@@ -39,9 +39,8 @@ from global_stats import categorize_log, fix_exchange, record_recipient_location
 # Import your existing modules
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from config.config import (
-    CONTEST_YEAR, BATCH_INPUT_DIR, HQ_FIELDS
+    CONTEST_YEAR, BATCH_INPUT_DIR, HQ_FIELDS, SCRIPT_DIR
 )
-SCRIPT_DIR = Path(__file__).resolve().parent
 
 def read_prepare(s):
     """

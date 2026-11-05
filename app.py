@@ -4,7 +4,7 @@ Texas QSO Party Log Upload Application
 Web interface for contestants to submit and validate Cabrillo log files
 """
 
-from flask import Flask, json, render_template, request, jsonify
+from flask import Flask, json, render_template, request, jsonify, redirect, url_for
 import os
 from datetime import datetime
 import pprint
@@ -13,13 +13,12 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from database import save_result, get_result
-from config.config import SECRET_KEY, CONTEST_YEAR, BATCH_INPUT_DIR, ALLOWED_LOG_EXTENSIONS
+from config.config import SECRET_KEY, CONTEST_YEAR, BATCH_INPUT_DIR, ALLOWED_LOG_EXTENSIONS, SCRIPT_DIR, DEBUG
 
 app = Flask(__name__)
 
 # Ensure upload directory exists
 os.makedirs(BATCH_INPUT_DIR, exist_ok=True)
-SCRIPT_DIR = Path(__file__).resolve().parent
 
 def allowed_file(filename):
     """Check if file extension is allowed"""
@@ -37,7 +36,7 @@ def format_set_as_list(s):
 @app.route('/')
 def home():
     """Render the home page"""
-    return render_template('home.html')
+    return redirect(url_for('results'))
 
 @app.route('/abbreviations')
 def abbreviations():
@@ -85,11 +84,12 @@ def api_individual_results():
         # Get result from database
         # they come back deserialized   i.e. in json format
         result = get_result(year, callsign)
-        write_str = f'*** {datetime.now().strftime("%Y-%m-%d %H:%M")}\n'
-        write_str = write_str + pprint.pformat(result, indent=2, width=80)
-        debug_file = open(SCRIPT_DIR /  "OUTPUT_FILES" / "DEBUG_FILE.txt", "w")
-        debug_file.write(write_str)
-        debug_file.close()
+        if DEBUG:
+            write_str = f'*** {datetime.now().strftime("%Y-%m-%d %H:%M")}\n'
+            write_str = write_str + pprint.pformat(result, indent=2, width=80)
+            debug_file = open(SCRIPT_DIR /  "OUTPUT_FILES" / "DEBUG_FILE.txt", "w")
+            debug_file.write(write_str)
+            debug_file.close()
         
         if not result:
             return jsonify({

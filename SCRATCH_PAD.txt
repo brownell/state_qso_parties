@@ -1,10 +1,174 @@
 Individual Needed
-- station location - undefined
-- two types of bonus points. cab and mtb. also score before BONUes
 - counties activated (if mobile)
-- counties/states/provinces/countries worked
 - for all: if any - worked_counties_mobile
+FileNotFoundError: [WinError 3] The system cannot find the path specified: 'C:\\Users\\Ham\\Documents\\GitHub\\state_qso_parties\\tqp_data\\batch_input\\2026'
+2026-11-05T16:22:50Z runner[2872957b463d98] dfw [info]Pulling container image registry.fly.io/txqp@sha256:bfc19712f13c4dbd75014885192b63300a10b5094aab1cbdcff19d32d8da0864
+2026-11-05T16:22:57Z runner[2872957b463d98] dfw [info]Successfully prepared image registry.fly.io/txqp@sha256:bfc19712f13c4dbd75014885192b63300a10b5094aab1cbdcff19d32d8da0864 (7.222925088s)
+2026-11-05T16:22:57Z runner[2872957b463d98] dfw [info]Setting up volume 'txqp_data'
+2026-11-05T16:22:57Z runner[2872957b463d98] dfw [info]Uninitialized volume 'txqp_data', initializing...
+2026-11-05T16:22:57Z runner[2872957b463d98] dfw [info]Encrypting volume
+2026-11-05T16:22:58Z runner[2872957b463d98] dfw [info]Opening encrypted volume
+2026-11-05T16:22:59Z runner[2872957b463d98] dfw [info]Formatting volume
+2026-11-05T16:23:00Z runner[2872957b463d98] dfw [info]Configuring firecracker
+2026-11-05T16:38:57Z runner[2872957b463d98] dfw [info]Pulling container image registry.fly.io/txqp@sha256:bfc19712f13c4dbd75014885192b63300a10b5094aab1cbdcff19d32d8da0864
+2026-11-05T16:38:57Z runner[2872957b463d98] dfw [info]Container image registry.fly.io/txqp@sha256:bfc19712f13c4dbd75014885192b63300a10b5094aab1cbdcff19d32d8da0864 already prepared
+2026-11-05T16:38:57Z runner[2872957b463d98] dfw [info]Setting up volume 'txqp_data'
+2026-11-05T16:38:57Z runner[2872957b463d98] dfw [info]Opening encrypted volume
+2026-11-05T16:38:58Z runner[2872957b463d98] dfw [info]Configuring firecracker
+(.venv) PS C:\Users\Ham\Documents\GitHub\state_qso_parties> fly logs -a txqp
+2026-11-05T15:59:15Z app[28724d1aeeee48] dfw [info]    from database import save_result, get_result
+2026-11-05T15:59:15Z app[28724d1aeeee48] dfw [info]  File "/app/database.py", line 438, in <module>
+2026-11-05T15:59:15Z app[28724d1aeeee48] dfw [info]    db = ContestDatabase(Path(DATABASE_FILE))
+2026-11-05T15:59:15Z app[28724d1aeeee48] dfw [info]         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Your uploaded files show that persistence is not configured yet:
+
+Your Dockerfile sets DATABASE_FILE=/data/database/txqp.db, but that only defines a filename. It does not create a Fly Volume or copy your database there.
+
+Your fly.toml has no [mounts] section, so it does not tell Fly to mount a volume at /data.
+
+Your app runs as the non-root user txqp (UID 1000), so the database directory and file must be writable by that user. Your Dockerfile currently changes ownership of /app, not /data.
+
+A volume might already exist from an earlier CLI command; the files alone cannot establish that. Here is how to check and then transfer your existing database without creating a replacement database.
+
+1. Check the existing Machines and volumes
+Run these in your Chromebook’s Linux terminal:
+
+bash
+fly status -a txqp
+fly machine list -a txqp
+fly volumes list -a txqp
+The volume listing shows the volume’s name, region, and attached Machine. An empty listing means you have no volumes for this app; a volume without an attached Machine exists but is not currently attached. Check the Machines’ regions too—your configuration specifies dfw, but use the actual Machine region when attaching storage.
+
+If there is no suitable existing volume, create one:
+
+bash
+fly volumes create txqp_data --region dfw --size 1 -a txqp
+That creates a 1 GB volume. If you already have a suitable volume, reuse its name instead of creating another. Fly documents volume creation and mounting as separate steps.
+
+For this straightforward SQLite setup, use one application Machine. Multiple Machines would each need their own volume, and those volumes would not automatically contain the same database.
+
+2. Add the mount to fly.toml
+Add this as a new top-level section, for example immediately before [http_service]:
+
+text
+[mounts]
+  source = "txqp_data"
+  destination = "/data"
+If reusing an existing volume, replace txqp_data with its name. With this mount, your configured database path resolves to:
+
+text
+/data                     ← persistent Fly Volume
+/data/database            ← directory you will create on that volume
+/data/database/txqp.db     ← your existing SQLite database
+Fly applies the mount configuration when you deploy. Files written beneath /data then live on the volume rather than in the replaceable application filesystem.
+
+Keep your existing Dockerfile setting:
+
+text
+DATABASE_FILE=/data/database/txqp.db
+That path already matches this layout. However, your Python code must actually read DATABASE_FILE; setting the environment variable alone does not change any hard-coded database path in the application. The uploaded files do not include that Python code.
+
+3. Temporarily start a maintenance server so you can upload the database
+Because your app cannot start without its database, use a temporary process that stays running without importing the Flask application. This avoids the “I need the app running to upload the database, but it cannot start without the database” problem.
+
+Temporarily replace the final Gunicorn CMD in your Dockerfile with:
+
+text
+CMD ["python", "-m", "http.server", "8080", "--bind", "0.0.0.0", "--directory", "/tmp"]
+This is only a bootstrap server, not your application. Serving /tmp avoids exposing your application directory.
+
+Also temporarily change these values under [http_service] in fly.toml so the Machine stays running while you work:
+
+text
+  auto_stop_machines = "off"
+  min_machines_running = 1
+Deploy:
+
+bash
+fly deploy -a txqp
+Then verify the attachment:
+
+bash
+fly volumes list -a txqp
+fly ssh console -a txqp -C "df -h /data"
+Confirm that the volume lists an attached Machine and that df shows a filesystem mounted at /data. Deploying a temporary application with the volume attached is a documented community workaround for loading a database before the real application can start.
+
+4. Create the database directory on the mounted volume
+Open a shell:
+
+bash
+fly ssh console -a txqp
+Inside the remote shell, run:
+
+bash
+mkdir -p /data/database
+chown txqp:txqp /data/database
+chmod 750 /data/database
+ls -ld /data/database
+exit
+Fly’s SSH console connects as root by default, allowing you to prepare the directory for your txqp application user. Do this on the mounted volume—not just in a Dockerfile build step.
+
+5. Upload your existing database
+First stop your local Flask application and any other processes writing to the local database. If SQLite is using WAL mode, do not copy only the .db file while writers are active; use a consistent SQLite backup instead.
+
+From your local terminal, upload the database, replacing the example local path with its actual location:
+
+bash
+fly ssh sftp put ./path/to/txqp.db /data/database/txqp.db -a txqp
+fly ssh sftp put ../txqp_data/database/txqp.db /data/txqp.db -a txqp
+Fly’s SFTP command uploads the local file to the specified path on the running Machine. Do not overwrite an existing production database blindly—this procedure is for initially loading your existing database onto the new volume.
+
+Then fix ownership and permissions:
+
+bash
+fly ssh console -a txqp
+Inside the remote shell:
+
+bash
+chown txqp:txqp /data/database/txqp.db
+chmod 640 /data/database/txqp.db
+ls -lh /data/database/txqp.db
+SQLite needs to write both the database and its containing directory for journal or WAL files. Your app’s txqp user therefore needs ownership of both.
+
+While still connected, check that the uploaded database is readable and intact without accidentally creating an empty database:
+
+bash
+python - <<'PY'
+import sqlite3
+
+db = sqlite3.connect(
+    "file:/data/database/txqp.db?mode=ro",
+    uri=True,
+)
+print("Integrity:", db.execute("PRAGMA integrity_check").fetchone()[0])
+print("Tables:", db.execute(
+    "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+).fetchall())
+db.close()
+PY
+You should see Integrity: ok and your expected tables. Then:
+
+bash
+exit
+6. Restore Flask and deploy normally
+Restore your original Dockerfile command:
+
+text
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--timeout", "120", "app:app"]
+That is the original command in your uploaded Dockerfile.
+
+Restore your preferred auto-stop settings in fly.toml:
+
+text
+  auto_stop_machines = "stop"
+  min_machines_running = 0
+Then deploy and check the logs:
+
+bash
+fly deploy -a txqp
+fly logs -a txqp
+Leave the [mounts] section in place permanently. Subsequent application deployments will continue using the database on the mounted volume; you should not upload the local database again during ordinary software updates.
 
 - us logs still wrong
 - tx_fixed_logs is wrong

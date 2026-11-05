@@ -13,9 +13,8 @@ from utilities import generate_index_key, get_dxcc, writefile
 # Import your existing modules
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from config.config import (
-    CONTEST_YEAR, BATCH_INPUT_DIR, HQ_FIELDS
+    CONTEST_YEAR, BATCH_INPUT_DIR, HQ_FIELDS, SCRIPT_DIR, 
 )
-SCRIPT_DIR = Path(__file__).resolve().parent
 
 def fix_exchange(s, exchange, callsign, code = 0, entity=""):
     """

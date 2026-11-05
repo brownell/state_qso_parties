@@ -377,6 +377,10 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
         }
 
+        // Counties where a mobile operator was worked
+        
+
+
         // errors and warnings
         if (result.errors && result.errors.length > 0) {
             html += '<div class="result-group2">';

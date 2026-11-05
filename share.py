@@ -16,7 +16,7 @@ from pathlib import Path
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 input_dir = Path(f"{BATCH_INPUT_DIR}/{CONTEST_YEAR}")
-SCRIPT_DIR = Path(__file__).resolve().parent
+script_dir = Path(__file__).resolve().parent
 
 '''
 Much of the processing of log files is done with the log data in memory in a large
@@ -34,31 +34,31 @@ class SHARED:
     def __init__(self):
         """Initialize with reference data files"""
         # Load counties, states, and provinces
-        with open(SCRIPT_DIR / COUNTIES_FILE, 'r') as f:
+        with open(script_dir / COUNTIES_FILE, 'r') as f:
             self.counties = {line.strip().upper() for line in f if line.strip()}
 
-        with open(SCRIPT_DIR / STATES_FILE, 'r') as f:
+        with open(script_dir / STATES_FILE, 'r') as f:
             self.states = set(line.strip().upper() for line in f if line.strip())
 
-        with open(SCRIPT_DIR / PROVINCES_FILE, 'r') as f:
+        with open(script_dir / PROVINCES_FILE, 'r') as f:
             self.provinces = set(line.strip().upper() for line in f if line.strip())
 
         ## create DXCC code (same as ADIF number) to DXCC entity. Needed for DX mults
         self.dxcc_entities = [None] * 750
-        with open(SCRIPT_DIR / DXCC_ENTITIES_FILE, 'r') as f:
+        with open(script_dir / DXCC_ENTITIES_FILE, 'r') as f:
             reader = csv.reader(f)
             for row in reader:
                 self.dxcc_entities[int(row[0])] = row[1].split('  ')[0]
         self.out_files = {
-            'errors': open(SCRIPT_DIR /  "OUTPUT_FILES" / "ERROR_FILE.txt", "w"),
-            'warnings': open(SCRIPT_DIR /  "OUTPUT_FILES" / "WARNING_FILE.txt", "w"),
-            'uniques': open(SCRIPT_DIR /  "OUTPUT_FILES" / "UNIQUES_FILE.txt", "w"),
-            'busteds': open(SCRIPT_DIR /  "OUTPUT_FILES" / "BUSTEDS_FILE.txt", "w"),
-            'nils': open(SCRIPT_DIR /  "OUTPUT_FILES" / "NILS_FILE.txt", "w"),
-            'debug': open(SCRIPT_DIR /  "OUTPUT_FILES" / "DEBUG_FILE.txt", "w"),
-            'dups': open(SCRIPT_DIR /  "OUTPUT_FILES" / "DUPS_FILE.txt", "w"),
-            'stats': open(SCRIPT_DIR /  "OUTPUT_FILES" / "STATS_FILE.txt", "w"),
-            'other_invalid_qsos': open(SCRIPT_DIR /  "OUTPUT_FILES" / "OTHER_INVALID_QSOS_FILE.txt", "w")
+            'errors': open(script_dir /  "OUTPUT_FILES" / "ERROR_FILE.txt", "w"),
+            'warnings': open(script_dir /  "OUTPUT_FILES" / "WARNING_FILE.txt", "w"),
+            'uniques': open(script_dir /  "OUTPUT_FILES" / "UNIQUES_FILE.txt", "w"),
+            'busteds': open(script_dir /  "OUTPUT_FILES" / "BUSTEDS_FILE.txt", "w"),
+            'nils': open(script_dir /  "OUTPUT_FILES" / "NILS_FILE.txt", "w"),
+            'debug': open(script_dir /  "OUTPUT_FILES" / "DEBUG_FILE.txt", "w"),
+            'dups': open(script_dir /  "OUTPUT_FILES" / "DUPS_FILE.txt", "w"),
+            'stats': open(script_dir /  "OUTPUT_FILES" / "STATS_FILE.txt", "w"),
+            'other_invalid_qsos': open(script_dir /  "OUTPUT_FILES" / "OTHER_INVALID_QSOS_FILE.txt", "w")
         }
         self.out_files['errors'].seek(0)
         self.out_files['warnings'].seek(0)
@@ -161,6 +161,7 @@ class SHARED:
             'num_provinces_worked': 0,
             'num_dx_worked': 0,
             'num_counties_activated': 0,
+            'rejected_logs_filenames': []
         }
 
     # One of these is created for each log file

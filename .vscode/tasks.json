@@ -1,0 +1,57 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Fly: Deploy",
+      "type": "process",
+      "command": "fly",
+      "args": [
+        "deploy",
+        "--remote-only",
+        "--ha=false"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Fly: Status",
+      "type": "process",
+      "command": "fly",
+      "args": ["status"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Fly: Logs",
+      "type": "process",
+      "command": "fly",
+      "args": ["logs"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Fly: SSH console",
+      "type": "process",
+      "command": "fly",
+      "args": ["ssh", "console"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
