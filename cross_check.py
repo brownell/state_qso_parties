@@ -34,6 +34,7 @@ def cross_check(s):
     for result in s.results:
         dup = {
             'qsos': [],
+            'qso_times': [],
             'num_qso': 0,
         }
         if result['callsign'] == 'AA0AW':
@@ -45,10 +46,11 @@ def cross_check(s):
             qso_dup = make_dup(s, result, qso)
 
             if qso_dup in dup['qsos']:
+                index = dup['qsos'].index(qso_dup)
                 if qso.valid:
                     result['valid_qsos'] -= 1
                     s.stats['duplicate_qsos'] += 1
-                    temp = f"Duplicate QSO: "
+                    temp = f"Duplicate of QSO on {dup['qso_times'][index].strftime("%dth at %H%M")}: "
                     writefile(s, result, qso, temp, ['errors'])
                     qso.valid = False
                     s.stats['invalidated_qsos'] += 1
@@ -57,6 +59,7 @@ def cross_check(s):
                 continue
             else:
                 dup['qsos'].append(qso_dup)
+                dup['qso_times'].append(qso.date)
 
             if qso.dx_call not in list(s.all_callsigns.keys()):
                 # this is a UNIQUE - he gets the points

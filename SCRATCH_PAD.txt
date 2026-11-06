@@ -1,6 +1,10 @@
 Individual Needed
 - counties activated (if mobile)
 - for all: if any - worked_counties_mobile
+
+
+[["Duplicate of QSO on 19th at 1538: : QSO: 14037 CW 2026-09-19 1551 AA3R 599 NJ AD4EB 599 RAIN"]]
+
 FileNotFoundError: [WinError 3] The system cannot find the path specified: 'C:\\Users\\Ham\\Documents\\GitHub\\state_qso_parties\\tqp_data\\batch_input\\2026'
 2026-11-05T16:22:50Z runner[2872957b463d98] dfw [info]Pulling container image registry.fly.io/txqp@sha256:bfc19712f13c4dbd75014885192b63300a10b5094aab1cbdcff19d32d8da0864
 2026-11-05T16:22:57Z runner[2872957b463d98] dfw [info]Successfully prepared image registry.fly.io/txqp@sha256:bfc19712f13c4dbd75014885192b63300a10b5094aab1cbdcff19d32d8da0864 (7.222925088s)
