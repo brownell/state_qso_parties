@@ -213,11 +213,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (result.final_score) {html += `<dt>Final Score:</dt><dd>${result.final_score.toLocaleString()}</dd>`
         }
-        if (result.claimed_score) {html += `<dt>Claimed Score:</dt><dd>${result.claimed_score.toLocaleString()}</dd>`
+        if (result.claimed_score) {
+            html += `<dt>Claimed Score:</dt><dd>${result.claimed_score.toLocaleString()}</dd>`
+            result.diff = Math.round((result.final_score - result.claimed_score) / result.claimed_score * 100)
+            html += `<dt>Increase+ / Decrease- from Claimed:</dt><dd>${result.diff}%</dd>`
         }
         if (result.cab_mobile_points > 0) {html += `<dt>County Activation Bonus:</dt><dd>${result.cab_mobile_points.toLocaleString()}</dd>`
         }
-        if (result.mtb_mobile_points > 0) {html += `<dt>Mobile Tracking Bonus:</dt><dd>${result.cab_mobile_points.toLocaleString()}</dd>`
+        if (result.mtb_mobile_points > 0) {html += `<dt>Mobile Tracking Bonus:</dt><dd>${result.mtb_mobile_points.toLocaleString()}</dd>`
         }
         if (result.qso_points > 0) {html += `<dt>Points for QSOs:</dt><dd>${result.qso_points.toLocaleString()}</dd>`
         }
