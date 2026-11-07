@@ -16,7 +16,7 @@ EXPOSE 8080
 # Install system dependencies
 # Install Git before pip processes the GitHub dependency.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gcc git ca-certificates \
+    && apt-get install -y --no-install-recommends git ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
