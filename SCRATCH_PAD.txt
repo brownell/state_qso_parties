@@ -1,9 +1,24 @@
-Individual Needed
+xIndividual Needed
 - counties activated (if mobile)
 - for all: if any - worked_counties_mobile
+ISS rx 437.800 tx 145.990 UTC 7:13PM
 
-
-[["Duplicate of QSO on 19th at 1538: : QSO: 14037 CW 2026-09-19 1551 AA3R 599 NJ AD4EB 599 RAIN"]]
+xxxDuplicate of QSO on 19th at 1445: : QSO: 7037 CW 2026-09-19 1445 AD4EB 599 DELT K5T 599 STEP
+xxxDuplicate of QSO on 19th at 1503: : QSO: 7037 CW 2026-09-19 1525 AD4EB 599 HUNT K4ZGB 599 AL
+xxxDuplicate of QSO on 19th at 1527: : QSO: 7037 CW 2026-09-19 1548 AD4EB 599 RAIN N5RZ 599 GILL
+xxxDuplicate of QSO on 19th at 1526: : QSO: 7037 CW 2026-09-19 1548 AD4EB 599 RAIN K5WA 599 AUST
+xxxDuplicate of QSO on 19th at 1530: : QSO: 7037 CW 2026-09-19 1548 AD4EB 599 RAIN NW0M 599 MO
+xxxDuplicate of QSO on 19th at 1530: : QSO: 7037 CW 2026-09-19 1548 AD4EB 599 RAIN NS4X 599 TN
+xxxDuplicate of QSO on 19th at 1538: : QSO: 14037 CW 2026-09-19 1551 AD4EB 599 RAIN AA3R 599 NJ
+xxxDuplicate of QSO on 19th at 1537: : QSO: 14037 CW 2026-09-19 1552 AD4EB 599 RAIN K2TNO 599 NC
+xxxDuplicate of QSO on 19th at 1533: : QSO: 14037 CW 2026-09-19 1552 AD4EB 599 RAIN OM2VL 599 OM
+Duplicate of QSO on 19th at 1533: : QSO: 14037 CW 2026-09-19 1552 AD4EB 599 RAIN K9CW 599 IL
+Duplicate of QSO on 19th at 1532: : QSO: 14037 CW 2026-09-19 1552 AD4EB 599 RAIN DL3DXX 599 DL
+Duplicate of QSO on 19th at 1537: : QSO: 14037 CW 2026-09-19 1553 AD4EB 599 RAIN WO4O 599 FL
+Duplicate of QSO on 19th at 1531: : QSO: 14037 CW 2026-09-19 1553 AD4EB 599 RAIN VE3YT 599 ON
+Duplicate of QSO on 19th at 1532: : QSO: 14037 CW 2026-09-19 1554 AD4EB 599 RAIN NE8P 599 FL
+Duplicate of QSO on 19th at 1538: : QSO: 14037 CW 2026-09-19 1555 AD4EB 599 RAIN KV8Q 599 OH
+Duplicate of QSO on 19th at 1533: : QSO: 14037 CW 2026-09-19 1556 AD4EB 599 RAIN K2ZR 599 NY
 
 FileNotFoundError: [WinError 3] The system cannot find the path specified: 'C:\\Users\\Ham\\Documents\\GitHub\\state_qso_parties\\tqp_data\\batch_input\\2026'
 2026-11-05T16:22:50Z runner[2872957b463d98] dfw [info]Pulling container image registry.fly.io/txqp@sha256:bfc19712f13c4dbd75014885192b63300a10b5094aab1cbdcff19d32d8da0864

@@ -162,7 +162,8 @@ def score_an_operator(s, r):
             single county'''
         if r['callsign'] in s.mobile_callsigns:
             for key in list(r['mobile_activation_counts'].keys()):
-                r['cab_mobile_points'] += int(r['mobile_activation_counts'][key] / MOBILE_REQUIRED_QSOS)  * COUNTIES_ACTIVATED_POINTS
+                if int(r['mobile_activation_counts'][key] / MOBILE_REQUIRED_QSOS) > 0:
+                    r['cab_mobile_points'] += COUNTIES_ACTIVATED_POINTS
 
         ''' Bonus points for ALL operators for each county in which
             they worked a mobile operator'''
