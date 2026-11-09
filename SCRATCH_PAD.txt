@@ -3,42 +3,25 @@ xIndividual Needed
 - for all: if any - worked_counties_mobile
 ISS rx 437.800 tx 145.990 UTC 7:13PM
 
-xxxDuplicate of QSO on 19th at 1445: : QSO: 7037 CW 2026-09-19 1445 AD4EB 599 DELT K5T 599 STEP
-xxxDuplicate of QSO on 19th at 1503: : QSO: 7037 CW 2026-09-19 1525 AD4EB 599 HUNT K4ZGB 599 AL
-xxxDuplicate of QSO on 19th at 1527: : QSO: 7037 CW 2026-09-19 1548 AD4EB 599 RAIN N5RZ 599 GILL
-xxxDuplicate of QSO on 19th at 1526: : QSO: 7037 CW 2026-09-19 1548 AD4EB 599 RAIN K5WA 599 AUST
-xxxDuplicate of QSO on 19th at 1530: : QSO: 7037 CW 2026-09-19 1548 AD4EB 599 RAIN NW0M 599 MO
-xxxDuplicate of QSO on 19th at 1530: : QSO: 7037 CW 2026-09-19 1548 AD4EB 599 RAIN NS4X 599 TN
-xxxDuplicate of QSO on 19th at 1538: : QSO: 14037 CW 2026-09-19 1551 AD4EB 599 RAIN AA3R 599 NJ
-xxxDuplicate of QSO on 19th at 1537: : QSO: 14037 CW 2026-09-19 1552 AD4EB 599 RAIN K2TNO 599 NC
-xxxDuplicate of QSO on 19th at 1533: : QSO: 14037 CW 2026-09-19 1552 AD4EB 599 RAIN OM2VL 599 OM
-Duplicate of QSO on 19th at 1533: : QSO: 14037 CW 2026-09-19 1552 AD4EB 599 RAIN K9CW 599 IL
-Duplicate of QSO on 19th at 1532: : QSO: 14037 CW 2026-09-19 1552 AD4EB 599 RAIN DL3DXX 599 DL
-Duplicate of QSO on 19th at 1537: : QSO: 14037 CW 2026-09-19 1553 AD4EB 599 RAIN WO4O 599 FL
-Duplicate of QSO on 19th at 1531: : QSO: 14037 CW 2026-09-19 1553 AD4EB 599 RAIN VE3YT 599 ON
-Duplicate of QSO on 19th at 1532: : QSO: 14037 CW 2026-09-19 1554 AD4EB 599 RAIN NE8P 599 FL
-Duplicate of QSO on 19th at 1538: : QSO: 14037 CW 2026-09-19 1555 AD4EB 599 RAIN KV8Q 599 OH
-Duplicate of QSO on 19th at 1533: : QSO: 14037 CW 2026-09-19 1556 AD4EB 599 RAIN K2ZR 599 NY
-
-FileNotFoundError: [WinError 3] The system cannot find the path specified: 'C:\\Users\\Ham\\Documents\\GitHub\\state_qso_parties\\tqp_data\\batch_input\\2026'
-2026-11-05T16:22:50Z runner[2872957b463d98] dfw [info]Pulling container image registry.fly.io/txqp@sha256:bfc19712f13c4dbd75014885192b63300a10b5094aab1cbdcff19d32d8da0864
-2026-11-05T16:22:57Z runner[2872957b463d98] dfw [info]Successfully prepared image registry.fly.io/txqp@sha256:bfc19712f13c4dbd75014885192b63300a10b5094aab1cbdcff19d32d8da0864 (7.222925088s)
-2026-11-05T16:22:57Z runner[2872957b463d98] dfw [info]Setting up volume 'txqp_data'
-2026-11-05T16:22:57Z runner[2872957b463d98] dfw [info]Uninitialized volume 'txqp_data', initializing...
-2026-11-05T16:22:57Z runner[2872957b463d98] dfw [info]Encrypting volume
-2026-11-05T16:22:58Z runner[2872957b463d98] dfw [info]Opening encrypted volume
-2026-11-05T16:22:59Z runner[2872957b463d98] dfw [info]Formatting volume
-2026-11-05T16:23:00Z runner[2872957b463d98] dfw [info]Configuring firecracker
-2026-11-05T16:38:57Z runner[2872957b463d98] dfw [info]Pulling container image registry.fly.io/txqp@sha256:bfc19712f13c4dbd75014885192b63300a10b5094aab1cbdcff19d32d8da0864
-2026-11-05T16:38:57Z runner[2872957b463d98] dfw [info]Container image registry.fly.io/txqp@sha256:bfc19712f13c4dbd75014885192b63300a10b5094aab1cbdcff19d32d8da0864 already prepared
-2026-11-05T16:38:57Z runner[2872957b463d98] dfw [info]Setting up volume 'txqp_data'
-2026-11-05T16:38:57Z runner[2872957b463d98] dfw [info]Opening encrypted volume
-2026-11-05T16:38:58Z runner[2872957b463d98] dfw [info]Configuring firecracker
-(.venv) PS C:\Users\Ham\Documents\GitHub\state_qso_parties> fly logs -a txqp
-2026-11-05T15:59:15Z app[28724d1aeeee48] dfw [info]    from database import save_result, get_result
-2026-11-05T15:59:15Z app[28724d1aeeee48] dfw [info]  File "/app/database.py", line 438, in <module>
-2026-11-05T15:59:15Z app[28724d1aeeee48] dfw [info]    db = ContestDatabase(Path(DATABASE_FILE))
-2026-11-05T15:59:15Z app[28724d1aeeee48] dfw [info]         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+DX SO DX SINGLE OPERATOR 7
+NTX SO MIX NON-TEXAS SINGLE OPERATOR MIXED MODE 82
+NTX SO CWO NON-TEXAS SINGLE OPERATOR CW ONLY 127
+NTX SO PHO NON-TEXAS SINGLE OPERATOR PHONE ONLY 55
+NTX SO QRP NON-TEXAS SINGLE OPERATOR QRP 6
+Total Non-Texas (incl DX) Logs 277
+TX CWO SO HP TEXAS CW ONLY SINGLE OPERATOR HIGH POWER 8
+TX CWO SO LP TEXAS CW ONLY SINGLE OPERATOR LOW POWER 17
+TX MO HP TEXAS MULTI-OPERATOR HIGH POWER 1
+TX MO LP TEXAS MULTI-OPERATOR LOW POWER 12
+TX PHO SO HP TEXAS PHONE ONLY SINGLE OPERATOR HIGH POWER 10
+TX PHO SO LP TEXAS PHONE ONLY SINGLE OPERATOR LOW POWER 32
+TX SO QRP TEXAS SINGLE OPERATOR QRP 3
+TX SO MIX HP TEXAS SINGLE OPERATOR MIXED MODE HIGH POWER 6
+TX SO MIX LP TEXAS SINGLE OPERATOR MIXED MODE LOW POWER 15
+TXM MO TEXAS MOBILE MULTI-OPERATOR 1
+TXM SO MIX TEXAS MOBILE SINGLE OPERATOR MIXED MODE 7
+TXM SO CWO TEXAS MOBILE SINGLE OPERATOR CW ONLY 3
+TXM SO PHO TEXAS MOBILE SINGLE OPERATOR PHONE ONLY
 
 Your uploaded files show that persistence is not configured yet:
 

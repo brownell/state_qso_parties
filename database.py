@@ -23,7 +23,7 @@ from typing import Dict, List, Optional
 from datetime import datetime, timezone
 from share import SHARED as s
 from config.config import DATABASE_FILE, DB_DROP,  CONVERT
-from config.config_txqp import RANKINGS
+from config.config_txqp import RANKINGS, CATCONVERSIONS
 
 def create_tables():
     """Create database tables if they don't exist"""
@@ -504,6 +504,119 @@ def get_clubs_section(s, year):
                 }
 
             sections[1]['tables'].append(table)
+
+    return sections
+
+def get_stats_sections(s):
+    db_path = Path(DATABASE_FILE)
+    with sqlite3.connect(db_path, timeout=20.0) as conn:
+        sql = '''SELECT
+                    cat,
+                    COUNT(*) AS cat_count
+                FROM contest_results
+                GROUP BY cat;'''
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        conn.commit
+        rows = cursor.fetchall()
+        # convert list of lists to dict with key as very short cat name
+        cat_dict = {}
+        # valid_logs = (s.stats['total_logs'] - s.stats['rejected_logs'])
+        valid_logs = 416
+        for r in rows: #Each row is a list of 
+            if r[0] != 'C':
+                cat_dict[r[0]] = [CATCONVERSIONS[r[0]], RANKINGS[r[0]], r[1],  f"{int(r[1] / valid_logs * 100)}%"]
+
+    rows = []
+    
+    counter = 0
+    for i, k in enumerate(list(CATCONVERSIONS.keys())):
+        if k in list(cat_dict.keys()):
+            rows.append([CATCONVERSIONS[k], RANKINGS[k], cat_dict[k][2], cat_dict[k][3]])
+            counter += cat_dict[k][2]
+        else:
+            rows.append([CATCONVERSIONS[k], RANKINGS[k], 0, 0])
+        
+        if i == 8:  # TX FIXED
+            rows.append(['', 'Number of Logs from TX Fixed Operators', counter, f"{int(counter / valid_logs * 100)}%"])
+            txf = counter
+            counter = 0
+        if i == 12: # TX Mobile
+            rows.append(['', 'Number of Logs from TX Mobile Operators', counter, f"{int(counter / valid_logs * 100)}%"])
+            rows.append(['', 'Number of Logs from All TX Operators', counter, f"{int(counter / valid_logs * 100)}%"])
+            counter = 0
+        if i == 16: # TX Mobile
+            rows.append(['', 'Number of Logs from TX Mobile Operators', counter, f"{int(counter / valid_logs * 100)}%"])
+            ntx = counter
+            counter = 0
+        if i == 17: # DX
+            rows.append(['', 'Number of Logs from DX Single Operator', counter, f"{int(counter / valid_logs * 100)}%"])
+            rows.append(['', 'Number of Logs from All non-TX Operators', counter, f"{int(counter + ntx / valid_logs * 100)}%"])
+            counter = 0
+
+    sections =  [
+        {
+            'section_title': 'Some Statistics from the Log',
+            'tables': [
+                {
+                'title': 'Number of Logs by Category',
+                'headers': ['Category', 'Category Full Name', 'Log Count', 'Percent of Logs'],
+                'rows': rows
+                }
+            ]
+        },
+    ]
+    # for testing
+    s.stats = {
+        'qsos_by_mode': {'PH': 18021, 'CW': 31432, 'RY': 39, 'DG': 225, 'FM': 0},
+        'total_qsos': 52779,
+        'qsos_with_canada': 2110,
+        'qsos_with_tx': 47580,
+        'qsos_with_us': 51858,
+        'qsos_with_dx': 3592,
+        'qsos_by_band': {'160': 2, '80': 565, '40': 15001, '20': 30564, '15': 3476, '10': 65, '6': 0, '2': 44},
+        'qsos_by_hour': [4263, 3794, 2817, 2540, 2783, 2493, 3422, 2448, 2758, 3192, 2615, 2690, 3304, 2599, 1872, 1704, 2019, 2395, 9, 0, 0, 0, 0, 0]
+    }
+    rows.append(['CW', s.stats['qsos_by_mode']['CW'], f"{int(s.stats['qsos_by_mode']['CW'] / s.stats['total_qsos'] * 100)}%"])
+    rows.append(['SSB', s.stats['qsos_by_mode']['PH'], f"{int(s.stats['qsos_by_mode']['PH'] / s.stats['total_qsos'] * 100)}%"])
+    rows.append(['RY', s.stats['qsos_by_mode']['RY'], f"{int(s.stats['qsos_by_mode']['RY'] / s.stats['total_qsos'] * 100)}%"])
+    rows.append(['DG', s.stats['qsos_by_mode']['DG'], f"{int(s.stats['qsos_by_mode']['DG'] / s.stats['total_qsos'] * 100)}%"])
+    sections[0]['tables'].append(
+        {
+        'title': 'Number of Logs by Mode',
+        'headers': ['Mode', 'QSOs Count', 'Percent of QSOS'],
+        'rows': rows
+        }
+    )
+
+    rows = []
+    for k in list(s.stats['qsos_by_band'].keys()):
+        rows.append([k, s.stats['qsos_by_band'][k], f"{int(s.stats['qsos_by_band'][k] / s.stats['total_qsos'] * 100)}%"])
+    sections[0]['tables'].append(
+        {
+            'title': 'Number of Logs by Band',
+            'headers': ['Band', 'QSOs Count', 'Percent of QSOS'],
+            'rows': rows
+        }
+    )
+
+    rows = []
+    for i, h in enumerate(s.stats['qsos_by_hour']):
+        if i <= 9: # Saturday
+            dt = f"Saturday, {(i * 100) + 1400} to {((i + 1) * 100) + 1400} UTC"
+        elif i > 9 and i <= 11: # Sunday early
+            dt = f"Sunday, {(i * 100)} to {(i + 1) * 100} UTC"
+        else:
+            dt = f"Sunday, {(i * 100 + 200)} to {((i + 1) * 100) + 200} UTC"
+        rows.append([dt, h, f"{int(h / s.stats['total_qsos'] * 100)}"])
+
+    sections[0]['tables'].append(
+            {
+            'title': 'Number of Logs by hour',
+            'headers': ['Hour', 'QSOs Count', 'Percent of QSOS'],
+            'rows': rows
+            }
+        )
 
     return sections
 

@@ -78,7 +78,7 @@ Thank you for your participation and we look forward to seeing you next year!
 73,
 Texas DX Society</p>
 """
-STATISTICS_TEXT = {
+STATISTICS_TEXT_FINAL_REPORT = {
     # LOGS
     'title_logs': 'LOGS',
     'total_logs': 'Total Number of Logs Received',
@@ -144,8 +144,113 @@ STATISTICS_TEXT = {
     'provinces_worked': 'List of Provinces Worked',
     'dx_worked': 'List of Non North America Worked',
         }
-RANKINGS = {
 
+'''
+Tables:
+    # logs by category (include percent in all counts)
+    # logs by band
+    # logs by mode
+    # logs by destination
+    # logs per hour FOR EACH OP?
+
+'''
+STATISTICS_TEXT = {
+    # LOGS
+    'title_logs': 'LOGS',
+    'total_logs': 'Total Number of Logs Received',
+    'rejected_logs': 'Number of Logs Rejected',
+    # Sources of Logs
+    'title_log_sources': 'Sources of Logs',
+    'us_logs': 'US Non-Texas',
+    'cdn_logs': 'Canada',
+    'tx_fixed_logs': 'Texas Fixed Logs',
+    'tx_mobile_logs': 'Texax Mobile Logs',
+    'dx_logs': 'Outside North America',
+    'unclassed_logs': 'Unclassified Logs',
+    # QSOS
+    'title_qsos': 'QSOS',
+    'total_qsos': 'Total Number of QSOs',
+    'scored_qsos': 'Number of Scored QSOs',
+    'uniques': 'Number of Unique QSOs',
+    # QSOS BY MODE
+    'title_mode': "QSOs by Mode",
+    'scored_mode': 'QSO Count for Mode',
+    'qsos_by_mode': 'QSOs by Mode',
+    # QSOS BY bAND
+    'title_band': "QSOs by Band",
+    'scored_band': 'QSO Count for Band',
+    'qsos_by_band': "QSOs by Band",
+    # QSOS BY HOUR
+    'title_hour': 'QSOs by Hour',
+    'scored_hour': 'QSO Count for hour',
+    'qsos_by_hour': 'QSOs by Hour',
+    # Counts of QSOS BY DESTINATION
+    'title_dest': 'QSO Counts From TX to Destination',
+    'with_receiver': 'Total Counted With a Receiver',
+    'qsos_with_tx': 'Number With Texas',
+    'qsos_with_us': 'Number With US Non Texas',
+    'qsos_with_canada': 'Number With Canada',
+    'qsos_with_dx': 'Number With Non North America',
+    # QSO ERRORS
+    'title_qso_issues': 'QSO Issues',
+    'duplicate_qsos': 'Numbre of Duplicate QSOs',
+    'nils': 'Number of NILs',
+    'busteds': 'Number of Busteds',
+    'other_invalid_qsos': 'Number Invalidated for Other Reasons',
+    'multi_county_exchanges': 'Number of Exchanges With Multiple Counties',
+    'num_bad_exchanges': 'Number of Bad Exchanges',
+    # checks
+    'checks_title': 'Sums to Check the Previous Values',
+    'uncategorized_logs': 'Number of Uncategorized Logs',
+    'invalidated_qsos': 'Number of QSOs Invalidated',
+    'with_receiver': 'Number of QSOs With a Receiver',
+    'num_states_worked': 'Number of Non-TX States Worked',
+    'num_provinces_worked': 'Number of Provinces Worked',
+    'num_dx_worked': 'Number of Non North America Worked',
+    'num_counties_activated': 'Number of Counties Activated - Non-Mobile',
+    'num_counties_activated_mobile': 'Number of Counties Activated - Mobile',
+    # lists
+    'title_counties': 'Areas Activated and Worked',
+    'bad_exchanges': 'Invalid Exchanges',
+    'mobile_activation_counts': 'Number Mobile Activations by County',
+    'worked_counties_mobile': 'Number Mobiles Worked By County',
+    'counties_activated': 'Counties Activated',
+    'counties_worked': 'List Counties Worked by Any Station',
+    'states_worked': 'List of Non-TX States Worked',
+    'provinces_worked': 'List of Provinces Worked',
+    'dx_worked': 'List of Non North America Worked',
+}
+
+CATCONVERSIONS = {
+    # Texas – Fixed Station
+    'TSL': 'TX SO LP',
+	'TSH':  'TX SO HP',
+	'TML':  'TX MO LP',
+	'TMH':  'TX MO HP',
+	'TQS':  'TX QRP SO',
+	'TCSL': 'TX CWO SO LP',
+	'TCSH': 'TX CWO SO HP',
+	'TPSL':  'TX PHO SO LP',
+	'TPSH':  'TX PHO SO HP',
+    
+    # Texas – Mobile Stations
+	'TMS':  'TXM SO',
+	'TMM':  'TXM MO',
+	'TMSC': 'TXM SO CWO',
+	'TMSP':  'TXM MO CWO',
+    # Note: The spirit of the mobile category is for vehicle-based *or* non-permanent stations who work from multiple counties during the event.',
+
+    # Non-Texas Stations
+	'NS':   'NTX SO',
+	'NSQ':  'NTX SO QRP',
+	'NSC':  'NTX SO CWO',
+	'NSP':  'NTX SO PHO',
+
+    # DX Stations
+	'DS':  'DX SO',
+}
+
+RANKINGS = {
     # Texas – Fixed Station
     'TSL': 'Single Operator Mixed Mode (150 watts power limit)',
 	'TSH':  'Single Operator Mixed Mode High-Power (>150 watts power)',

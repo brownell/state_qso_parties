@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from config.config_txqp import RANKINGS, RANK_TABLES, FINAL_REPORT_TXT
 from config.config import FINAL_REPORTS_DIR, CONTEST_YEAR
 from ranking_tables import get_section
-from database import get_clubs_section
+from database import get_clubs_section, get_stats_sections
 try:
     from reportlab.lib import colors
     from reportlab.lib.pagesizes import letter
@@ -139,12 +139,16 @@ def generate_final_report_pdf(s, year: str):
 
     for section_config in RANK_TABLES:
         section = get_section(year, section_config)
-        _add_section(section, year)
+        _add_section(section)
 
     # get the section for the club results
     sections = get_clubs_section(s, year)
     for section in sections:
-        _add_section(section, year)
+        _add_section(section)
+
+    sections = get_stats_sections(s)
+    for section in sections:
+        _add_section(section, color=False)
     
     print(f"finish PDF document")
     _finish_pdf_document()
@@ -167,7 +171,7 @@ def _set_up_pdf_document(year):
     intro_text = FINAL_REPORT_TXT if FINAL_REPORT_TXT else 'Congratulations to all participants!'
     story.append(Paragraph(intro_text, intro_style))
 
-def _add_section(section, year):
+def _add_section(section, color = True):
     story.append(Paragraph(section['section_title'], section_title_style))
     
     for table in section['tables']:
@@ -219,15 +223,16 @@ def _add_section(section, year):
             # Rank highlighting
             rank = row[0] # Rank is first column
             is_highlighted = False
-            if rank == 1:
-                bg_color = colors.HexColor("#B4F0B5")
-                is_highlighted = True
-            elif rank == 2:
-                bg_color = colors.HexColor("#CA9AEFFF")
-                is_highlighted = True
-            elif rank == 3:
-                bg_color = colors.HexColor("#B2C9FA")
-                is_highlighted = True
+            if colors:
+                if rank == 1:
+                    bg_color = colors.HexColor("#B4F0B5")
+                    is_highlighted = True
+                elif rank == 2:
+                    bg_color = colors.HexColor("#CA9AEFFF")
+                    is_highlighted = True
+                elif rank == 3:
+                    bg_color = colors.HexColor("#B2C9FA")
+                    is_highlighted = True
             
             style_cmds.append(('BACKGROUND', (0, row_idx), (-1, row_idx), bg_color))
             if is_highlighted:

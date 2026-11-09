@@ -122,8 +122,6 @@ class SHARED:
             'qsos_with_canada': 0,
             'qsos_with_tx': 0,
             'qsos_with_us': 0,
-            'qsos_with_tx': 0,
-            'qsos_with_us': 0,
             'qsos_with_dx': 0,
             # QSOs with ERRORS
             'duplicate_qsos': 0,
@@ -139,7 +137,7 @@ class SHARED:
             # QSOS BY bAND
             'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
             # QSOS BY HOUR
-            'qsos_by_hour': [0] * 24,
+            'qsos_by_hour': [0] * 18,
             'exceptions': [],
             'mobile_activation_counts': {},
             'worked_counties_mobile': {},
