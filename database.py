@@ -575,12 +575,13 @@ def get_stats_sections(s):
         'qsos_with_us': 51858,
         'qsos_with_dx': 3592,
         'qsos_by_band': {'160': 2, '80': 565, '40': 15001, '20': 30564, '15': 3476, '10': 65, '6': 0, '2': 44},
-        'qsos_by_hour': [4263, 3794, 2817, 2540, 2783, 2493, 3422, 2448, 2758, 3192, 2615, 2690, 3304, 2599, 1872, 1704, 2019, 2395, 9, 0, 0, 0, 0, 0]
+        'qsos_by_hour': [4263, 3794, 2817, 2540, 2783, 2493, 3422, 2448, 2758, 3192, 2615, 2690, 3304, 2599, 1872, 1704, 2019, 2395, 9, 0, 0, 0, 0, 0],
+        'scored_qsos': 49717
     }
-    rows.append(['CW', s.stats['qsos_by_mode']['CW'], f"{int(s.stats['qsos_by_mode']['CW'] / s.stats['total_qsos'] * 100)}%"])
-    rows.append(['SSB', s.stats['qsos_by_mode']['PH'], f"{int(s.stats['qsos_by_mode']['PH'] / s.stats['total_qsos'] * 100)}%"])
-    rows.append(['RY', s.stats['qsos_by_mode']['RY'], f"{int(s.stats['qsos_by_mode']['RY'] / s.stats['total_qsos'] * 100)}%"])
-    rows.append(['DG', s.stats['qsos_by_mode']['DG'], f"{int(s.stats['qsos_by_mode']['DG'] / s.stats['total_qsos'] * 100)}%"])
+    rows = [['CW', s.stats['qsos_by_mode']['CW'], f"{int(s.stats['qsos_by_mode']['CW'] / s.stats['scored_qsos'] * 100)}%"]]
+    rows.append(['SSB', s.stats['qsos_by_mode']['PH'], f"{int(s.stats['qsos_by_mode']['PH'] / s.stats['scored_qsos'] * 100)}%"])
+    rows.append(['RY', s.stats['qsos_by_mode']['RY'], f"{int(s.stats['qsos_by_mode']['RY'] / s.stats['scored_qsos'] * 100)}%"])
+    rows.append(['DG', s.stats['qsos_by_mode']['DG'], f"{int(s.stats['qsos_by_mode']['DG'] / s.stats['scored_qsos'] * 100)}%"])
     sections[0]['tables'].append(
         {
         'title': 'Number of Logs by Mode',
@@ -591,11 +592,11 @@ def get_stats_sections(s):
 
     rows = []
     for k in list(s.stats['qsos_by_band'].keys()):
-        rows.append([k, s.stats['qsos_by_band'][k], f"{int(s.stats['qsos_by_band'][k] / s.stats['total_qsos'] * 100)}%"])
+        rows.append([k, s.stats['qsos_by_band'][k], f"{int(s.stats['qsos_by_band'][k] / s.stats['scored_qsos'] * 100)}%"])
     sections[0]['tables'].append(
         {
             'title': 'Number of Logs by Band',
-            'headers': ['Band', 'QSOs Count', 'Percent of QSOS'],
+            'headers': ['Band', f"QSOs\nCount", 'Percent of QSOS'],
             'rows': rows
         }
     )
@@ -603,12 +604,12 @@ def get_stats_sections(s):
     rows = []
     for i, h in enumerate(s.stats['qsos_by_hour']):
         if i <= 9: # Saturday
-            dt = f"Saturday, {(i * 100) + 1400} to {((i + 1) * 100) + 1400} UTC"
+            dt = f"Saturday {(i * 100) + 1400} to {((i + 1) * 100) + 1400} UTC"
         elif i > 9 and i <= 11: # Sunday early
-            dt = f"Sunday, {(i * 100)} to {(i + 1) * 100} UTC"
+            dt = f"Sunday {(i * 100)} to {(i + 1) * 100} UTC"
         else:
-            dt = f"Sunday, {(i * 100 + 200)} to {((i + 1) * 100) + 200} UTC"
-        rows.append([dt, h, f"{int(h / s.stats['total_qsos'] * 100)}"])
+            dt = f"Sunday {(i * 100 + 200)} to {((i + 1) * 100) + 200} UTC"
+        rows.append([dt, h, f"{int(h / s.stats['scored_qsos'] * 100)}%"])
 
     sections[0]['tables'].append(
             {

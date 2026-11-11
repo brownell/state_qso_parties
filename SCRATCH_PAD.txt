@@ -1,7 +1,72 @@
 xIndividual Needed
 - counties activated (if mobile)
 - for all: if any - worked_counties_mobile
-ISS rx 437.800 tx 145.990 UTC 7:13PM
+111 Spacer, 112 Paragraph, 113 KeepTogether, 114 Spacer, 115 Paragraph, 116 KeepTogether, 117 Spacer
+
+# Append title normally
+story.append(Paragraph(table['title'], table_title_style)), # Wrap ONLY the Table in KeepTogether
+story.append(KeepTogether(t))
+
+# Append spacer
+story.append(Spacer(1, 10))
+
+from reportlab.platypus import Paragraph, Table, TableStyle, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+
+# 1. Define cell styles for headers and body
+styles = getSampleStyleSheet()
+
+header_style = ParagraphStyle(
+    'TableHeaderStyle',
+    fontName='Courier-Bold',
+    fontSize=12,
+    leading=14,
+    textColor=colors.white,
+    alignment=0  # 0=LEFT, 1=CENTER
+)
+
+cell_style = ParagraphStyle(
+    'TableCellStyle',
+    fontName='Courier-Bold',
+    fontSize=9,
+    leading=11,
+    textColor=colors.black
+)
+
+for table in section['tables']:
+    table_elements = []
+    table_elements.append(Paragraph(table['title'], table_title_style))
+    
+    # Prepare table data
+    table_data = []
+    
+    # Headers wrapped in Paragraphs
+    table_data.append([Paragraph(str(h), header_style) for h in table['headers']])
+    
+    # Rows wrapped in Paragraphs so colWidths forces wrapping
+    for row in table['rows']:
+        formatted_row = [
+            Paragraph("N/A" if val == -1 else str(val), cell_style) 
+            for val in row
+        ]
+        table_data.append(formatted_row)
+    
+    # Create Table with colWidths
+    if table['title'] == 'Number of Logs by Category':
+        t = Table(table_data, repeatRows=1, colWidths=col_widths)
+    else:
+        t = Table(table_data, repeatRows=1)
+    
+    # Base Table Style
+    style_cmds = [
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#6899EE")),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),  # Changed to TOP so wrapped lines align nicely
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+    ]
+
 
 DX SO DX SINGLE OPERATOR 7
 NTX SO MIX NON-TEXAS SINGLE OPERATOR MIXED MODE 82

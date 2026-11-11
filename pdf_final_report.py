@@ -27,6 +27,7 @@ try:
     from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, KeepTogether, PageBreak, Image
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.pdfgen import canvas
+    from reportlab.lib.units import inch
 
 except ImportError:
     print("Error: reportlab is not installed. Please install it with: pip install reportlab")
@@ -46,12 +47,6 @@ c = canvas.Canvas("final_report.pdf")
 c.setTitle("TXQP Report")
 
 styles = getSampleStyleSheet()
-
-doc = SimpleDocTemplate(
-    "report.pdf",
-    title="Club Activity Report",
-    author="Your Name",
-)
 
 doc = SimpleDocTemplate(
     str(output_file),
@@ -122,6 +117,42 @@ table_title_style = ParagraphStyle(
     spaceBefore=8,
     spaceAfter=4
 )
+# Define a paragraph style for your table cells (adjust font, size, leading as needed)
+cell_style = ParagraphStyle(
+    'TableCellStyle',
+    fontName='Courier-Bold',
+    fontSize=9,
+    leading=11,
+    textColor=colors.black,
+    alignment=2  # right
+)
+# Headers (wrap headers in Paragraphs as well if they might be long)
+header_style = ParagraphStyle(
+    'TableHeaderStyle',
+    fontName='Courier-Bold',
+    fontSize=12,
+    leading=14,
+    textColor=colors.white,
+    alignment=0  # 0=LEFT, 1=CENTER
+)
+
+# Base Table Style
+more_table_style_cmds = [
+    ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#6899EE")),
+    ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+    ('VALIGN', (0, 0), (-1, -1), 'TOP'),  # Changed to TOP so wrapped lines align nicely
+    ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ('ALIGN', (0, 0), (-1, 0), 'LEFT'),
+    ('ALIGN', (0, 0), (0, -1), 'CENTER'), # Rank column centered
+    ('FONTNAME', (0, 0), (-1, 0), 'Courier-Bold'),
+    ('FONTSIZE', (0, 0), (-1, 0), 12),
+    ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+    ('TOPPADDING', (0, 0), (-1, 0), 6),
+    ('FONTNAME', (0, 1), (-1, -1), 'Courier-Bold'),
+    ('FONTSIZE', (0, 1), (-1, -1), 9),
+    ('TOPPADDING', (0, 1), (-1, -1), 4),
+    ('BOTTOMPADDING', (0, 1), (-1, -1), 4),
+]
 
 story = []
 
@@ -147,18 +178,21 @@ def generate_final_report_pdf(s, year: str):
         _add_section(section)
 
     sections = get_stats_sections(s)
+    col_widths = [1 * inch, 5 * inch, 0.5 * inch, 0.5 * inch]
     for section in sections:
-        _add_section(section, color=False)
+        _add_section(section, color=False, col_widths=col_widths)
     
     print(f"finish PDF document")
     _finish_pdf_document()
+    
+    print('break')
 
 def _set_up_pdf_document(year):
     """Set up the PDF document natively using ReportLab"""
     # Header
-    story.append(Paragraph(f"Texas QSO Party {year}", title_style))
-    story.append(Paragraph("Final Results", subtitle_style))
-    story.append(Paragraph(f"Generated: {datetime.now().strftime('%B %d, %Y')}", date_style))
+    story.extend([Paragraph(f"Texas QSO Party {year}", title_style)])
+    story.extend([Paragraph("Final Results", subtitle_style)])
+    story.extend([Paragraph(f"Generated: {datetime.now().strftime('%B %d, %Y')}", date_style)])
 
     # logo
     img = Image(f"{img_path}/txqp.png")
@@ -169,50 +203,35 @@ def _set_up_pdf_document(year):
     
     # Intro
     intro_text = FINAL_REPORT_TXT if FINAL_REPORT_TXT else 'Congratulations to all participants!'
-    story.append(Paragraph(intro_text, intro_style))
+    story.extend([Paragraph(intro_text, intro_style)])
 
-def _add_section(section, color = True):
-    story.append(Paragraph(section['section_title'], section_title_style))
-    
+def _add_section(section, color = True, col_widths=[]):
+    story.extend([Paragraph(section['section_title'], section_title_style)])
+    # one table at a time
     for table in section['tables']:
-        table_elements = []
-        table_elements.append(Paragraph(table['title'], table_title_style))
-        
-        # Prepare table data
-        table_data = []
+        print('break')
+        story.extend([Paragraph(table['title'], table_title_style)])
+        print('break')
         
         # Headers
-        table_data.append(table['headers'])
-        
-        # Rows
+        if len(table['headers']) == 3:
+            col_widths = [1 * inch, 1 * inch, 1 * inch]
+        num_table_rows = 0
+        num_styles_added = 0
+        table_rows = []
+        table_style_cmds = []
+        story.extend([Paragraph(h, header_style) for h in table['headers']])
+        # Rows wrapped in Paragraphs so colWidths forces wrapping
         for row in table['rows']:
-            formatted_row = ["N/A" if val == -1 else str(val) for val in row]
-            table_data.append(formatted_row)
-        
-        # Create Table (using auto-sizing columns)
-        t = Table(table_data, repeatRows=1)
-        
-        # Base Table Style
-        style_cmds = [
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#6899EE")),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-            ('ALIGN', (0, 0), (-1, 0), 'LEFT'),
-            ('ALIGN', (0, 0), (0, -1), 'CENTER'), # Rank column centered
-            ('FONTNAME', (0, 0), (-1, 0), 'Courier-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 12),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
-            ('TOPPADDING', (0, 0), (-1, 0), 6),
-            ('FONTNAME', (0, 1), (-1, -1), 'Courier-Bold'),
-            ('FONTSIZE', (0, 1), (-1, -1), 9),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('TOPPADDING', (0, 1), (-1, -1), 3),
-            ('BOTTOMPADDING', (0, 1), (-1, -1), 3),
-        ]
+            formatted_row = [
+                Paragraph("N/A" if val == -1 else str(val), cell_style) 
+                for val in row
+            ]
+            table_rows.append(formatted_row)
+            num_table_rows += 1
         
         # Alternating row colors and rank highlighting
-        for i, row in enumerate(table['rows']):
-            row_idx = i + 1 # offset by 1 for header
+        for i, row in enumerate(table_rows):
             
             # Default alternating
             if i % 2 == 0:
@@ -223,31 +242,69 @@ def _add_section(section, color = True):
             # Rank highlighting
             rank = row[0] # Rank is first column
             is_highlighted = False
-            if colors:
+            if i > 2 or color:
                 if rank == 1:
                     bg_color = colors.HexColor("#B4F0B5")
-                    is_highlighted = True
                 elif rank == 2:
                     bg_color = colors.HexColor("#CA9AEFFF")
-                    is_highlighted = True
                 elif rank == 3:
                     bg_color = colors.HexColor("#B2C9FA")
-                    is_highlighted = True
             
-            style_cmds.append(('BACKGROUND', (0, row_idx), (-1, row_idx), bg_color))
-            if is_highlighted:
-                style_cmds.append(('FONTNAME', (0, row_idx), (-1, row_idx), 'Courier-Bold'))
+            table_style_cmds.extend([('BACKGROUND', (0, i), (-1, i), bg_color)])
+            # print(f"i = {i}, New cmds:\n{table_style_cmds[:23]}")
+            num_styles_added += 1
+            
         
-        t.setStyle(TableStyle(style_cmds))
-        table_elements.append(t)
-        table_elements.append(Spacer(1, 10))
-        
-        story.append(KeepTogether(table_elements))
-        
-    story.append(PageBreak())
+        # Create Table (using auto-sizing columns) except for category stats table
+        if table['title'] == 'Number of Logs by Category':
+            rows_in_table = Table(table_rows, repeatRows=1, colWidths=col_widths)
+        else:
+            rows_in_table = Table(table_rows, repeatRows=1)
+        # print(f"rows in table: {type(table_rows)} {len(table_rows)}")
+        # for i, r in enumerate(table_rows):
+        #     print(f"index {i}, length of row {len(r)}")
+
+        # nrows = len(table_rows)
+
+        # for command in table_style_cmds:
+        #     if command[0] not in {
+        #         "BACKGROUND",
+        #         "ROWBACKGROUNDS",
+        #         "COLBACKGROUNDS",
+        #     }:
+        #         continue
+
+        #     start_row = 14
+        #     end_row = command[2][1]
+
+        #     for label, row in (("start", start_row), ("end", end_row)):
+        #         normalized_row = row if row >= 0 else nrows + row
+
+        #         if not 0 <= normalized_row < nrows:
+        #             print(f"Table {table['title']!r} has {nrows} rows, but background command has invalid {label} row {row}: {command!r}"
+        #             )
+        #             print('break')
+
+        foo = table_style_cmds + more_table_style_cmds
+        rows_in_table.setStyle(TableStyle(foo))
+        story.append(rows_in_table)
+        story.append(Spacer(1, 10))
+        print('break')
 
 def _finish_pdf_document():
-    doc.build(story)
+    print(f"length of story list: {len(story)}")
+    for index, item in enumerate(story):
+        print(f"{index} {type(item).__name__}\n")
+    print('break')
+
+    import sys
+    import traceback
+
+    try:
+        doc.build(story)
+    except Exception:
+        traceback.print_exc(limit=100, file=sys.stdout)
+        raise
 
 def main(year):
     generate_final_report_pdf(year)
