@@ -39,7 +39,7 @@ def get_section(year: str, section_config: List[Dict]) -> Dict:
     metadata = section_config[0]
     section_title = metadata['section_title']
     section_fields = metadata['show']
-    
+
     # Rest are table definitions
     tables = []
     table_fields = []
@@ -53,7 +53,7 @@ def get_section(year: str, section_config: List[Dict]) -> Dict:
     return {
         'section_title': section_title,
         'table_fields': table_fields,
-        'tables': tables
+        'tables': tables,
     }    
 def generate_table(year: str, table_config: Dict, table_fields: List) -> Dict:
     """

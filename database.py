@@ -24,6 +24,7 @@ from datetime import datetime, timezone
 from share import SHARED as s
 from config.config import DATABASE_FILE, DB_DROP,  CONVERT
 from config.config_txqp import RANKINGS, CATCONVERSIONS
+from reportlab.lib.units import inch
 
 def create_tables():
     """Create database tables if they don't exist"""
@@ -424,91 +425,24 @@ class ContestDatabase:
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            cursor.execute('''SELECT * FROM contest_stats WHERE year = ?''', (year))
+            cursor.execute('''SELECT * FROM contest_stats WHERE year = ?''', [year])
             row = cursor.fetchone()
-            if row:
-                columns = [desc[0] for desc in cursor.description]
-                result = {}
-                for i, col in enumerate(columns):
-                    result[col] = row[i]
-                return self._deserialize_result(result, self.field_types, self.result_fields)
+            columns = [desc[0] for desc in cursor.description]
+            result = {}
+            for i, col in enumerate(columns):
+                result[col] = row[i]
+            return self._deserialize_result(result, self.field_types, self.result_fields)
                 
         return None
 
 db = ContestDatabase(Path(DATABASE_FILE))
 create_tables()
+
 # Convenience functions
 
-def get_clubs_section(s, year):
+def get_stats_sections(s, year):
     db_path = Path(DATABASE_FILE)
-    with sqlite3.connect(db_path, timeout=20.0) as conn:
-        sql = '''SELECT
-                club,
-                COUNT(*) AS person_count,
-                SUM(final_score) AS total_score
-                FROM contest_results
-                WHERE club IS NOT NULL
-                GROUP BY club
-                ORDER BY total_score DESC;'''
-        cursor = conn.cursor()
-        cursor.execute(sql)
-        conn.commit
-        all_clubs = cursor.fetchall()
-        rows = []
-        j = 1
-        for i, t in enumerate(all_clubs):
-            rows.append([j] + list(all_clubs[i]))
-            j += 1
-
-        sections =  [
-            {
-                'section_title': 'Clubs Summary Results',
-                'tables': [
-                    {
-                    'title': '',
-                    'headers': ['Rank', 'Club', 'Entries', 'Score'],
-                    'rows': rows
-                    }
-                ]
-            },
-            {
-                'section_title': 'Results By Club',
-                'tables': []
-            }
-        ]
-
-        
-        for club in all_clubs:
-            sql = '''
-                    select callsign,  final_score, club
-                        from contest_results
-                        where club = ?
-                        order by final_score DESC; '''
-            val = list(club)[0]
-            cursor = conn.cursor()
-            cursor.execute(sql, [val])
-            conn.commit
-            temp = cursor.fetchall()
-            rows = []
-            j = 1
-            for i, t in enumerate(temp):
-                if int(list(temp[i])[1]) == 1:
-                    break
-                rows.append([j] + list(temp[i])[:-1])
-                j += 1
-
-            table = {
-                'title': f"Results for {club[0]}",
-                'headers': ['Rank',  'Entries', 'Total Score'],
-                'rows': rows
-                }
-
-            sections[1]['tables'].append(table)
-
-    return sections
-
-def get_stats_sections(s):
-    db_path = Path(DATABASE_FILE)
+    # stats = get_stats(year)
     with sqlite3.connect(db_path, timeout=20.0) as conn:
         sql = '''SELECT
                     cat,
@@ -561,23 +495,12 @@ def get_stats_sections(s):
                 {
                 'title': 'Number of Logs by Category',
                 'headers': ['Category', 'Category Full Name', 'Log Count', 'Percent of Logs'],
-                'rows': rows
+                'rows': rows,
+                'col_widths': [1.3 * inch, 5 * inch, inch, inch]
                 }
             ]
         },
     ]
-    # for testing
-    s.stats = {
-        'qsos_by_mode': {'PH': 18021, 'CW': 31432, 'RY': 39, 'DG': 225, 'FM': 0},
-        'total_qsos': 52779,
-        'qsos_with_canada': 2110,
-        'qsos_with_tx': 47580,
-        'qsos_with_us': 51858,
-        'qsos_with_dx': 3592,
-        'qsos_by_band': {'160': 2, '80': 565, '40': 15001, '20': 30564, '15': 3476, '10': 65, '6': 0, '2': 44},
-        'qsos_by_hour': [4263, 3794, 2817, 2540, 2783, 2493, 3422, 2448, 2758, 3192, 2615, 2690, 3304, 2599, 1872, 1704, 2019, 2395, 9, 0, 0, 0, 0, 0],
-        'scored_qsos': 49717
-    }
     rows = [['CW', s.stats['qsos_by_mode']['CW'], f"{int(s.stats['qsos_by_mode']['CW'] / s.stats['scored_qsos'] * 100)}%"]]
     rows.append(['SSB', s.stats['qsos_by_mode']['PH'], f"{int(s.stats['qsos_by_mode']['PH'] / s.stats['scored_qsos'] * 100)}%"])
     rows.append(['RY', s.stats['qsos_by_mode']['RY'], f"{int(s.stats['qsos_by_mode']['RY'] / s.stats['scored_qsos'] * 100)}%"])
@@ -586,7 +509,8 @@ def get_stats_sections(s):
         {
         'title': 'Number of Logs by Mode',
         'headers': ['Mode', 'QSOs Count', 'Percent of QSOS'],
-        'rows': rows
+        'rows': rows,
+         'col_widths': [inch, 1.2 * inch, 1.5 * inch]
         }
     )
 
@@ -597,7 +521,8 @@ def get_stats_sections(s):
         {
             'title': 'Number of Logs by Band',
             'headers': ['Band', f"QSOs\nCount", 'Percent of QSOS'],
-            'rows': rows
+            'rows': rows,
+         'col_widths': [inch, 1.2 * inch, 1.5 * inch]
         }
     )
 
@@ -607,17 +532,88 @@ def get_stats_sections(s):
             dt = f"Saturday {(i * 100) + 1400} to {((i + 1) * 100) + 1400} UTC"
         elif i > 9 and i <= 11: # Sunday early
             dt = f"Sunday {(i * 100)} to {(i + 1) * 100} UTC"
-        else:
+        elif i > 11 and i <= 18:
             dt = f"Sunday {(i * 100 + 200)} to {((i + 1) * 100) + 200} UTC"
+        else: break
         rows.append([dt, h, f"{int(h / s.stats['scored_qsos'] * 100)}%"])
 
     sections[0]['tables'].append(
             {
             'title': 'Number of Logs by hour',
             'headers': ['Hour', 'QSOs Count', 'Percent of QSOS'],
-            'rows': rows
+            'rows': rows,
+            'col_widths': [3 * inch, 1.3 * inch, 1.5 * inch]
             }
         )
+
+    return sections
+def get_clubs_section(s, year):
+    db_path = Path(DATABASE_FILE)
+    with sqlite3.connect(db_path, timeout=20.0) as conn:
+        sql = '''SELECT
+                club,
+                COUNT(*) AS person_count,
+                SUM(final_score) AS total_score
+                FROM contest_results
+                WHERE club IS NOT NULL
+                GROUP BY club
+                ORDER BY total_score DESC;'''
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        conn.commit
+        all_clubs = cursor.fetchall()
+        rows = []
+        j = 1
+        for i, t in enumerate(all_clubs):
+            rows.append([j] + list(all_clubs[i]))
+            j += 1
+
+        sections =  [
+            {
+                'section_title': 'Clubs Summary Results',
+                'tables': [
+                    {
+                    'title': '',
+                    'headers': ['Rank', 'Club', 'Entries', 'Score'],
+                    'rows': rows,
+                    'col_widths': [inch, 4 * inch, inch, 1.4 * inch]
+                    }
+                ]
+            },
+            {
+                'section_title': 'Results By Club',
+                'tables': []
+            }
+        ]
+
+        
+        for club in all_clubs:
+            sql = '''
+                    select callsign,  final_score, club
+                        from contest_results
+                        where club = ?
+                        order by final_score DESC; '''
+            val = list(club)[0]
+            cursor = conn.cursor()
+            cursor.execute(sql, [val])
+            conn.commit
+            temp = cursor.fetchall()
+            rows = []
+            j = 1
+            for i, t in enumerate(temp):
+                if int(list(temp[i])[1]) == 1:
+                    break
+                rows.append([j] + list(temp[i])[:-1])
+                j += 1
+            if len(rows) >= 3:
+                table = {
+                    'title': f"Results for {club[0]}",
+                    'headers': ['Rank',  'Entries', 'Total Score'],
+                    'rows': rows,
+                    'col_widths': [inch,  inch, 1.4 * inch]
+                    }
+
+                sections[1]['tables'].append(table)
 
     return sections
 

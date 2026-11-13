@@ -8,7 +8,6 @@ NOTE: set up for Windows dev and deployment
 """
 import os
 from datetime import datetime
-
 from pathlib import Path
 
 # contest times

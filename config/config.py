@@ -29,7 +29,7 @@ except ImportError:
 
 DEBUG = False
 DB_DROP = False
-REPORTS_ONLY = True
+REPORTS_ONLY = False
 SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY not set in environment!")

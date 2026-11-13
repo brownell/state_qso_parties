@@ -104,6 +104,7 @@ section_title_style = ParagraphStyle(
     parent=styles['Heading2'],
     fontName='Times-Bold',
     fontSize=24,
+    leading=26,
     textColor=colors.HexColor('#8B0000'),
     spaceBefore=14,
     spaceAfter=8
@@ -112,46 +113,56 @@ table_title_style = ParagraphStyle(
     'TableTitleStyle',
     parent=styles['Heading3'],
     fontName='Helvetica-Bold',
-    fontSize=11,
-    textColor=colors.HexColor("#000000"),
-    spaceBefore=8,
-    spaceAfter=4
-)
-# Define a paragraph style for your table cells (adjust font, size, leading as needed)
-cell_style = ParagraphStyle(
-    'TableCellStyle',
-    fontName='Courier-Bold',
-    fontSize=9,
-    leading=11,
-    textColor=colors.black,
-    alignment=2  # right
+    fontSize=16,
+    textColor=colors.white,
 )
 # Headers (wrap headers in Paragraphs as well if they might be long)
-header_style = ParagraphStyle(
+table_header_style = ParagraphStyle(
     'TableHeaderStyle',
     fontName='Courier-Bold',
-    fontSize=12,
-    leading=14,
+    fontSize=14,
     textColor=colors.white,
-    alignment=0  # 0=LEFT, 1=CENTER
+)
+# Define a paragraph style for your table cells (adjust font, size, leading as needed)
+table_cell_style = ParagraphStyle(
+    'TableCellStyle',
+    fontName='Courier-Bold',
+    fontSize=12,
+    leading=13,
+    textColor=colors.black,
+    alignment=2  # right
 )
 
 # Base Table Style
 more_table_style_cmds = [
-    ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#6899EE")),
-    ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-    ('VALIGN', (0, 0), (-1, -1), 'TOP'),  # Changed to TOP so wrapped lines align nicely
+    # Grid, padding
     ('GRID', (0, 0), (-1, -1), 1, colors.black),
-    ('ALIGN', (0, 0), (-1, 0), 'LEFT'),
-    ('ALIGN', (0, 0), (0, -1), 'CENTER'), # Rank column centered
-    ('FONTNAME', (0, 0), (-1, 0), 'Courier-Bold'),
-    ('FONTSIZE', (0, 0), (-1, 0), 12),
+
+    # Table Title: Span row 0 across all columns
+    ('SPAN', (0, 0), (-1, 0)),
+    ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+    ('VALIGN', (0, 0), (-1, 0), 'TOP'),
+    ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#024A35")),
+    ('LEADING', (0, 0), (-1, 0), 18),
+    ('TOPPADDING', (0, 0), (-1, 0), 8),
     ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
-    ('TOPPADDING', (0, 0), (-1, 0), 6),
-    ('FONTNAME', (0, 1), (-1, -1), 'Courier-Bold'),
-    ('FONTSIZE', (0, 1), (-1, -1), 9),
-    ('TOPPADDING', (0, 1), (-1, -1), 4),
-    ('BOTTOMPADDING', (0, 1), (-1, -1), 4),
+
+    # Table Header styling
+    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),  # Changed to TOP so wrapped lines align nicely
+    ('BACKGROUND', (0, 1), (-1, 1), colors.navy),
+    ('TOPPADDING', (0, 1), (-1, 1), 6),
+    ('BOTTOMPADDING', (0, 1), (-1, 1), 6),
+
+    # Table Cells of datas (rows 2 through end)
+    # Added as the table cells are created
+    ('ALIGN', (0, 1), (0, -1), 'CENTER'),
+    ('VALIGN', (0, 1), (0, -1), 'TOP'),  # Changed to TOP so wrapped lines align nicely
+    ('ALIGN', (1, 1), (-1, -1), 'RIGHT'),
+    ('VALIGN', (1, 1), (-1, -1), 'TOP'),  # Changed to TOP so wrapped lines align nicely
+    ('BACKGROUND', (0, 2), (-1, -1), colors.white),
+    ('TOPPADDING', (0, 2), (-1, -1), 6),
+    ('BOTTOMPADDING', (0, 2), (-1, -1), 4),
 ]
 
 story = []
@@ -165,22 +176,20 @@ def generate_final_report_pdf(s, year: str):
     """
     print(f"Texas QSO Party - Generate Final Report PDF ({year} {when}))")
  
-  
     _set_up_pdf_document(year)
 
     for section_config in RANK_TABLES:
         section = get_section(year, section_config)
-        _add_section(section)
+        _add_section(section, True, False)
 
     # get the section for the club results
     sections = get_clubs_section(s, year)
     for section in sections:
-        _add_section(section)
+        _add_section(section, True)
 
-    sections = get_stats_sections(s)
-    col_widths = [1 * inch, 5 * inch, 0.5 * inch, 0.5 * inch]
+    sections = get_stats_sections(s, year)
     for section in sections:
-        _add_section(section, color=False, col_widths=col_widths)
+        _add_section(section, False)
     
     print(f"finish PDF document")
     _finish_pdf_document()
@@ -205,34 +214,33 @@ def _set_up_pdf_document(year):
     intro_text = FINAL_REPORT_TXT if FINAL_REPORT_TXT else 'Congratulations to all participants!'
     story.extend([Paragraph(intro_text, intro_style)])
 
-def _add_section(section, color = True, col_widths=[]):
+def _add_section(section, color, col_widths=True):
     story.extend([Paragraph(section['section_title'], section_title_style)])
     # one table at a time
     for table in section['tables']:
-        print('break')
-        story.extend([Paragraph(table['title'], table_title_style)])
-        print('break')
-        
-        # Headers
-        if len(table['headers']) == 3:
-            col_widths = [1 * inch, 1 * inch, 1 * inch]
-        num_table_rows = 0
-        num_styles_added = 0
-        table_rows = []
+        if len(table['rows']) ==0: continue
+        if col_widths:
+            col_widths = table['col_widths']
         table_style_cmds = []
-        story.extend([Paragraph(h, header_style) for h in table['headers']])
+        add_columns = [''] * (len(table['headers']) - 1)
+        temp = [Paragraph(table['title'], table_title_style)]
+        table_rows = [temp + add_columns]
+        # Headers
+
+        table_rows.append([Paragraph(h, table_header_style) for h in table['headers']])
         # Rows wrapped in Paragraphs so colWidths forces wrapping
+        # the first row is table title, second row is table headers
+        # data starts in the third row i.e. [2]
         for row in table['rows']:
             formatted_row = [
-                Paragraph("N/A" if val == -1 else str(val), cell_style) 
+                Paragraph("N/A" if val == -1 else str(val), table_cell_style) 
                 for val in row
             ]
             table_rows.append(formatted_row)
-            num_table_rows += 1
         
         # Alternating row colors and rank highlighting
         for i, row in enumerate(table_rows):
-            
+            if i in [0,1]: continue
             # Default alternating
             if i % 2 == 0:
                 bg_color = colors.HexColor('#ffffff')
@@ -240,56 +248,53 @@ def _add_section(section, color = True, col_widths=[]):
                 bg_color = colors.HexColor("#bff5d7")
             
             # Rank highlighting
-            rank = row[0] # Rank is first column
-            is_highlighted = False
-            if i > 2 or color:
-                if rank == 1:
+            if color:
+                if i == 3:
                     bg_color = colors.HexColor("#B4F0B5")
-                elif rank == 2:
+                elif i == 4:
                     bg_color = colors.HexColor("#CA9AEFFF")
-                elif rank == 3:
+                elif i == 5:
                     bg_color = colors.HexColor("#B2C9FA")
-            
+            if i > (len(table_rows) - 1):
+                print('break')
             table_style_cmds.extend([('BACKGROUND', (0, i), (-1, i), bg_color)])
             # print(f"i = {i}, New cmds:\n{table_style_cmds[:23]}")
-            num_styles_added += 1
             
         
         # Create Table (using auto-sizing columns) except for category stats table
-        if table['title'] == 'Number of Logs by Category':
+        if col_widths:
             rows_in_table = Table(table_rows, repeatRows=1, colWidths=col_widths)
         else:
             rows_in_table = Table(table_rows, repeatRows=1)
+
         # print(f"rows in table: {type(table_rows)} {len(table_rows)}")
         # for i, r in enumerate(table_rows):
         #     print(f"index {i}, length of row {len(r)}")
 
-        # nrows = len(table_rows)
+        nrows = len(table_rows)
 
-        # for command in table_style_cmds:
-        #     if command[0] not in {
-        #         "BACKGROUND",
-        #         "ROWBACKGROUNDS",
-        #         "COLBACKGROUNDS",
-        #     }:
-        #         continue
+        for command in table_style_cmds:
+            if command[0] not in {
+                "BACKGROUND",
+                "ROWBACKGROUNDS",
+                "COLBACKGROUNDS",
+            }:
+                continue
 
-        #     start_row = 14
-        #     end_row = command[2][1]
+            start_row = 0
+            end_row = command[2][1]
 
-        #     for label, row in (("start", start_row), ("end", end_row)):
-        #         normalized_row = row if row >= 0 else nrows + row
+            for label, row in (("start", start_row), ("end", end_row)):
+                normalized_row = row if row >= 0 else nrows + row
 
-        #         if not 0 <= normalized_row < nrows:
-        #             print(f"Table {table['title']!r} has {nrows} rows, but background command has invalid {label} row {row}: {command!r}"
-        #             )
-        #             print('break')
-
-        foo = table_style_cmds + more_table_style_cmds
-        rows_in_table.setStyle(TableStyle(foo))
-        story.append(rows_in_table)
+                if not 0 <= normalized_row < nrows:
+                    print(f"Table {table['title']!r} has {nrows} rows, but background command has invalid {label} row {row}: {command!r}"
+                    )
+                    print('break')
+       
+        rows_in_table.setStyle(TableStyle(more_table_style_cmds + table_style_cmds))
+        story.extend([rows_in_table])
         story.append(Spacer(1, 10))
-        print('break')
 
 def _finish_pdf_document():
     print(f"length of story list: {len(story)}")
