@@ -178,9 +178,14 @@ def generate_final_report_pdf(s, year: str):
  
     _set_up_pdf_document(year)
 
+    col_widths = {
+        9: [inch, inch, 1.2 * inch, 0.8 * inch,  0.8 * inch, inch, inch, 1.2 * inch, 1.2 * inch],
+        8: [inch, inch, 1.2 * inch, 0.8 * inch, inch, inch, 1.2 * inch, 1.2 * inch],
+    }
+
     for section_config in RANK_TABLES:
         section = get_section(year, section_config)
-        _add_section(section, True, False)
+        _add_section(section, True, col_widths)
 
     # get the section for the club results
     sections = get_clubs_section(s, year)
@@ -217,8 +222,10 @@ def _set_up_pdf_document(year):
 def _add_section(section, color, col_widths=True):
     story.extend([Paragraph(section['section_title'], section_title_style)])
     # one table at a time
-    for table in section['tables']:
+    for i, table in enumerate(section['tables']):
         if len(table['rows']) ==0: continue
+        if i > 0:
+            story.append(PageBreak())
         if col_widths:
             col_widths = table['col_widths']
         table_style_cmds = []
@@ -243,9 +250,9 @@ def _add_section(section, color, col_widths=True):
             if i in [0,1]: continue
             # Default alternating
             if i % 2 == 0:
-                bg_color = colors.HexColor('#ffffff')
-            else:
                 bg_color = colors.HexColor("#bff5d7")
+            else:
+                bg_color = colors.HexColor('#ffffff')
             
             # Rank highlighting
             if color:
@@ -263,9 +270,9 @@ def _add_section(section, color, col_widths=True):
         
         # Create Table (using auto-sizing columns) except for category stats table
         if col_widths:
-            rows_in_table = Table(table_rows, repeatRows=1, colWidths=col_widths)
+            rows_in_table = Table(table_rows, repeatRows=2, colWidths=col_widths)
         else:
-            rows_in_table = Table(table_rows, repeatRows=1)
+            rows_in_table = Table(table_rows, repeatRows=2)
 
         # print(f"rows in table: {type(table_rows)} {len(table_rows)}")
         # for i, r in enumerate(table_rows):
