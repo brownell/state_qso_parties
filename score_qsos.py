@@ -44,7 +44,7 @@ def score_all_qsos(s):
 
         # save this operator and move on to the next
         try:
-            saved = save_result(result, CONTEST_YEAR)
+            saved = save_result(s, result, CONTEST_YEAR)
             if not saved:
                 temp = f"Failed to save result for {result['callsign']}"
                 writefile(s, result, qso, temp, ['errors'])

@@ -45,11 +45,12 @@ class SHARED:
             self.provinces = set(line.strip().upper() for line in f if line.strip())
 
         ## create DXCC code (same as ADIF number) to DXCC entity. Needed for DX mults
-        self.dxcc_entities = [None] * 750
+        self.dxcc_entities = [''] * 750
         with open(script_dir / DXCC_ENTITIES_FILE, 'r') as f:
             reader = csv.reader(f)
             for row in reader:
                 self.dxcc_entities[int(row[0])] = row[1].split('  ')[0]
+
         if not REPORTS_ONLY:
             self.out_files = {
                 'errors': open(script_dir /  "OUTPUT_FILES" / "ERROR_FILE.txt", "w"),

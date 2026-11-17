@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 from datetime import datetime
 from pprint import pprint
+from tokenize import Number
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -28,6 +29,7 @@ try:
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.pdfgen import canvas
     from reportlab.lib.units import inch
+    from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 
 except ImportError:
     print("Error: reportlab is not installed. Please install it with: pip install reportlab")
@@ -39,7 +41,6 @@ output_path.mkdir(parents=True, exist_ok=True)
 img_path = Path('static/images')
 # Define output file path
 when = datetime.now().strftime('%m-%d-%H-%M')
-print(f"Texas QSO Party - Generate Final Report PDF ({CONTEST_YEAR} {when}))")
 output_file = (output_path / f"final_report_{CONTEST_YEAR}_{when}.pdf")
 
 # make these "global" since they are being used in two different functions
@@ -109,28 +110,61 @@ section_title_style = ParagraphStyle(
     spaceBefore=14,
     spaceAfter=8
 )
+# table_title_style = ParagraphStyle(
+#     'TableTitleStyle',
+#     parent=styles['Heading3'],
+#     fontName='Helvetica-Bold',
+#     fontSize=16,
+#     textColor=colors.white,
+# )
+# # Headers (wrap headers in Paragraphs as well if they might be long)
+# table_header_style = ParagraphStyle(
+#     'TableHeaderStyle',
+#     fontName='Courier-Bold',
+#     fontSize=14,
+#     textColor=colors.white,
+# )
+# # Define a paragraph style for your table cells (adjust font, size, leading as needed)
+# table_cell_style = ParagraphStyle(
+#     'TableCellStyle',
+#     fontName='Courier-Bold',
+#     fontSize=12,
+#     textColor=colors.black,
+# )
 table_title_style = ParagraphStyle(
     'TableTitleStyle',
     parent=styles['Heading3'],
     fontName='Helvetica-Bold',
     fontSize=16,
+    leading=18,
+    alignment=TA_CENTER,
     textColor=colors.white,
+    spaceBefore=0,
+    spaceAfter=0,
 )
-# Headers (wrap headers in Paragraphs as well if they might be long)
+
 table_header_style = ParagraphStyle(
     'TableHeaderStyle',
+    parent=styles['Normal'],
     fontName='Courier-Bold',
     fontSize=14,
+    leading=16,
+    alignment=TA_CENTER,
     textColor=colors.white,
+    spaceBefore=0,
+    spaceAfter=0,
 )
-# Define a paragraph style for your table cells (adjust font, size, leading as needed)
+
 table_cell_style = ParagraphStyle(
     'TableCellStyle',
+    parent=styles['Normal'],
     fontName='Courier-Bold',
     fontSize=12,
-    leading=13,
+    leading=14,
+    alignment=TA_RIGHT,
     textColor=colors.black,
-    alignment=2  # right
+    spaceBefore=0,
+    spaceAfter=0,
 )
 
 # Base Table Style
@@ -148,21 +182,18 @@ more_table_style_cmds = [
     ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
 
     # Table Header styling
-    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),  # Changed to TOP so wrapped lines align nicely
+    ('ALIGN', (0, 1), (-1, 1), 'CENTER'),
     ('BACKGROUND', (0, 1), (-1, 1), colors.navy),
+    ('LEADING', (0, 1), (-1, 1), 16),
     ('TOPPADDING', (0, 1), (-1, 1), 6),
     ('BOTTOMPADDING', (0, 1), (-1, 1), 6),
 
-    # Table Cells of datas (rows 2 through end)
+    # Table Cells of data (rows 2 through end)
     # Added as the table cells are created
-    ('ALIGN', (0, 1), (0, -1), 'CENTER'),
-    ('VALIGN', (0, 1), (0, -1), 'TOP'),  # Changed to TOP so wrapped lines align nicely
-    ('ALIGN', (1, 1), (-1, -1), 'RIGHT'),
-    ('VALIGN', (1, 1), (-1, -1), 'TOP'),  # Changed to TOP so wrapped lines align nicely
+    ('ALIGN', (0, 2), (-1, -1), 'RIGHT'),
+    ('VALIGN', (0, 2), (-1, -1), 'TOP'),  # Changed to TOP so wrapped lines align nicely
     ('BACKGROUND', (0, 2), (-1, -1), colors.white),
-    ('TOPPADDING', (0, 2), (-1, -1), 6),
-    ('BOTTOMPADDING', (0, 2), (-1, -1), 4),
+    ('LEADING', (0, 2), (-1, -1), 14),
 ]
 
 story = []
@@ -174,32 +205,37 @@ def generate_final_report_pdf(s, year: str):
     Args:
         year: Contest year
     """
-    print(f"Texas QSO Party - Generate Final Report PDF ({year} {when}))")
+    print(f"\nTexas QSO Party - Generate Final Report PDF ({year} {when}))")
  
     _set_up_pdf_document(year)
 
-    col_widths = {
-        9: [inch, inch, 1.2 * inch, 0.8 * inch,  0.8 * inch, inch, inch, 1.2 * inch, 1.2 * inch],
-        8: [inch, inch, 1.2 * inch, 0.8 * inch, inch, inch, 1.2 * inch, 1.2 * inch],
+    all_col_widths = {
+        10:[0.7*inch, 0.9*inch, 0.9*inch, 0.7 * inch,  0.7 * inch, 0.7*inch, 0.8*inch,     inch, 0.8*inch, 0.6*inch],
+        9: [0.7*inch, 0.9*inch, 0.9*inch, 0.7 * inch,  0.7 * inch, 0.7*inch, 0.8*inch,     inch, 0.6*inch],
+        8: [0.7*inch, 0.9*inch, 0.9*inch, 0.7 * inch,  0.7 * inch, 0.8*inch,     inch, 0.6*inch],
+        4: [0.7*inch, 4 * inch, inch, inch],
+        3: [inch, inch, 1.1 * inch],
+        'Number of Logs by Hour': [3.5 * inch, inch, 1.1 * inch],
+        'Number of Logs by Category': [1.5*inch, 5.0 * inch, 0.8 * inch, 0.8*inch],
+        
+
     }
 
     for section_config in RANK_TABLES:
         section = get_section(year, section_config)
-        _add_section(section, True, col_widths)
+        _add_section(section, True, all_col_widths)
 
     # get the section for the club results
     sections = get_clubs_section(s, year)
     for section in sections:
-        _add_section(section, True)
+        _add_section(section, True, all_col_widths)
 
     sections = get_stats_sections(s, year)
     for section in sections:
-        _add_section(section, False)
+        _add_section(section, False, all_col_widths)
     
-    print(f"finish PDF document")
     _finish_pdf_document()
     
-    print('break')
 
 def _set_up_pdf_document(year):
     """Set up the PDF document natively using ReportLab"""
@@ -219,15 +255,18 @@ def _set_up_pdf_document(year):
     intro_text = FINAL_REPORT_TXT if FINAL_REPORT_TXT else 'Congratulations to all participants!'
     story.extend([Paragraph(intro_text, intro_style)])
 
-def _add_section(section, color, col_widths=True):
+def _add_section(section, color, all_col_widths):
+    story.append(PageBreak())
     story.extend([Paragraph(section['section_title'], section_title_style)])
     # one table at a time
     for i, table in enumerate(section['tables']):
         if len(table['rows']) ==0: continue
         if i > 0:
             story.append(PageBreak())
-        if col_widths:
-            col_widths = table['col_widths']
+        if table['title'] in list(all_col_widths.keys()):
+            col_widths = all_col_widths[table['title']]
+        else:
+            col_widths = all_col_widths[len(table['headers'])]
         table_style_cmds = []
         add_columns = [''] * (len(table['headers']) - 1)
         temp = [Paragraph(table['title'], table_title_style)]
@@ -276,7 +315,7 @@ def _add_section(section, color, col_widths=True):
 
         # print(f"rows in table: {type(table_rows)} {len(table_rows)}")
         # for i, r in enumerate(table_rows):
-        #     print(f"index {i}, length of row {len(r)}")
+            # print(f"index {i}, length of row {len(r)}")
 
         nrows = len(table_rows)
 
@@ -304,10 +343,10 @@ def _add_section(section, color, col_widths=True):
         story.append(Spacer(1, 10))
 
 def _finish_pdf_document():
-    print(f"length of story list: {len(story)}")
-    for index, item in enumerate(story):
-        print(f"{index} {type(item).__name__}\n")
-    print('break')
+    # print(f"length of story list: {len(story)}")
+    # for index, item in enumerate(story):
+    #     print(f"{index} {type(item).__name__}\n")
+    # print('break')
 
     import sys
     import traceback
@@ -319,14 +358,15 @@ def _finish_pdf_document():
         raise
 
 def main(year):
-    generate_final_report_pdf(year)
 
-if __name__ == "__main__":
-    from config.config import CONTEST_YEAR
-    
-    # Get year from environment or command line
-    if len(sys.argv) > 1:
-        year = sys.argv[1]
+    if __name__ == "__main__":
+        from config.config import CONTEST_YEAR
+        
+        # Get year from environment or command line
+        if len(sys.argv) > 1:
+            year = sys.argv[1]
+        else:
+            year = CONTEST_YEAR
+        main(year)
     else:
-        year = CONTEST_YEAR
-    main(year)
+        generate_final_report_pdf(s, year)

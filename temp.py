@@ -513,7 +513,7 @@ foo =  {
 #     'tables': [
 #         {
 #             'title': 'Texas Mobile Single Operator Mixed Mode–may be assisted (no contest power limit)', 
-#             'category': 'TMS', 'headers': ['Rank', 'CallSign', 'Score', 'CWQs', 'PHQs', 'QSOPts', 'Mults', 'No Bonus', 'CABPts', 'MTBPts'], 
+#             'category': 'TMS', 'headers': ['Rank', 'CallSign', 'Score', 'CWQs', 'PHQs', 'QSOPts', 'Mults', 'w/o Bonus', 'CABPts', 'MTBPts'], 
 #             'rows': [
 #                 [1, 'K5CM', 888220, 1478, 343, 5120, 81, 414720, 473000, 500], [2, 'KT3X', 509730, 1012, 77, 3190, 67, 213730, 296000, 0], [3, 'N5KW', 327420, 554, 203, 2068, 65, 134420, 193000, 0], [4, 'N5NU', 270232, 500, 72, 1644, 78, 128232, 142000, 0], [5, 'K5K', 264569, 347, 273, 1587, 87, 138069, 126000, 500], [6, 'N5T', 202936, 456, 384, 2136, 51, 108936, 94000, 0], [7, 'KE5OBS', 57020, 12, 160, 356, 45, 16020, 41000, 0], [8, 'KJ5GCH', 4312, 0, 20, 82, 16, 1312, 3000, 0]
 #             ]
@@ -965,7 +965,7 @@ foo =  {
 # # import trace
 # # trace
 
-# # foo = {'title': 'Single Operator Mixed Mode High-Power (>150 watts power)', 'category': 'TSH', 'headers': ['Rank', 'Call', 'Score', 'CWQs', 'PHQs', 'QSOPts', 'Mults', 'No Bonus', 'MTBPts', 'Claimed'], 'rows': [[...], [...], [...], [...], [...], [...]]}
+# # foo = {'title': 'Single Operator Mixed Mode High-Power (>150 watts power)', 'category': 'TSH', 'headers': ['Rank', 'Call', 'Score', 'CWQs', 'PHQs', 'QSOPts', 'Mults', 'w/o Bonus', 'MTBPts', 'Claimed'], 'rows': [[...], [...], [...], [...], [...], [...]]}
 
 
 # # foo = [
@@ -976,7 +976,7 @@ foo =  {
 # #                 ['final_score', 'Score'],
 # #                 ['qso_points', 'QSOPts'],
 # #                 ['total_multipliers', 'Mults'],
-# #                 ['score_wo_bonus', 'No Bonus'],
+# #                 ['score_wo_bonus', 'w/o Bonus'],
 # #                 ['cab_mobile_points', 'CABPts'],
 # #                 ['mtb_mobile_points', 'MTBPts'],
 # #                 ['claimed_score', 'Claimed']
@@ -988,7 +988,7 @@ foo =  {
 # #         {'title': 'TMSP', 'category': 'TXM SO PHO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]}
 # #     ]
 
-# # {'title': 'Single Operator Mixed Mode (150 watts power limit)', 'category': 'TSL', 'headers': ['Rank', 'Call', 'Score', 'CWQs', 'PHQs', 'QSOPts', 'Mults', 'No Bonus', 'MTBPts', 'Claimed'], 'rows': [[...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...]]}
+# # {'title': 'Single Operator Mixed Mode (150 watts power limit)', 'category': 'TSL', 'headers': ['Rank', 'Call', 'Score', 'CWQs', 'PHQs', 'QSOPts', 'Mults', 'w/o Bonus', 'MTBPts', 'Claimed'], 'rows': [[...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...], [...]]}
 
 
 

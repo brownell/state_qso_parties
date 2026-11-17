@@ -26,7 +26,7 @@ from database import save_stats, store_rankings
 from share import SHARED
 from config.config import DATABASE_FILE, REPORTS_ONLY, DEBUG
 
-def main(contest_year):
+def main(context, contest_year):
     s = context
     db_path = Path(DATABASE_FILE)
      # Ensure directory exists
@@ -39,9 +39,10 @@ def main(contest_year):
         save values that will be needed later
     '''
     if not REPORTS_ONLY:
+        print(f"Batch processing program starting for contest year {contest_year}")
+        print(f"\nStarting Read and Prepare")
         read_prepare(context)
-        print(f"after read_prepare: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
-        print('break')
+        print(f"Finished Read and Prepare: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
 
     '''
     Do the cross-checking, marking qsos that fail the match test.
@@ -50,9 +51,10 @@ def main(contest_year):
     '''
     
     if not REPORTS_ONLY:
+        print(f"\nStarting Cross-Check")
         cross_check(context)
-        print(f"after cross-check results: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
-        print('break')
+        print(f"Finished Cross-Check: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+
     # for debugging, print out all the scores
     # if DEBUG:
     #     for r in context.results:
@@ -63,23 +65,32 @@ def main(contest_year):
     #     print(f"results[{i}]: {r['callsign']} {r['final_score']} {r['mtb_mobile_points']} {r['score_wo_bonus']} {r['total_multipliers']} {r['qso_points']} {r['ph_qsos']} {r['cw_qsos']}")
 
     if not REPORTS_ONLY:
+        print(f"\nStarting Scoring of Results")
         score_all_qsos(context)
-        print(f"all QSOs scored and stored: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+        print(f"Finished Scoring of Results: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+
+        print(f"\nSaving Results in Database")
         store_rankings(CONTEST_YEAR)
-        print(f"scored rankings: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+        print(f"Saved Results in Database")
+
+        print(f"\nAdding to Statistics")
         fix_stats(context)
-        print(f"stats fixed: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
+        print(f"Added to Statictics")
+
+        print(f"\nSaving Statistics in Database")
         save_stats(context, contest_year, s.stats)
-        print(f"stats saved: invalidated qsos: {s.stats['invalidated_qsos']}, duplicate qsos: {s.stats['duplicate_qsos']}, nils: {s.stats['nils']}, busteds: {s.stats['busteds']}")
-        print('after stats')
+        print(f"Saved Statistics in Database")
 
     
     # REMEMBER to close all the out_files
     if not REPORTS_ONLY:
+        print(f"Closing all output files")
         for f in list(context.out_files.keys()):
             context.out_files[f].close()
-    
+        print(f"Closed all output files")
+            
     generate_final_report_pdf(context, contest_year)
+    print(f"Finished Generating Final Report PDF for contest year {contest_year}")
     
 if __name__ == "__main__":
     import os, sys
@@ -90,6 +101,4 @@ if __name__ == "__main__":
         year = sys.argv[1]
     else:
         year = CONTEST_YEAR
-    print(f"{'*' * 10} Processing logs for year: {year}")
-    context = SHARED()
-    main(year)
+    main(SHARED(), year)

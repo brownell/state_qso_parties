@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime, timezone
 from share import SHARED as s
-from config.config import DATABASE_FILE, DB_DROP,  CONVERT
+from config.config import DATABASE_FILE, DB_DROP,  CONVERT, REPORTS_ONLY
 from config.config_txqp import RANKINGS, CATCONVERSIONS
 from reportlab.lib.units import inch
 
@@ -265,12 +265,12 @@ class ContestDatabase:
             db_result['created_at'] = now
             db_result['updated_at'] = now
         except Exception as e:
-            s.stats['exceptions'].append(f"serialize result: {result['callsign']}: {e}")
-            print(f"exception {e} in creating db_result")
+            # s.stats['exceptions'].append(f"serialize result: {result['callsign']}: {e}")
+            print(f"exception {e} in creating db_result for {result['callsign']}")
             # print('BREAK')
         return db_result
     
-    def _deserialize_result(self, result: Dict, field_types: Dict, fields: Dict) -> Dict:
+    def _deserialize_result(self, s, result: Dict, field_types: Dict, fields: Dict) -> Dict:
         """ The opposite of serialize_result
             Reads data from the databaser one operator record
             Adds simple fields from the "result" object
@@ -308,12 +308,12 @@ class ContestDatabase:
                 display_result['cat'] = RANKINGS[display_result['cat']]
 
             except Exception as e:
-                s.stats['exceptions'].append(f"de-serialize result: {result['callsign']}: {e}")
-                s.out_files['errors'].write(f"could not deserialize {result}\n")
+                s.stats['exceptions'].append(f"de-serialize result: : {e}")
+                # s.out_files['errors'].write(f"could not deserialize {result}\n")
         
         return display_result
     
-    def save_result(self, contest_year: str, result: Dict) -> bool:
+    def save_result(self, s, contest_year: str, result: Dict) -> bool:
         """
         Save or update a contest result.
         If a record exists for (year, callsign), it will be replaced.
@@ -361,7 +361,7 @@ class ContestDatabase:
             print(f"Error saving result: {e}")
             return False
     
-    def get_result(self, year: str, callsign: str) -> Optional[Dict]:
+    def get_result(self, s, year: str, callsign: str) -> Optional[Dict]:
         """
         Get a single result by year and callsign.
         
@@ -385,7 +385,7 @@ class ContestDatabase:
                 result['category_station'] = CONVERT.get(result['category_station'], "")
                 result['category_mode'] = CONVERT.get(result['category_mode'], "")
                 result['category_power'] = CONVERT.get(result['category_power'], "")
-                dict_result = self._deserialize_result(result, self.field_types, self.result_fields)
+                dict_result = self._deserialize_result(s, result, self.field_types, self.result_fields)
                 dict_result['scored_qsos'] = sum(dict_result['qsos_by_hour'])
                 return dict_result
         return None
@@ -416,7 +416,7 @@ class ContestDatabase:
             print(f"Error saving statistics: {e}")
             return False
            
-    def get_stats(self, year: str) -> Dict:
+    def get_stats(self, s, year: str) -> Dict:
         """  Get contest statistics for a year.
                 Args:
                     year: Contest year
@@ -431,7 +431,7 @@ class ContestDatabase:
             result = {}
             for i, col in enumerate(columns):
                 result[col] = row[i]
-            return self._deserialize_result(result, self.field_types, self.result_fields)
+            return self._deserialize_result(s, result, self.field_types, self.result_fields)
                 
         return None
 
@@ -442,7 +442,9 @@ create_tables()
 
 def get_stats_sections(s, year):
     db_path = Path(DATABASE_FILE)
-    # stats = get_stats(year)
+    if REPORTS_ONLY:
+        temp = get_stats(s, year)
+        s.stats = temp
     with sqlite3.connect(db_path, timeout=20.0) as conn:
         sql = '''SELECT
                     cat,
@@ -494,9 +496,8 @@ def get_stats_sections(s, year):
             'tables': [
                 {
                 'title': 'Number of Logs by Category',
-                'headers': ['Category', 'Category Full Name', 'Log Count', 'Percent of Logs'],
-                'rows': rows,
-                'col_widths': [1.3 * inch, 5 * inch, inch, inch]
+                'headers': ['Category', 'Category Full Name', 'Log Count', '''% of Logs'''],
+                'rows': rows
                 }
             ]
         },
@@ -509,8 +510,7 @@ def get_stats_sections(s, year):
         {
         'title': 'Number of Logs by Mode',
         'headers': ['Mode', 'QSOs Count', 'Percent of QSOS'],
-        'rows': rows,
-         'col_widths': [inch, 1.2 * inch, 1.5 * inch]
+        'rows': rows
         }
     )
 
@@ -521,8 +521,7 @@ def get_stats_sections(s, year):
         {
             'title': 'Number of Logs by Band',
             'headers': ['Band', f"QSOs\nCount", 'Percent of QSOS'],
-            'rows': rows,
-         'col_widths': [inch, 1.2 * inch, 1.5 * inch]
+            'rows': rows
         }
     )
 
@@ -539,10 +538,9 @@ def get_stats_sections(s, year):
 
     sections[0]['tables'].append(
             {
-            'title': 'Number of Logs by hour',
-            'headers': ['Hour', 'QSOs Count', 'Percent of QSOS'],
-            'rows': rows,
-            'col_widths': [3 * inch, 1.3 * inch, 1.5 * inch]
+            'title': 'Number of Logs by Hour',
+            'headers': ['Hour', 'QSOs Count', 'Percent QSOs'],
+            'rows': rows
             }
         )
 
@@ -575,8 +573,7 @@ def get_clubs_section(s, year):
                     {
                     'title': '',
                     'headers': ['Rank', 'Club', 'Entries', 'Score'],
-                    'rows': rows,
-                    'col_widths': [inch, 4 * inch, inch, 1.4 * inch]
+                    'rows': rows
                     }
                 ]
             },
@@ -609,15 +606,14 @@ def get_clubs_section(s, year):
                 table = {
                     'title': f"Results for {club[0]}",
                     'headers': ['Rank',  'Entries', 'Total Score'],
-                    'rows': rows,
-                    'col_widths': [inch,  inch, 1.4 * inch]
+                    'rows': rows
                     }
 
                 sections[1]['tables'].append(table)
 
     return sections
 
-def save_result(result: Dict, contest_year: str, db_path: str = DATABASE_FILE) -> bool:
+def save_result(s, result: Dict, contest_year: str, db_path: str = DATABASE_FILE) -> bool:
     """
     Save a result to the database.
     
@@ -630,10 +626,10 @@ def save_result(result: Dict, contest_year: str, db_path: str = DATABASE_FILE) -
     """
     db = ContestDatabase(db_path)
     db.drop_db = False
-    return db.save_result(contest_year, result)
+    return db.save_result(s, contest_year, result)
 
 
-def get_result(year: str, callsign: str, db_path: str = DATABASE_FILE) -> Optional[Dict]:
+def get_result(s, year: str, callsign: str, db_path: str = DATABASE_FILE) -> Optional[Dict]:
     """
     Get a result from the database.
     
@@ -647,7 +643,7 @@ def get_result(year: str, callsign: str, db_path: str = DATABASE_FILE) -> Option
     """
     db = ContestDatabase(db_path)
     db.drop_db = False
-    return db.get_result(year, callsign)
+    return db.get_result(s, year, callsign)
 
 def save_stats(s, contest_year: str, result: Dict, db_path: str = DATABASE_FILE) -> bool:
     """
@@ -664,7 +660,7 @@ def save_stats(s, contest_year: str, result: Dict, db_path: str = DATABASE_FILE)
     db.drop_db = False
     return db.save_stats(s, contest_year, result)
 
-def get_stats(year: str, db_path: str = DATABASE_FILE) -> Dict:
+def get_stats(s, year: str, db_path: str = DATABASE_FILE) -> Dict:
     """
     Get a result from the database.
     
@@ -678,7 +674,7 @@ def get_stats(year: str, db_path: str = DATABASE_FILE) -> Dict:
     """
     db = ContestDatabase(db_path)
     db.drop_db = False
-    return db.get_stats(year)
+    return db.get_stats(s, year)
 
 def store_rankings(year):
     """

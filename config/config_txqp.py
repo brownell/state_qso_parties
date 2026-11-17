@@ -291,24 +291,24 @@ RANK_TABLES = [
             'show': [
                 ['callsign', 'Call'],
                 ['final_score', 'Score'],
-                ['qso_points', 'QSOPts'],
+                ['qso_points', 'QSO Pts'],
                 ['total_multipliers', 'Mults'],
-                ['score_wo_bonus', 'No Bonus'],
-                ['mtb_mobile_points', 'MTBPts']
+                ['score_wo_bonus', 'w/o Bonus'],
+                ['mtb_mobile_points', 'MTB Pts']
             ],
             'discussion': f"This is an area where discussion can be added",
         },
         # the 'show' list, if not empty adds columns after the final score column
         #   shows field name and column header 
-        {'title': 'TSL', 'category': 'TX SO LP', 'show': [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
-        {'title': 'TSH', 'category': 'TX SO HP', 'show': [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
-        {'title': 'TML', 'category': 'TX MO LP', 'show': [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
-        {'title': 'TMH', 'category': 'TX', 'show':  [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
-        {'title': 'TQS', 'category': 'TX QRP SO', 'show':  [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
-        {'title': 'TCSL', 'category': 'TX CWO SO LP', 'show': [['cw_qsos', 'CWQs']]},
-        {'title': 'TCSH', 'category': 'TX CWO SO HP', 'show': [['cw_qsos', 'CWQs']]},
-        {'title': 'TPSL', 'category': 'TX PHO SO LP', 'show': [['ph_qsos', 'PHQs']]},
-        {'title': 'TPSH', 'category': 'TX PHO SO HP', 'show':  [['ph_qsos', 'PHQs']]}
+        {'title': 'TSL', 'category': 'TX SO LP', 'show': [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
+        {'title': 'TSH', 'category': 'TX SO HP', 'show': [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
+        {'title': 'TML', 'category': 'TX MO LP', 'show': [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
+        {'title': 'TMH', 'category': 'TX', 'show':  [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
+        {'title': 'TQS', 'category': 'TX QRP SO', 'show':  [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
+        {'title': 'TCSL', 'category': 'TX CWO SO LP', 'show': [['cw_qsos', 'CW Qs']]},
+        {'title': 'TCSH', 'category': 'TX CWO SO HP', 'show': [['cw_qsos', 'CW Qs']]},
+        {'title': 'TPSL', 'category': 'TX PHO SO LP', 'show': [['ph_qsos', 'PH Qs']]},
+        {'title': 'TPSH', 'category': 'TX PHO SO HP', 'show':  [['ph_qsos', 'PH Qs']]}
     ],
     ###############
     # SECTION 2 #
@@ -317,19 +317,19 @@ RANK_TABLES = [
         {
             'section_title': 'Texas - Mobile Stations',
             'show': [
-                ['callsign', 'CallSign'],
+                ['callsign', 'Call'],
                 ['final_score', 'Score'],
-                ['qso_points', 'QSOPts'],
+                ['qso_points', 'QSO Pts'],
                 ['total_multipliers', 'Mults'],
-                ['score_wo_bonus', 'No Bonus'],
-                ['cab_mobile_points', 'CABPts'],
-                ['mtb_mobile_points', 'MTBPts']
+                ['score_wo_bonus', 'w/o Bonus'],
+                ['cab_mobile_points', 'CAB Pts'],
+                ['mtb_mobile_points', 'MTB Pts']
             ],
         },
-        {'title': 'TMS', 'category': 'TXM SO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
-        {'title': 'TMM', 'category': 'TXM MO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
-        {'title': 'TMSC', 'category': 'TXM SO CWO', 'show': [['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
-        {'title': 'TMSP', 'category': 'TXM SO PHO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]}
+        {'title': 'TMS', 'category': 'TXM SO', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
+        {'title': 'TMM', 'category': 'TXM MO', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
+        {'title': 'TMSC', 'category': 'TXM SO CWO', 'show': [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
+        {'title': 'TMSP', 'category': 'TXM SO PHO', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]}
     ],
     ###############
     # SECTION   3 #
@@ -338,18 +338,18 @@ RANK_TABLES = [
         {
             'section_title': 'Non-Texas Stations',
             'show': [
-                ['callsign', 'CallSign'],
+                ['callsign', 'Call'],
                 ['final_score', 'Score'],
-                ['qso_points', 'QSOPts'],
+                ['qso_points', 'QSO Pts'],
                 ['total_multipliers', 'Mults'],
-                ['score_wo_bonus', 'No Bonus'],
-                ['mtb_mobile_points', 'MTBPts']
+                ['score_wo_bonus', 'w/o Bonus'],
+                ['mtb_mobile_points', 'MTB Pts']
             ],
         },
-        {'title': 'NS', 'category': 'NTX SO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
-        {'title': 'NSQ', 'category': 'NTX SO QRP', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]},
-        {'title': 'NSC', 'category': 'NTX SO CWO', 'show':[['cw_qsos', 'CWQs']]},
-        {'title': 'NSP', 'category': 'NTX SO PHO', 'show':[['ph_qsos', 'PHQs']]},
+        {'title': 'NS', 'category': 'NTX SO', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
+        {'title': 'NSQ', 'category': 'NTX SO QRP', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
+        {'title': 'NSC', 'category': 'NTX SO CWO', 'show':[['cw_qsos', 'CW Qs']]},
+        {'title': 'NSP', 'category': 'NTX SO PHO', 'show':[['ph_qsos', 'PH Qs']]},
     ],
 
     ###############
@@ -359,15 +359,15 @@ RANK_TABLES = [
         {
             'section_title': 'DX Stations',
             'show': [
-                ['callsign', 'CallSign'],
+                ['callsign', 'Call'],
                 ['final_score', 'Score'],
-                ['qso_points', 'QSOPts'],
+                ['qso_points', 'QSO Pts'],
                 ['total_multipliers', 'Mults'],
                 ['score_wo_bonus', 'QSO Score'],
-                ['mtb_mobile_points', 'MTBPts']
+                ['mtb_mobile_points', 'MTB Pts']
             ],
         },
-        {'title': 'DS', 'category': 'DX SO', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]}
+        {'title': 'DS', 'category': 'DX SO', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]}
     ],
 
     ###############
@@ -377,14 +377,14 @@ RANK_TABLES = [
         {
             'section_title': 'Check Log',
             'show': [
-                ['callsign', 'CallSign'],
+                ['callsign', 'Call'],
                 ['final_score', 'Score'],
-                ['qso_points', 'QSOPts'],
+                ['qso_points', 'QSO Pts'],
                 ['total_multipliers', 'Mults'],
-                ['score_wo_bonus', 'No Bonus'],
-                ['mtb_mobile_points', 'MTBPts']
+                ['score_wo_bonus', 'w/o Bonus'],
+                ['mtb_mobile_points', 'MTB Pts']
             ],
         },
-        {'title': 'C', 'category': 'CHK', 'show':[['cw_qsos', 'CWQs'], ['ph_qsos', 'PHQs']]}
+        {'title': 'C', 'category': 'CHK', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]}
     ]
 ]
