@@ -45,6 +45,7 @@ def get_section(year: str, section_config: List[Dict]) -> Dict:
     table_fields = []
     for table_config in section_config[1:]:
         table_fields = [section_fields[0], section_fields[1]]
+        # TODO add fields for cw, ph, dg, and ry only as needed for the table
         table_fields = table_fields + table_config['show']
         table_fields = table_fields + section_fields[2:]
         table = generate_table(year, table_config, table_fields)
