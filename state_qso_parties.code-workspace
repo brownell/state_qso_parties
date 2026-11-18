@@ -2,9 +2,6 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "../tqp_data/batch_input/2026"
 		}
 	],
 	"settings": {}

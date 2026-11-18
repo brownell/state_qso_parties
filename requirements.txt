@@ -1,7 +1,11 @@
 # Texas QSO Party Processor - Python Dependencies
 
-# cabrillo @ git+https://github.com/brownell/cabrillo.git@17e591b0cee35ab7394ccba2e1d1bad1d90666f7
--e ../cabrillo
+# if running on fly.io
+cabrillo @ git+https://github.com/brownell/cabrillo.git@17e591b0cee35ab7394ccba2e1d1bad1d90666f7
+
+# if running locally
+# -e ../cabrillo
+
 # Database
 SQLAlchemy>=2.0.0
 

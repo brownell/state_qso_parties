@@ -121,15 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
         finalReport.style.display = 'none';
     }
 
-    // Display final report
-    function displayFinalReport(html) {
-        document.getElementById('finalReportContent').innerHTML = html;
-
-        // Show final report section
-        finalReport.style.display = 'block';
-        individualResults.style.display = 'none';
-    }
-
     // Generate certificate HTML
     function generateCertificate(result) {
 // TODO club might be string 'None'
