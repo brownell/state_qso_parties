@@ -300,11 +300,11 @@ RANK_TABLES = [
         },
         # the 'show' list, if not empty adds columns after the final score column
         #   shows field name and column header 
-        {'title': 'TSL', 'category': 'TX SO LP', 'show': [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
-        {'title': 'TSH', 'category': 'TX SO HP', 'show': [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
-        {'title': 'TML', 'category': 'TX MO LP', 'show': [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
-        {'title': 'TMH', 'category': 'TX', 'show':  [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
-        {'title': 'TQS', 'category': 'TX QRP SO', 'show':  [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
+        {'title': 'TSL', 'category': 'TX SO LP', 'show': [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs'], ['dg_qsos', 'DG Qs'], ['ry_qsos', 'RY Qs']]},
+        {'title': 'TSH', 'category': 'TX SO HP', 'show': [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs'], ['dg_qsos', 'DG Qs'], ['ry_qsos', 'RY Qs']]},
+        {'title': 'TML', 'category': 'TX MO LP', 'show': [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs'], ['dg_qsos', 'DG Qs'], ['ry_qsos', 'RY Qs']]},
+        {'title': 'TMH', 'category': 'TX MO HP', 'show':  [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs'], ['dg_qsos', 'DG Qs'], ['ry_qsos', 'RY Qs']]},
+        {'title': 'TQS', 'category': 'TX QRP SO', 'show':  [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs'], ['dg_qsos', 'DG Qs'], ['ry_qsos', 'RY Qs']]},
         {'title': 'TCSL', 'category': 'TX CWO SO LP', 'show': [['cw_qsos', 'CW Qs']]},
         {'title': 'TCSH', 'category': 'TX CWO SO HP', 'show': [['cw_qsos', 'CW Qs']]},
         {'title': 'TPSL', 'category': 'TX PHO SO LP', 'show': [['ph_qsos', 'PH Qs']]},
@@ -326,10 +326,10 @@ RANK_TABLES = [
                 ['mtb_mobile_points', 'MTB Pts']
             ],
         },
-        {'title': 'TMS', 'category': 'TXM SO', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
-        {'title': 'TMM', 'category': 'TXM MO', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
-        {'title': 'TMSC', 'category': 'TXM SO CWO', 'show': [['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
-        {'title': 'TMSP', 'category': 'TXM SO PHO', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]}
+        {'title': 'TMS', 'category': 'TXM SO', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs'], ['dg_qsos', 'DG Qs'], ['ry_qsos', 'RY Qs']]},
+        {'title': 'TMM', 'category': 'TXM MO', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs'], ['dg_qsos', 'DG Qs'], ['ry_qsos', 'RY Qs']]},
+        {'title': 'TMSC', 'category': 'TXM SO CWO', 'show': [['cw_qsos', 'CW Qs']]},
+        {'title': 'TMSP', 'category': 'TXM SO PHO', 'show':[['ph_qsos', 'PH Qs']]}
     ],
     ###############
     # SECTION   3 #
@@ -346,8 +346,8 @@ RANK_TABLES = [
                 ['mtb_mobile_points', 'MTB Pts']
             ],
         },
-        {'title': 'NS', 'category': 'NTX SO', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
-        {'title': 'NSQ', 'category': 'NTX SO QRP', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]},
+        {'title': 'NS', 'category': 'NTX SO', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs'], ['dg_qsos', 'DG Qs'], ['ry_qsos', 'RY Qs']]},
+        {'title': 'NSQ', 'category': 'NTX SO QRP', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs'], ['dg_qsos', 'DG Qs'], ['ry_qsos', 'RY Qs']]},
         {'title': 'NSC', 'category': 'NTX SO CWO', 'show':[['cw_qsos', 'CW Qs']]},
         {'title': 'NSP', 'category': 'NTX SO PHO', 'show':[['ph_qsos', 'PH Qs']]},
     ],
@@ -385,6 +385,6 @@ RANK_TABLES = [
                 ['mtb_mobile_points', 'MTB Pts']
             ],
         },
-        {'title': 'C', 'category': 'CHK', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs']]}
+        {'title': 'C', 'category': 'CHK', 'show':[['cw_qsos', 'CW Qs'], ['ph_qsos', 'PH Qs'], ['dg_qsos', 'DG Qs'], ['ry_qsos', 'RY Qs']]}
     ]
 ]

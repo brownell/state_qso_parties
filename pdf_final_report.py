@@ -110,27 +110,6 @@ section_title_style = ParagraphStyle(
     spaceBefore=14,
     spaceAfter=8
 )
-# table_title_style = ParagraphStyle(
-#     'TableTitleStyle',
-#     parent=styles['Heading3'],
-#     fontName='Helvetica-Bold',
-#     fontSize=16,
-#     textColor=colors.white,
-# )
-# # Headers (wrap headers in Paragraphs as well if they might be long)
-# table_header_style = ParagraphStyle(
-#     'TableHeaderStyle',
-#     fontName='Courier-Bold',
-#     fontSize=14,
-#     textColor=colors.white,
-# )
-# # Define a paragraph style for your table cells (adjust font, size, leading as needed)
-# table_cell_style = ParagraphStyle(
-#     'TableCellStyle',
-#     fontName='Courier-Bold',
-#     fontSize=12,
-#     textColor=colors.black,
-# )
 table_title_style = ParagraphStyle(
     'TableTitleStyle',
     parent=styles['Heading3'],
@@ -142,7 +121,6 @@ table_title_style = ParagraphStyle(
     spaceBefore=0,
     spaceAfter=0,
 )
-
 table_header_style = ParagraphStyle(
     'TableHeaderStyle',
     parent=styles['Normal'],
@@ -210,15 +188,14 @@ def generate_final_report_pdf(s, year: str):
     _set_up_pdf_document(year)
 
     all_col_widths = {
-        10:[0.7*inch, 0.9*inch, 0.9*inch, 0.7 * inch,  0.7 * inch, 0.7*inch, 0.8*inch,     inch, 0.8*inch, 0.6*inch],
+        11:[0.7*inch, 0.9*inch, 0.9*inch, 0.7 * inch,  0.6 * inch, 0.6*inch, 0.6*inch, 0.8*inch,     inch, 0.8*inch, 0.6*inch],
+        10:[0.7*inch, 0.9*inch, 0.9*inch, 0.7 * inch,  0.7 * inch, 0.7*inch, 0.8*inch,     inch, 0.9*inch, 0.6*inch],
         9: [0.7*inch, 0.9*inch, 0.9*inch, 0.7 * inch,  0.7 * inch, 0.7*inch, 0.8*inch,     inch, 0.6*inch],
         8: [0.7*inch, 0.9*inch, 0.9*inch, 0.7 * inch,  0.7 * inch, 0.8*inch,     inch, 0.6*inch],
         4: [0.7*inch, 4 * inch, inch, inch],
         3: [inch, inch, 1.1 * inch],
         'Number of Logs by Hour': [3.5 * inch, inch, 1.1 * inch],
         'Number of Logs by Category': [1.5*inch, 5.0 * inch, 0.8 * inch, 0.8*inch],
-        
-
     }
 
     for section_config in RANK_TABLES:
@@ -286,7 +263,8 @@ def _add_section(section, color, all_col_widths):
         
         # Alternating row colors and rank highlighting
         for i, row in enumerate(table_rows):
-            if i in [0,1]: continue
+            if i in [0,1]:
+                continue
             # Default alternating
             if i % 2 == 0:
                 bg_color = colors.HexColor("#bff5d7")
@@ -295,23 +273,18 @@ def _add_section(section, color, all_col_widths):
             
             # Rank highlighting
             if color:
-                if i == 3:
+                if i == 2:
                     bg_color = colors.HexColor("#B4F0B5")
-                elif i == 4:
+                elif i == 3:
                     bg_color = colors.HexColor("#CA9AEFFF")
-                elif i == 5:
+                elif i == 4:
                     bg_color = colors.HexColor("#B2C9FA")
             if i > (len(table_rows) - 1):
                 print('break')
             table_style_cmds.extend([('BACKGROUND', (0, i), (-1, i), bg_color)])
-            # print(f"i = {i}, New cmds:\n{table_style_cmds[:23]}")
             
-        
-        # Create Table (using auto-sizing columns) except for category stats table
-        if col_widths:
-            rows_in_table = Table(table_rows, repeatRows=2, colWidths=col_widths)
-        else:
-            rows_in_table = Table(table_rows, repeatRows=2)
+        # Create Table 
+        rows_in_table = Table(table_rows, repeatRows=2, colWidths=col_widths)
 
         # print(f"rows in table: {type(table_rows)} {len(table_rows)}")
         # for i, r in enumerate(table_rows):

@@ -84,7 +84,7 @@ def main(context, contest_year):
     
     # REMEMBER to close all the out_files
     if not REPORTS_ONLY:
-        print(f"Closing all output files")
+        print(f"\nClosing all output files")
         for f in list(context.out_files.keys()):
             context.out_files[f].close()
         print(f"Closed all output files")

@@ -16,24 +16,55 @@ from typing import List, Dict, Tuple
 from datetime import datetime
 from config.config import DATABASE_FILE, BONUS_CALLSIGN
 from config.config_txqp import  RANKINGS
-
-load_dotenv()
-project_root = Path(__file__).resolve().parent  # or .parent.parent if .env is one level up
-db_path = (project_root / os.getenv("DATABASE_FILE")).resolve()
-db_path.parent.mkdir(parents=True, exist_ok=True)
+from database import get_cat_qso_counts
   
-def get_section(year: str, section_config: List[Dict]) -> Dict:
+# def get_section(year: str, section_config: List[Dict]) -> Dict:
+"""
+Generate a single section with multiple tables.
+
+Args:
+    year: Contest year
+    section_config: Section configuration (first element is metadata, rest are tables)
+    rankings_dict: RANKINGS dict for title lookup
+    save_rankings: If True, save individual rankings
+    
+Returns:
+    Dict with section metadata and tables
+"""
+# # First element is section metadata
+# metadata = section_config[0]
+# section_title = metadata['section_title']
+# section_fields = metadata['show']
+
+# # Rest are table definitions
+# tables = []
+# for table_config in section_config[1:]:
+#     # these two columns go before the qso count columns, and the rest go after
+#     table_fields = [section_fields[0], section_fields[1]]
+#     # TODO add fields for cw, ph, dg, and ry only as needed for the table
+#     for col in table_config['show']:
+#         if 
+#     # the rest of the fields after the qso count columns
+#     table_fields = table_fields + section_fields[2:]
+    # table = generate_table(year, table_config, table_fields)
+#     if table['rows']:  # Only include tables with data (skip empty tables)
+#         tables.append(table)
+# return {
+#     'section_title': section_title,
+#     'table_fields': table_fields,
+#     'tables': tables,
+# }    
+
+def get_section(year: str, section_config: List(Dict)) -> Dict:
     """
-    Generate a single section with multiple tables.
+    Create a section of the Final Report with multiple tables based on the provided configuration.
     
     Args:
         year: Contest year
-        section_config: Section configuration (first element is metadata, rest are tables)
-        rankings_dict: RANKINGS dict for title lookup
-        save_rankings: If True, save individual rankings
+        section_config: List of dictionaries defining the section and its tables
         
     Returns:
-        Dict with section metadata and tables
+        Dict with table title, headers, and ranked rows
     """
     # First element is section metadata
     metadata = section_config[0]
@@ -42,74 +73,63 @@ def get_section(year: str, section_config: List[Dict]) -> Dict:
 
     # Rest are table definitions
     tables = []
-    table_fields = []
     for table_config in section_config[1:]:
+        # these two columns go before the qso count columns, and the rest go after
         table_fields = [section_fields[0], section_fields[1]]
-        # TODO add fields for cw, ph, dg, and ry only as needed for the table
-        table_fields = table_fields + table_config['show']
+
+        # table title is now a ranking code (e.g., 'NQ')
+        cat = table_config['title']
+        counts = get_cat_qso_counts(year, cat)
+        # add a table field for a qso count only if the sum of them in the table is positive
+        for x in table_config['show']:
+            if counts[x[0]] > 0:
+                table_fields.append(x)
         table_fields = table_fields + section_fields[2:]
-        table = generate_table(year, table_config, table_fields)
+
+        # Get display title from config
+        if RANKINGS and cat in RANKINGS:
+            display_title = f"{table_config['category']}: {RANKINGS[cat]}"
+        else:
+            # Fallback if RANKINGS not provided
+            display_title = table_config['category']
+        
+        # Build SQL query - need to also select callsign for saving rankings
+        sql, params = build_query(year, counts,cat, table_fields, include_callsign=True, include_counts=True)
+        
+        # Execute query
+        with sqlite3.connect(DATABASE_FILE) as conn:
+            cursor = conn.cursor()
+            cursor.execute(sql, params)
+            rows = cursor.fetchall()
+
+            # Add rank column
+            ranked_rows = []
+            for rank, row in enumerate(rows, 1):
+                
+                # Build display row: [rank] + [display values]
+                # but remove the "cat" value at the end
+                ranked_row = [rank] + list(row[:-1])
+                ranked_rows.append(ranked_row)
+        
+        # Build headers (Rank + show fields)
+        headers = ['Rank'] + [field[1] for field in table_fields]
+        table = {
+            'title': display_title,  # Display title, not code
+            'category': cat,  # Keep code for reference
+            'headers': headers,
+            'rows': ranked_rows
+        }
         if table['rows']:  # Only include tables with data (skip empty tables)
             tables.append(table)
+
     return {
         'section_title': section_title,
         'table_fields': table_fields,
         'tables': tables,
-    }    
-def generate_table(year: str, table_config: Dict, table_fields: List) -> Dict:
-    """
-    Generate a single ranked table.
-    
-    Args:
-        year: Contest year
-        table_config: Table configuration with 'title' (ranking code) and 'ands'
-        table_fields: Fields to display from section metadata
-        rankings_dict: RANKINGS dict to get title from code
-        save_rankings: If True, save rankings to database
-        
-    Returns:
-        Dict with table title, headers, and ranked rows
-    """
-    # title is now a ranking code (e.g., 'NQ')
-    cat = table_config['title']
-    
-    # Get display title from RANKINGS dict
-    if RANKINGS and cat in RANKINGS:
-        display_title = RANKINGS[cat]
-    else:
-        # Fallback if RANKINGS not provided
-        display_title = table_config['cat']
-    
-    # Build SQL query - need to also select callsign for saving rankings
-    sql, params = build_query(year, cat, table_fields, include_callsign=True)
-    
-    # Execute query
-    with sqlite3.connect(db_path) as conn:
-        cursor = conn.cursor()
-        cursor.execute(sql, params)
-        rows = cursor.fetchall()
-
-        # Add rank column
-        ranked_rows = []
-        for rank, row in enumerate(rows, 1):
-            
-            # Build display row: [rank] + [display values]
-            # but remove the "cat" value at the end
-            ranked_row = [rank] + list(row[:-1])
-            ranked_rows.append(ranked_row)
-    
-    # Build headers (Rank + show fields)
-    headers = ['Rank'] + [field[1] for field in table_fields]
-    
-    return {
-        'title': display_title,  # Display title, not code
-        'category': cat,  # Keep code for reference
-        'headers': headers,
-        'rows': ranked_rows
     }
 
-def build_query(year: str, cat, table_fields: List, 
-                include_callsign: bool = True) -> Tuple[str, List]:
+def build_query(year: str, counts, cat, table_fields: List, 
+                include_callsign: bool = True, include_counts: bool = True) -> Tuple[str, List]:
     """
     Build SQL query from AND conditions.
     
@@ -128,6 +148,13 @@ def build_query(year: str, cat, table_fields: List,
         select_clause = 'callsign, ' + ', '.join(select_fields)
     else:
         select_clause = ', '.join(select_fields)
+
+    if include_counts:
+        # Add QSO count fields if requested
+        count_fields = ['cw_qsos', 'ph_qsos', 'dg_qsos', 'ry_qsos']
+        for cf in count_fields:
+            if counts[cf] > 0 and cf not in select_fields:
+                select_clause += f', {cf}'
     
     # Build WHERE clause
     where_clause = '''year = ? AND cat = ?'''
