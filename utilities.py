@@ -219,10 +219,10 @@ def save_stats(s, message):
     stats_keys = list(s.stats.keys())
     for k in list(STATISTICS_TEXT.keys()):
         if k in stats_keys:
-            print(f"{STATISTICS_TEXT[k]}: {s.stats[k]}")
+            # print(f"{STATISTICS_TEXT[k]}: {s.stats[k]}")
             s.out_files['stats'].write(f"{STATISTICS_TEXT[k]}: {s.stats[k]}\n")
         else:
-             print(f"\n*** {STATISTICS_TEXT[k]} ***")
+             # print(f"\n*** {STATISTICS_TEXT[k]} ***")
              s.out_files['stats'].write(f"\n*** {STATISTICS_TEXT[k]} ***\n")
 
 # def debug_print(s, r, title, p=True):

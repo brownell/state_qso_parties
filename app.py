@@ -83,7 +83,7 @@ def api_individual_results():
         
         # Get result from database
         # they come back deserialized   i.e. in json format
-        result = get_result(year, callsign)
+        result = get_result(s, year, callsign)
         if DEBUG:
             write_str = f'*** {datetime.now().strftime("%Y-%m-%d %H:%M")}\n'
             write_str = write_str + pprint.pformat(result, indent=2, width=80)

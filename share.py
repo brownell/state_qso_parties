@@ -9,7 +9,7 @@ from collections import defaultdict
 from config.config import (
     CONTEST_YEAR,
     COUNTIES_FILE, BATCH_INPUT_DIR, DXCC_ENTITIES_FILE, CONTEST_YEAR,
-    COUNTIES_FILE, STATES_FILE, PROVINCES_FILE
+    COUNTIES_FILE, STATES_FILE, PROVINCES_FILE, REPORTS_ONLY
     )
 import sys
 from pathlib import Path
@@ -34,6 +34,7 @@ class SHARED:
     def __init__(self):
         """Initialize with reference data files"""
         # Load counties, states, and provinces
+
         with open(script_dir / COUNTIES_FILE, 'r') as f:
             self.counties = {line.strip().upper() for line in f if line.strip()}
 
@@ -44,31 +45,33 @@ class SHARED:
             self.provinces = set(line.strip().upper() for line in f if line.strip())
 
         ## create DXCC code (same as ADIF number) to DXCC entity. Needed for DX mults
-        self.dxcc_entities = [None] * 750
+        self.dxcc_entities = [''] * 750
         with open(script_dir / DXCC_ENTITIES_FILE, 'r') as f:
             reader = csv.reader(f)
             for row in reader:
                 self.dxcc_entities[int(row[0])] = row[1].split('  ')[0]
-        self.out_files = {
-            'errors': open(script_dir /  "OUTPUT_FILES" / "ERROR_FILE.txt", "w"),
-            'warnings': open(script_dir /  "OUTPUT_FILES" / "WARNING_FILE.txt", "w"),
-            'uniques': open(script_dir /  "OUTPUT_FILES" / "UNIQUES_FILE.txt", "w"),
-            'busteds': open(script_dir /  "OUTPUT_FILES" / "BUSTEDS_FILE.txt", "w"),
-            'nils': open(script_dir /  "OUTPUT_FILES" / "NILS_FILE.txt", "w"),
-            'debug': open(script_dir /  "OUTPUT_FILES" / "DEBUG_FILE.txt", "w"),
-            'dups': open(script_dir /  "OUTPUT_FILES" / "DUPS_FILE.txt", "w"),
-            'stats': open(script_dir /  "OUTPUT_FILES" / "STATS_FILE.txt", "w"),
-            'other_invalid_qsos': open(script_dir /  "OUTPUT_FILES" / "OTHER_INVALID_QSOS_FILE.txt", "w")
-        }
-        self.out_files['errors'].seek(0)
-        self.out_files['warnings'].seek(0)
-        self.out_files['uniques'].seek(0)
-        self.out_files['busteds'].seek(0)
-        self.out_files['nils'].seek(0)
-        self.out_files['debug'].seek(0)
-        self.out_files['dups'].seek(0)
-        self.out_files['stats'].seek(0)
-        self.out_files['other_invalid_qsos'].seek(0)
+
+        if not REPORTS_ONLY:
+            self.out_files = {
+                'errors': open(script_dir /  "OUTPUT_FILES" / "ERROR_FILE.txt", "w"),
+                'warnings': open(script_dir /  "OUTPUT_FILES" / "WARNING_FILE.txt", "w"),
+                'uniques': open(script_dir /  "OUTPUT_FILES" / "UNIQUES_FILE.txt", "w"),
+                'busteds': open(script_dir /  "OUTPUT_FILES" / "BUSTEDS_FILE.txt", "w"),
+                'nils': open(script_dir /  "OUTPUT_FILES" / "NILS_FILE.txt", "w"),
+                'debug': open(script_dir /  "OUTPUT_FILES" / "DEBUG_FILE.txt", "w"),
+                'dups': open(script_dir /  "OUTPUT_FILES" / "DUPS_FILE.txt", "w"),
+                'stats': open(script_dir /  "OUTPUT_FILES" / "STATS_FILE.txt", "w"),
+                'other_invalid_qsos': open(script_dir /  "OUTPUT_FILES" / "OTHER_INVALID_QSOS_FILE.txt", "w")
+            }
+            self.out_files['errors'].seek(0)
+            self.out_files['warnings'].seek(0)
+            self.out_files['uniques'].seek(0)
+            self.out_files['busteds'].seek(0)
+            self.out_files['nils'].seek(0)
+            self.out_files['debug'].seek(0)
+            self.out_files['dups'].seek(0)
+            self.out_files['stats'].seek(0)
+            self.out_files['other_invalid_qsos'].seek(0)
         self.script_dir = Path(__file__).resolve().parent
         self.first_call_qth = None  # To track the sent QTH in a log for checking other QSOs against it
         self.mode_points = {
@@ -122,8 +125,6 @@ class SHARED:
             'qsos_with_canada': 0,
             'qsos_with_tx': 0,
             'qsos_with_us': 0,
-            'qsos_with_tx': 0,
-            'qsos_with_us': 0,
             'qsos_with_dx': 0,
             # QSOs with ERRORS
             'duplicate_qsos': 0,
@@ -139,7 +140,7 @@ class SHARED:
             # QSOS BY bAND
             'qsos_by_band': {'160': 0, '80': 0, '40': 0, '20': 0, '15': 0, '10': 0, '6': 0, '2': 0},
             # QSOS BY HOUR
-            'qsos_by_hour': [0] * 24,
+            'qsos_by_hour': [0] * 18,
             'exceptions': [],
             'mobile_activation_counts': {},
             'worked_counties_mobile': {},
