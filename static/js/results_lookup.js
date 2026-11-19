@@ -6,11 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const yearSelect = document.getElementById('year');
     const callsignInput = document.getElementById('callsign');
     const showIndividualBtn = document.getElementById('showIndividualBtn');
-    const showFinalReportBtn = document.getElementById('showFinalReportBtn');
     const loadingIndicator = document.getElementById('loadingIndicator');
     const messageBox = document.getElementById('messageBox');
     const individualResults = document.getElementById('individualResults');
-    const finalReport = document.getElementById('finalReport');
     // const statsH3 = document.getElementById('statsH3');
 
     // Auto-uppercase callsign
@@ -32,17 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         await loadIndividualResults(year, callsign);
-    });
-
-    // Show final report
-    showFinalReportBtn.addEventListener('click', async function() {
-        const year = 2026;
-
-        if (!year) {
-            showMessage('Please select a contest year', 'error');
-            return;
-        }
-        await loadFinalReport(year);
     });
 
     // Load individual results
@@ -78,31 +65,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Load final report
-    async function loadFinalReport(year) {
-        hideMessage();
-        hideResults();
-        showLoading();
-
-        try {
-            const response = await fetch(`/api/final_report/2026.pdf`);
-            const data = await response.json();
-
-            hideLoading();
-
-            if (data.success) {
-                displayFinalReport(data.html);
-                scrollToResults();
-            } else {
-                showMessage(data.error || 'Final report not found', 'error');
-            }
-
-        } catch (error) {
-            hideLoading();
-            showMessage('Error loading final report: ' + error.message, 'error');
-        }
-    }
-
     // Display individual results
     function displayIndividualResults(result) {
         // Generate certificate
@@ -118,7 +80,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Show individual results section
         individualResults.style.display = 'block';
-        finalReport.style.display = 'none';
     }
 
     // Generate certificate HTML
@@ -415,13 +376,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function showLoading() {
         loadingIndicator.style.display = 'block';
         showIndividualBtn.disabled = true;
-        showFinalReportBtn.disabled = true;
     }
 
     function hideLoading() {
         loadingIndicator.style.display = 'none';
         showIndividualBtn.disabled = false;
-        showFinalReportBtn.disabled = false;
     }
 
     function showMessage(message, type) {
@@ -436,15 +395,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function hideResults() {
         individualResults.style.display = 'none';
-        finalReport.style.display = 'none';
     }
 
     function scrollToResults() {
         setTimeout(() => {
             if (individualResults.style.display === 'block') {
                 individualResults.scrollIntoView({ behavior: 'smooth' });
-            } else if (finalReport.style.display === 'block') {
-                finalReport.scrollIntoView({ behavior: 'smooth' });
             }
         }, 300);
     }
