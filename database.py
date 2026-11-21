@@ -475,19 +475,15 @@ def get_stats_sections(s, year):
         
         if i == 8:  # TX FIXED
             rows.append(['', 'Number of Logs from TX Fixed Operators', counter, f"{int(counter / valid_logs * 100)}%"])
-            txf = counter
+            tx = counter
             counter = 0
         if i == 12: # TX Mobile
+            tx += counter
             rows.append(['', 'Number of Logs from TX Mobile Operators', counter, f"{int(counter / valid_logs * 100)}%"])
-            rows.append(['', 'Number of Logs from All TX Operators', counter, f"{int(counter / valid_logs * 100)}%"])
+            rows.append(['', 'Number of Logs from All TX Operators', tx, f"{int(counter / valid_logs * 100)}%"])
             counter = 0
-        if i == 16: # TX Mobile
-            rows.append(['', 'Number of Logs from TX Mobile Operators', counter, f"{int(counter / valid_logs * 100)}%"])
-            ntx = counter
-            counter = 0
-        if i == 17: # DX
-            rows.append(['', 'Number of Logs from DX Single Operator', counter, f"{int(counter / valid_logs * 100)}%"])
-            rows.append(['', 'Number of Logs from All non-TX Operators', counter, f"{int(counter + ntx / valid_logs * 100)}%"])
+        if i == 16: # NTX
+            rows.append(['', 'Number of Logs from Non-Texas Operators', counter, f"{int(counter / valid_logs * 100)}%"])
             counter = 0
 
     sections =  [
@@ -709,6 +705,36 @@ def store_rankings(year):
                 print(f"***** ERROR could not set category for cat {c}")
                 print(f"***** EXCEPTION saving result: {e}")
                 return False
+def get_cat_qso_counts(year, cat):
+    """
+    Get counts of QSOs by category for a given year.
+    
+    Args:
+        year: Contest year
+        cat: Category code
+    """
+
+    # Build complete query (always ordered by final_score DESC)
+    sql = f"""
+        SELECT sum(cw_qsos) AS cw_qsos, sum(ph_qsos) AS ph_qsos, sum(dg_qsos) AS dg_qsos, sum(ry_qsos) AS ry_qsos,  year, cat
+        FROM contest_results
+        WHERE year = ? AND cat = ?
+    """
+    params = [year, cat]
+
+    with sqlite3.connect(DATABASE_FILE) as conn:
+        cursor = conn.cursor()
+        cursor.execute(sql, params)
+        rows = cursor.fetchone()
+        columns = [desc[0] for desc in cursor.description]
+    result = {}
+    for i, col in enumerate(columns):
+        result[col] = rows[i] if rows[i] is not None else 0
+    return result
+
+
+
+
 stats_fields = {
     ""
 }

@@ -72,6 +72,8 @@ def api_individual_results():
     try:
         data = request.get_json()
         year = '2026'   #data.get('year', '').strip()
+        if len(year) > 4:
+            year = year[:4]
         callsign = data.get('callsign', '').strip().upper()
         
         if not year or not callsign:
@@ -114,9 +116,45 @@ def api_final_report(year):
     """
     Get final contest report HTML for a year.
     """
-    return jsonify({
-        'success': True
-    })
+    temp_year = year
+    if len(year) > 4:
+        temp_year = year[:4]
+    try:
+        # Path to final report HTML
+        try:
+            from config.config import FINAL_REPORTS_DIR
+        except ImportError:
+            FINAL_REPORTS_DIR = 'data/final_reports'
+        
+        report_file = os.path.join(FINAL_REPORTS_DIR, f'final_report_{temp_year}.html')
+        print(f'**********  report_file: {report_file}')
+        
+        if not os.path.exists(report_file):
+            return jsonify({
+                'success': False,
+                'error': f'Final report for {year} not yet published'
+            }), 404
+        
+        # Read HTML file
+        with open(report_file, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        
+        # Extract just the body content (skip html/head tags if present)
+        import re
+        body_match = re.search(r'<body[^>]*>(.*?)</body>', html_content, re.DOTALL | re.IGNORECASE)
+        if body_match:
+            html_content = body_match.group(1)
+        
+        return jsonify({
+            'success': True,
+            'html': html_content
+        })
+    
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f'Server error: {str(e)}'
+        }), 500
 
 
 @app.route('/rules')
