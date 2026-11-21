@@ -91,7 +91,7 @@ class SHARED:
             "Austin QRP Club": 0, "Baytown Area ARC": 0, "Central Texas DX and Contest Club": 0, "Dallas ARC": 0,
             "DCT ARC": 0, 
             "Denton County ARC": 0, "DFW Contest Group": 0, "Ellis County ARC": 0, "Irving ARC": 0,
-            "Lake Area Amateur Radio Club": 0, 
+            "Lake Area Amateur Radio Klub": 0, 
             "Las Moras ARC": 0, "Longview/East Texas ARC": 0, "McKinney ARC": 0, "Medina County ARC": 0, 
             "Midland ARC": 0,
             "Naturist ARC": 0, "North Texas ARS": 0, "Panhandle ARC": 0, "Red River Valley ARC": 0, "Road Runners Microwave Group": 0,

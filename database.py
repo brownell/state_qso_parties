@@ -475,19 +475,15 @@ def get_stats_sections(s, year):
         
         if i == 8:  # TX FIXED
             rows.append(['', 'Number of Logs from TX Fixed Operators', counter, f"{int(counter / valid_logs * 100)}%"])
-            txf = counter
+            tx = counter
             counter = 0
         if i == 12: # TX Mobile
+            tx += counter
             rows.append(['', 'Number of Logs from TX Mobile Operators', counter, f"{int(counter / valid_logs * 100)}%"])
-            rows.append(['', 'Number of Logs from All TX Operators', counter, f"{int(counter / valid_logs * 100)}%"])
+            rows.append(['', 'Number of Logs from All TX Operators', tx, f"{int(counter / valid_logs * 100)}%"])
             counter = 0
-        if i == 16: # TX Mobile
-            rows.append(['', 'Number of Logs from TX Mobile Operators', counter, f"{int(counter / valid_logs * 100)}%"])
-            ntx = counter
-            counter = 0
-        if i == 17: # DX
-            rows.append(['', 'Number of Logs from DX Single Operator', counter, f"{int(counter / valid_logs * 100)}%"])
-            rows.append(['', 'Number of Logs from All non-TX Operators', counter, f"{int(counter + ntx / valid_logs * 100)}%"])
+        if i == 16: # NTX
+            rows.append(['', 'Number of Logs from Non-Texas Operators', counter, f"{int(counter / valid_logs * 100)}%"])
             counter = 0
 
     sections =  [

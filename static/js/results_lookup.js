@@ -171,9 +171,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="certificate-footer-container">
                     <div class="certificate-footer">
                         <div class="certificate-signature">
-                            <img src="/static/images/signatures.png" class="signature" alt="Signatures">
                         </div>
-                        <img src="/static/images/alligator_logo.png" class="certificate-logo" alt="Louisianba QSP Party">
+                        <img src="/static/images/Texas_QSO_Logo.png" class="certificate-logo" alt="Louisianba QSP Party">
                     </div>
 
                 </div>

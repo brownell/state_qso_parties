@@ -11,6 +11,7 @@ import pprint
 import tempfile
 from pathlib import Path
 from typing import Dict, List, Optional
+from share import SHARED as s
 
 from database import save_result, get_result
 from config.config import SECRET_KEY, CONTEST_YEAR, BATCH_INPUT_DIR, ALLOWED_LOG_EXTENSIONS, SCRIPT_DIR, DEBUG
