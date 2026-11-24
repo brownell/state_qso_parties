@@ -3,6 +3,25 @@ xIndividual Needed
 - for all: if any - worked_counties_mobile
 111 Spacer, 112 Paragraph, 113 KeepTogether, 114 Spacer, 115 Paragraph, 116 KeepTogether, 117 Spacer
 
+14" less on the whip. 16'5" on the counterpoises,
+which dip to 2' off the ground
+swr 1.08
+|Z| 48.1
+RL 25 dB
+Phase 127 degrees
+R 48.3 ohm
+X 801 ohm
+L 9.1 micro henries
+C -13.6 pico farads
+
+swr 1.12 RL
+|Z| 46.2
+RL 25 dB
+Phase 134.9 degrees
+R 46.4 ohm
+X 585.9 ohm
+L 6.7 micro henries
+C -19.6 pico farads
 # Append title normally
 story.append(Paragraph(table['title'], table_title_style)), # Wrap ONLY the Table in KeepTogether
 story.append(KeepTogether(t))
